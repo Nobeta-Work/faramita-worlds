@@ -4,6 +4,6 @@ WORKDIR /home/user/app
 
 COPY ./ /home/user/app
 
-RUN pip install gradio httpx
+RUN pip install -r requirements.txt
 
 ENTRYPOINT ["python", "-u", "app.py"]
