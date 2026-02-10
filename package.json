@@ -11,7 +11,31 @@
     "build": "vue-tsc --noEmit && electron-vite build",
     "preview": "electron-vite preview",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:win": "npm run build && electron-builder --win"
+  },
+  "build": {
+    "appId": "com.faramita.worlds",
+    "productName": "Faramita Worlds",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Faramita Worlds"
+    }
   },
   "dependencies": {
     "@vueuse/core": "^11.0.0",
