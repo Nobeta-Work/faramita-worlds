@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 import { db } from '../db/db'
 import { WorldCard, WorldMeta } from '@shared/Interface'
+import { useChronicleStore } from './chronicle'
 
 export const useWorldStore = defineStore('world', {
   state: () => ({
@@ -41,6 +42,10 @@ export const useWorldStore = defineStore('world', {
     async setActiveCharacters(ids: string[]) {
       this.activeCharacterIds = ids
       await db.settings.put({ key: 'active_characters', value: ids })
+      
+      // Auto-save archive when active characters change
+      const chronicleStore = useChronicleStore()
+      await chronicleStore.saveArchive()
     },
     async updateActiveCharacters(add: string[], remove: string[]) {
       const current = new Set(this.activeCharacterIds)
@@ -50,6 +55,10 @@ export const useWorldStore = defineStore('world', {
       // Fix DataCloneError by ensuring plain array via JSON serialization
       const plainIds = JSON.parse(JSON.stringify(this.activeCharacterIds))
       await db.settings.put({ key: 'active_characters', value: plainIds })
+      
+      // Auto-save archive when active characters change
+      const chronicleStore = useChronicleStore()
+      await chronicleStore.saveArchive()
     },
     async syncWithTemplate() {
       this.loading = true

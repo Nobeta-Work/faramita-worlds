@@ -283,7 +283,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
               <template v-if="editedCard.suffix_names">
                 <div v-for="(name, idx) in editedCard.suffix_names" :key="idx" class="list-item">
                   <input type="text" v-model="editedCard.suffix_names[idx]" placeholder="如：学徒、法师..." />
-                  <button class="btn-remove" @click="removeListItem('suffix_names', idx)"><Trash2 :size="14" /></button>
+                  <button class="btn-remove" @click="removeListItem('suffix_names', Number(idx))"><Trash2 :size="14" /></button>
                 </div>
               </template>
             </div>
@@ -314,7 +314,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
                     <template v-if="mode.prefix_names">
                       <div v-for="(p, pIdx) in mode.prefix_names" :key="pIdx" class="list-item small">
                         <input type="text" v-model="mode.prefix_names[pIdx]" placeholder="前缀名" />
-                        <button class="btn-remove" @click="removeListItem('prefix_names', pIdx, key)"><Trash2 :size="12" /></button>
+                        <button class="btn-remove" @click="removeListItem('prefix_names', Number(pIdx), String(key))"><Trash2 :size="12" /></button>
                       </div>
                     </template>
                     <button class="btn-add-text" @click="addPrefixName(key)">+ 添加前缀</button>
@@ -332,7 +332,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(t, idx) in editedCard.tags" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.tags[idx]" placeholder="输入标签..." />
-              <button class="btn-remove" @click="removeListItem('setting_tags', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('setting_tags', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
         </section>
@@ -381,7 +381,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(reward, idx) in editedCard.rewards" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.rewards[idx]" placeholder="奖励内容..." />
-              <button class="btn-remove" @click="removeListItem('rewards', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('rewards', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
 
@@ -393,7 +393,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             <div v-for="(point, index) in editedCard.plot_points" :key="point.id" class="plot-point-item">
               <div class="item-header">
                 <input type="text" v-model="point.title" placeholder="剧情点标题" />
-                <button class="btn-remove" @click="removePlotPoint(index)"><Trash2 :size="14" /></button>
+                <button class="btn-remove" @click="removePlotPoint(Number(index))"><Trash2 :size="14" /></button>
               </div>
               <textarea v-model="point.content" placeholder="主要内容" rows="3"></textarea>
               <textarea v-model="point.secret_notes" placeholder="秘密笔记 (AI可见)" rows="2"></textarea>
@@ -408,7 +408,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(t, idx) in editedCard.tags" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.tags[idx]" placeholder="标签..." />
-              <button class="btn-remove" @click="removeListItem('chapter_tags', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('chapter_tags', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
         </section>
@@ -459,7 +459,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(p, idx) in editedCard.personality" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.personality[idx]" placeholder="输入性格标签或描述..." />
-              <button class="btn-remove" @click="removeListItem('personality', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('personality', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
 
@@ -471,7 +471,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(s, idx) in editedCard.status" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.status[idx]" placeholder="输入状态..." />
-              <button class="btn-remove" @click="removeListItem('status', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('status', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
 
@@ -483,7 +483,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(a, idx) in editedCard.affiliation" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.affiliation[idx]" placeholder="输入阵营名称..." />
-              <button class="btn-remove" @click="removeListItem('affiliation', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('affiliation', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
 
@@ -498,7 +498,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-else v-for="(r, idx) in editedCard.race" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.race[idx]" placeholder="输入种族..." />
-              <button class="btn-remove" @click="removeListItem('race', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('race', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
 
@@ -518,7 +518,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(b, idx) in editedCard.background" :key="idx" class="list-item">
               <textarea v-model="editedCard.background[idx]" placeholder="输入背景内容..."></textarea>
-              <button class="btn-remove" @click="removeListItem('background', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('background', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
 
@@ -530,7 +530,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(t, idx) in editedCard.tags" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.tags[idx]" placeholder="输入标签..." />
-              <button class="btn-remove" @click="removeListItem('tags', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('tags', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
 
@@ -542,7 +542,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             <div v-for="(item, index) in editedCard.inventory" :key="index" class="inventory-item">
               <input type="text" v-model="item.item" placeholder="物品名称" />
               <textarea v-model="item.description" placeholder="描述"></textarea>
-              <button class="btn-remove" @click="removeInventoryItem(index)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeInventoryItem(Number(index))"><Trash2 :size="14" /></button>
             </div>
           </div>
         </section>
@@ -605,7 +605,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
             </div>
             <div v-for="(t, idx) in editedCard.tags" :key="idx" class="list-item">
               <input type="text" v-model="editedCard.tags[idx]" placeholder="输入标签..." />
-              <button class="btn-remove" @click="removeListItem('tags', idx)"><Trash2 :size="14" /></button>
+              <button class="btn-remove" @click="removeListItem('tags', Number(idx))"><Trash2 :size="14" /></button>
             </div>
           </div>
         </section>

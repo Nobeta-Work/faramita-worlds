@@ -26,6 +26,9 @@ export const useChronicleStore = defineStore('chronicle', {
       const rawEntry = toRaw(entry)
       const id = await db.chronicle.add(rawEntry as ChronicleEntry)
       this.history.push({ ...entry, id } as ChronicleEntry)
+      
+      // Auto-save archive after adding entry
+      await this.saveArchive()
     },
     async rollback(turn: number) {
       const toDelete = this.history.filter(e => e.turn >= turn)
@@ -35,6 +38,9 @@ export const useChronicleStore = defineStore('chronicle', {
       this.history = this.history.filter(e => e.turn < turn)
       this.pendingInteraction = null
       this.isWaitingForRoll = false
+      
+      // Auto-save archive after rollback
+      await this.saveArchive()
     },
     setInteraction(interaction: AIResponseInteraction) {
       // [临时方案] 当 needs_roll = false 时，不显示投掷面板，不设置 pendingInteraction
@@ -94,6 +100,9 @@ export const useChronicleStore = defineStore('chronicle', {
 
       this.clearInteraction()
       await this._generateAIResponse()
+      
+      // Auto-save archive after resolving interaction
+      await this.saveArchive()
     },
 
     async _generateAIResponse() {
@@ -238,10 +247,10 @@ export const useChronicleStore = defineStore('chronicle', {
             // [临时方案] 50%概率忽略投掷请求，直接当作无投掷处理
             // 效果：AI叙述正常显示，玩家可继续输入行为
             // TODO: 后续需要优化AI提示词来减少投掷频率
-            const shouldRoll = Math.random() < 0.1
+            const shouldRoll = Math.random() < 0.5
             if (!shouldRoll) {
               response.interaction.needs_roll = false
-              console.log('[临时] 90%概率忽略投掷请求，正常显示叙述')
+              console.log('[临时] 50%概率忽略投掷请求，正常显示叙述')
             }
             this.setInteraction(response.interaction)
           }
@@ -278,7 +287,7 @@ export const useChronicleStore = defineStore('chronicle', {
         history: this.history
       }
       
-      const result = await window.api.saveArchiveFile(
+      const result = await (window.api as any).saveArchiveFile(
         JSON.stringify(archive, null, 2),
         worldStore.meta.uuid,
         worldStore.meta.name
@@ -286,34 +295,12 @@ export const useChronicleStore = defineStore('chronicle', {
       return result
     },
     async loadArchive() {
-      const result = await window.api.loadArchive()
-      if (result.success && result.content) {
-        try {
-          const archive = JSON.parse(result.content)
-          if (Array.isArray(archive.history)) {
-            await db.chronicle.clear()
-            this.history = []
-            await db.chronicle.bulkAdd(archive.history)
-            await this.loadHistory()
-            this.clearInteraction()
-            
-            // Load active information if exists
-            if (archive.active_information && Array.isArray(archive.active_information)) {
-              const worldStore = useWorldStore()
-              await worldStore.setActiveCharacters(archive.active_information)
-            }
-            
-            return { success: true }
-          }
-        } catch (e: any) {
-          console.error('Failed to parse archive:', e)
-          return { success: false, error: 'Invalid archive format' }
-        }
-      }
-      return result
+      // This method is deprecated - use loadArchiveFile instead
+      console.warn('loadArchive is deprecated, use loadArchiveFile with specific filename')
+      return { success: false, error: 'Use loadArchiveFile instead' }
     },
     async loadArchiveFile(filename: string) {
-      const result = await window.api.loadArchiveFile(filename)
+      const result = await (window.api as any).loadArchiveFile(filename)
       if (result.success && result.content) {
         try {
           const archive = JSON.parse(result.content)

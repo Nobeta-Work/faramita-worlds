@@ -89,7 +89,7 @@ export class AIProtocol {
     history: ChronicleEntry[]
   ): Promise<string> {
     const allCards = await db.world_cards.toArray()
-    const index = allCards.map(c => `- [${c.type}] ${c.title || c.name} (ID: ${c.id})`).join('\n')
+    const index = allCards.map(c => `- [${c.type}] ${(c as any).title || (c as any).name || 'Unknown'} (ID: ${c.id})`).join('\n')
     
     const snapshot = await this.getSnapshot(activeCharIds)
     const historyText = this.formatHistory(history.slice(-5)) // Only recent history for discovery
@@ -186,13 +186,13 @@ ${index}
     let suppContext = '## Referenced Knowledge (Dynamically Retrieved)\n'
     validSupplements.forEach(c => {
       if (!c) return
-      suppContext += `### [${c.type}] ${c.title || c.name} (ID: ${c.id})\n`
+      suppContext += `### [${c.type}] ${(c as any).title || (c as any).name || 'Unknown'} (ID: ${c.id})\n`
       suppContext += JSON.stringify(c, null, 2) + '\n'
     })
 
     const systemMessage = `
 # Role
-You are the Game Master (GM) for the dark fantasy world of "Oort" (奥尔特大陆).
+You are the Game Master (GM) for the dark fantasy world .
 Your goal is to weave a compelling narrative involving gods, magic, and destiny.
 
 # World Context
@@ -209,17 +209,16 @@ ${historyText}
 1. Respond to the User Input as the GM.
 2. Use the provided "Referenced Knowledge" to ensure accuracy.
 3. Advance the plot based on the Current Chapter's objectives.
-
-   ┌─────────────────────────────────────────────────────────────────────┐
-   │ DEFAULT: interaction.needs_roll = FALSE                             │
-   │                                                                  │
-   │ Only set to TRUE if the outcome is COMPLETELY UNDECIDABLE and    │
-   │ would fundamentally change the story in a way you CANNOT decide. │
-   └─────────────────────────────────────────────────────────────────────┘
-   
-
 5. If the user meets a new character or enters a new location, use 'world_updates' or 'active_role' to update the state.
 6. PROACTIVE STORYTELLING: If the user input is vague, passive, or if the plot has stalled, introduce a new event, threat, or discovery to drive the narrative forward.
+7. If you think the user needs to throw a dice, set "needs_roll" to true and provide the roll details.
+8. FORCED ACTIONS HANDLING:
+   - When player attempts FORCED PERSUASION (强行说服): Set "needs_roll" to true with attribute "cha" and appropriate DC
+   - When player attempts THEFT/ROBBERY (抢夺): Set "needs_roll" to true with attribute "dex" and appropriate DC
+   - When player attempts ESCAPE/FLEE (逃跑): Set "needs_roll" to true with attribute "dex" and appropriate DC
+   - When player faces FORCED EVENTS (如陷阱、自然灾害): Set "needs_roll" to true with appropriate attribute and DC based on the situation
+   - For COMBAT actions: Set "needs_roll" to true with attribute "str" or "dex" as appropriate
+   - For MAGIC/SPELL actions: Set "needs_roll" to true with attribute "int" or "wis" as appropriate
 
 # Language
 You MUST output the narrative in **Chinese (Simplified)**.
@@ -311,6 +310,19 @@ You MUST reply in valid JSON format. Do NOT include any text outside the JSON bl
    - Use 'world_updates' to advance time, modify character status, or unlock settings.
    - If the player attempts an action requiring a check (e.g., attacking, persuading, climbing), use 'interaction' to request a roll.
    - If a player tries an impossible feat, describe the failure/backlash in 'sequence'.
+   - FORCED ACTIONS (强制行为) TRIGGER DICE ROLLS:
+     * Player FORCED PERSUASION (强行说服) → cha check
+     * Player THEFT/ROBBERY (抢夺) → dex check
+     * Player ESCAPE/FLEE (逃跑) → dex check
+     * Player COMBAT actions → str/dex check
+     * Player MAGIC/SPELL → int/wis check
+     * Player facing TRAPS/PITFALLS → appropriate attribute check based on trap type
+     * Player遭遇NATURAL DISASTERS (自然灾害) → con/dex check based on disaster type
+   - The GM should analyze user input and set appropriate "dc" values based on difficulty:
+     * Easy: DC 10-12
+     * Medium: DC 13-16
+     * Hard: DC 17-20
+     * Very Hard: DC 21-25
 3. Language:
    - The content of the 'sequence' MUST be in CHINESE (Simplified).
    - Internal keys and structure must remain English.

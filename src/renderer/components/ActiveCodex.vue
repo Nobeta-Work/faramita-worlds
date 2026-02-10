@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useWorldStore } from '../store/world'
 import { useChronicleStore } from '../store/chronicle'
 import { LevelCalculator } from '../core/LevelCalculator'
+import { CharacterCard } from '@shared/Interface'
 import { User, Book, ChevronRight, ChevronDown, ArrowLeft, Plus, X, Edit, Check } from 'lucide-vue-next'
 
 const worldStore = useWorldStore()
@@ -296,7 +297,7 @@ const attributeLabels: Record<string, string> = {
             @click="handleAddCharacter(char.id)"
           >
             <User :size="14" />
-            <span>{{ char.name }}</span>
+            <span>{{ (char as CharacterCard).name }}</span>
             <span class="char-id">{{ char.id }}</span>
           </div>
         </div>

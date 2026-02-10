@@ -152,14 +152,5 @@ export class NarrativeEngine {
     await worldStore.updateActiveCharacters(toAdd, toDelete)
   }
 
-  // Helper for deep merge
-  private static deepMerge(target: any, source: any): any {
-    for (const key in source) {
-      if (source[key] instanceof Object && key in target) {
-        Object.assign(source[key], this.deepMerge(target[key], source[key]))
-      }
-    }
-    Object.assign(target || {}, source)
-    return target
-  }
+
 }

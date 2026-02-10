@@ -1,25 +1,115 @@
----
-# 详细文档见https://modelscope.cn/docs/%E5%88%9B%E7%A9%BA%E9%97%B4%E5%8D%A1%E7%89%87
-domain: #领域：cv/nlp/audio/multi-modal/AutoML
-# - cv
-tags: #自定义标签
--
-datasets: #关联数据集
-  evaluation:
-  #- iic/ICDAR13_HCTR_Dataset
-  test:
-  #- iic/MTWI
-  train:
-  #- iic/SIBR
-models: #关联模型
-#- iic/ofa_ocr-recognition_general_base_zh
+# Faramita Worlds - 电子角色扮演游戏平台
 
-## 启动文件(若SDK为Gradio/Streamlit，默认为app.py, 若为Static HTML, 默认为index.html)
-# deployspec:
-#   entry_file: app.py
-license: Apache License 2.0
----
-#### Clone with HTTP
-```bash
- git clone https://www.modelscope.cn/studios/Nobeta/faramita-explore-worlds.git
-```
+## 项目介绍
+
+Faramita Worlds 是一款基于Electron + Vue3 + TypeScript开发的电子角色扮演游戏（TRPG）平台，专为桌面角色扮演游戏爱好者设计。该项目提供了丰富的世界书管理、角色卡创建、AI驱动的叙事引擎等功能，让玩家能够沉浸在深度互动的故事体验中。
+
+### 核心特性
+
+- **世界书管理**：支持自定义世界设定、角色、地点等内容
+- **智能AI叙事**：集成大语言模型，提供动态故事生成
+- **角色卡系统**：完善的角色属性、背景管理
+- **存档系统**：完整的进度保存与加载功能
+- **投掷机制**：内置骰子系统支持各类游戏判定
+- **多存档支持**：支持多个游戏存档并行管理
+
+## 为什么不需要部署到魔搭创空间
+
+虽然项目中包含用于魔搭创空间的 `app.py` 文件，但我们建议直接使用桌面客户端版本，原因如下：
+
+1. **性能考虑**：桌面版利用本地硬件资源，AI响应速度更快
+2. **数据安全**：本地运行保护用户的游戏进度和隐私数据
+3. **离线可用**：无需网络连接即可享受完整游戏体验
+4. **功能完整性**：桌面版提供完整的存档、文件管理等原生功能
+5. **用户体验**：桌面应用提供更流畅的操作体验和更高的画面质量
+
+## 演示内容
+
+### 视频演示
+![演示demo](./resources/演示demo.mp4)
+
+### 图片演示
+![演示图片1](./resources/演示图片1.png)
+
+## 下载安装
+
+点击以下链接下载适用于Windows系统的安装程序：
+
+[Faramita Worlds Setup 0.1.0.exe](./dist/Faramita%20Worlds%20Setup%200.1.0.exe) (约82MB)
+
+### 安装说明
+1. 下载安装包
+2. 以管理员身份运行安装程序
+3. 按照提示完成安装
+4. 启动应用并开始游戏
+
+## 功能演示
+
+### 1. 世界书管理
+- 创建和编辑自定义世界设定
+- 导入/导出世界书文件
+- 模板同步功能
+
+### 2. AI驱动的故事生成
+- 智能对话系统
+- 动态情节推进
+- 角色互动模拟
+
+### 3. 存档与进度管理
+- 自动存档功能
+- 多存档管理
+- 进度恢复
+
+### 4. 投掷与游戏机制
+- 内置骰子系统
+- 属性检定
+- 战斗判定
+
+## 部署到魔搭创空间（可选）
+
+如果您仍然希望在魔搭创空间上运行本项目，请注意以下配置：
+
+### 1. 环境变量配置
+- `MS_KEY`: 用于访问AI模型的API密钥
+
+### 2. 服务配置
+- 监听地址: `0.0.0.0` (允许外部访问)
+- 服务端口: `7860`
+
+### 3. 依赖配置
+- `requirements.txt`: 包含必要的Python库
+- `Dockerfile`: 定义容器环境
+
+## 部署步骤
+
+1. **克隆项目空间**
+   ```bash
+   git lfs install
+   git clone http://oauth2:ms-964762e2-63d4-41c1-84cf-ae046ccd7147@www.modelscope.cn/studios/Nobeta/faramita-explore-worlds.git
+   ```
+
+2. **准备文件**
+   确保以下文件存在于项目根目录：
+   - `app.py` (主应用文件)
+   - `requirements.txt` (依赖列表)
+   - `Dockerfile` (容器配置)
+
+3. **提交文件**
+   ```bash
+   git add app.py Dockerfile requirements.txt
+   git commit -m "Add application and Dockerfile"
+   git push
+   ```
+
+## 技术架构
+
+- **前端框架**：Vue 3 + TypeScript
+- **桌面应用**：Electron
+- **构建工具**：Vite
+- **状态管理**：Pinia
+- **数据库**：Dexie.js (IndexedDB wrapper)
+- **UI组件**：Lucide Vue Next
+
+## 许可证
+
+本项目仅供学习和研究使用。

@@ -22,8 +22,17 @@
     },
     "files": [
       "out/**/*",
-      "package.json"
+      "package.json",
+      "src/world_template/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "src/world_template/",
+        "to": "world_template/",
+        "filter": ["**/*"]
+      }
+    ],
+    "icon": "resources/faramita.png",
     "win": {
       "target": [
         "nsis"

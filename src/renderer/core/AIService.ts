@@ -48,7 +48,7 @@ export class AIService {
       throw new Error('配置错误: 缺少 API Key 或 Base URL。请检查设置。')
     }
 
-    const fullPrompt = skipContextInjection ? userPrompt : await AIProtocol.injectContext(userPrompt)
+    const fullPrompt = userPrompt
     
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 60000)

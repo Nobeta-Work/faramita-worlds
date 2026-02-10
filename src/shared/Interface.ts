@@ -145,6 +145,8 @@ export interface AIResponse {
   interaction?: AIResponseInteraction
   active_role?: AIResponseActiveRole
   world_updates?: AIResponseWorldUpdate[]
+  needed_card_ids?: string[]
+  active_role_suggestions?: string[]
 }
 
 // Save Archive Interface

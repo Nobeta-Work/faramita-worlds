@@ -779,7 +779,7 @@ const expandedSections = ref<Record<string, boolean>>({
         </div>
     </div>
 
-    <div v-if="viewMode === 'cards'" class="editor-pane" :class="{ open: !!editingCard }">
+    <div v-if="(viewMode as 'cards') === 'cards'" class="editor-pane" :class="{ open: !!editingCard }">
       <CardEditor
           v-if="editingCard"
           :key="editingCard.id"
