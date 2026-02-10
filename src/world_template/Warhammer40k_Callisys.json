@@ -1,0 +1,425 @@
+{
+  "world_meta": {
+    "uuid": "warhammer40k-callisys-001",
+    "name": "Warhammer40k_Callisys",
+    "version": "1.0.0",
+    "author": "Nobeta",
+    "description": "战锤40k宇宙，哥特式黑暗科幻世界，人类帝国的边缘星区，帝皇的光辉日渐黯淡，混沌势力暗中渗透，异形种族虎视眈眈，废弃星舰与被遗忘的遗迹遍布星系，唯有信仰与钢火能在黑暗中苟存。"
+  },
+  "entries": {
+    "setting_cards": [
+      {
+        "id": "setting-001",
+        "type": "setting",
+        "visible": {
+          "public_visible": false,
+          "player_visible": false,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "卡利西斯星区背景",
+        "content": "卡利西斯星区位于人类帝国 Segmentum Obscurus（朦胧星域）边缘，是帝国疆域的蛮荒前线。大远征时期，荷鲁斯之乱爆发前，帝皇麾下的极限战士战团曾在此建立前哨站，将人类文明的火种播撒至数个宜居星球。荷鲁斯之乱后，星区与帝国核心的联系逐渐薄弱，仅靠偶尔抵达的帝国舰队维持统治，地方总督手握重兵，部分星球甚至陷入割据状态。星区深处隐藏着古老的混沌遗迹，据传是荷鲁斯之乱时期混沌星际战士遗留的据点，同时，钛族探险队、兽人 waaagh! 以及虫巢舰队的先遣部队，也在不断侵蚀这片脆弱的帝国疆域。",
+        "tags": ["calixis sector", "imperium of man", "background"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-002",
+        "type": "setting",
+        "visible": {
+          "public_visible": false,
+          "player_visible": false,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "帝皇信仰与国教",
+        "content": "人类帝国以帝皇为唯一真神，国教（圣徒教派）是帝国的统治基石。卡利西斯星区的国教势力庞大，每个星球都设有教堂与神甫，负责传播帝皇信仰、净化异端与异形，并监视平民与贵族的思想。国教的审判官拥有至高权力，可随意指控他人为混沌信徒或异端，直接执行火刑或处决。对于玩家角色而言，公开违背帝皇信仰将被视为异端，遭到国教与审判庭的追杀；而坚定的信仰可获得帝皇庇佑，在关键时刻获得检定加成。",
+        "tags": ["emperor's faith", "ecclesiarchy", "inquisition"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-003",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": false,
+          "unlock_condition": "在帝国星舰忠诚之刃号上查阅帝国档案"
+        },
+        "category": "background",
+        "title": "巴尔之陨星系详情",
+        "content": "巴尔之陨星系是卡利西斯星区边缘的次级星系，包含5颗宜居星球与12颗废弃星球/小行星带，核心是一颗濒临熄灭的红巨星巴尔。宜居星球分别为：1. 巴尔主星（帝国农业星球，盛产粮食，由地方总督统治，平民生活贫瘠）；2. 铁砧星（帝国锻造星球，隶属机械神教，负责生产轻武器与动力甲零件）；3. 守望星（帝国防御前哨，驻扎帝国卫队第78铁盾团，监视异形动向）；4. 圣徒星（国教圣地，设有圣徒陵墓，神甫与朝圣者云集）；5. 阴影星（废弃殖民星球，据传被混沌腐蚀，信号完全失联）。星系内常年有小行星流穿梭，星舰航行需依靠机械神教的导航员或星语者。",
+        "tags": ["bal system", "planets"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-004",
+        "type": "setting",
+        "visible": {
+          "public_visible": false,
+          "player_visible": false,
+          "unlock_condition": "被混沌信徒捕获后得知"
+        },
+        "category": "background",
+        "title": "混沌势力渗透",
+        "content": "巴尔之陨星系的混沌势力主要来自黑暗掠夺者混沌战帮，这是一支由堕落星际战士、混沌信徒与混沌 daemon 组成的残暴势力，首领是堕落的阿斯塔特星际战士卡隆。他们以阴影星为据点，不断袭击帝国星舰与边境星球，掠夺资源与人口，传播混沌腐蚀。混沌腐蚀会扭曲生物的心智与肉体，被腐蚀者会逐渐丧失自我意识，沦为混沌的傀儡，其力量会随着腐蚀程度增强，但最终会被混沌彻底吞噬。跑团中，玩家角色若接触混沌物品或被混沌攻击，将进行混沌腐蚀检定，检定失败则腐蚀值增加。",
+        "tags": ["chaos", "corruption"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-005",
+        "type": "setting",
+        "visible": {
+          "public_visible": false,
+          "player_visible": false,
+          "unlock_condition": "机械神教角色解锁"
+        },
+        "category": "background",
+        "title": "机械神教与技术崇拜",
+        "content": "机械神教是帝国的技术统治机构，信奉万机之神（帝皇的技术化身），掌控着帝国所有的先进技术、星舰导航与锻造产业。巴尔之陨星系的铁砧星是机械神教的重要据点，驻扎着技术神甫与赛博格军队赛格玛。机械神教的成员会不断用机械部件替换自身肉体，以追求更接近万机之神，其技术等级决定了可使用的装备与技能。机械神教禁止研究异端技术（如混沌技术、异形技术），违者将被视为技术异端，遭到机械神教的追杀。",
+        "tags": ["adeptus mechanicus", "technology"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-006",
+        "type": "setting",
+        "visible": {
+          "public_visible": false,
+          "player_visible": false,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "阿斯塔特星际战士",
+        "content": "阿斯塔特星际战士是帝皇的精英战士，由基因种子改造而成，身高近3米，身披动力甲，战斗力远超普通人类。他们隶属于各个战团，每个战团都有自己的信仰与战斗风格。巴尔之陨星系偶尔会有阿斯塔特小队路过，执行异端净化或异形清剿任务，他们通常不会直接参与玩家角色的行动，但可在关键时刻提供援助（需满足特定条件）。阿斯塔特的基因种子是帝国的重要资源，混沌势力一直试图夺取基因种子，改造出堕落的混沌星际战士。",
+        "tags": ["adeptus astartes", "space marines"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-007",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": false,
+          "unlock_condition": "抵达守望星后得知"
+        },
+        "category": "background",
+        "title": "异形威胁",
+        "content": "巴尔之陨星系的主要异形威胁有三类：1. 兽人 waaagh!：一群好战的绿色皮肤异形，以战争与掠夺为乐，聚集在星系边缘的小行星带，偶尔会袭击帝国防御薄弱的星球，其战斗力随数量增加而增强；2. 钛族探险队：钛族是一个科技发达、追求Greater Good（至善）的异形种族，他们在星系内建立了秘密前哨，试图收集人类与混沌的技术，与帝国保持着脆弱的和平，但偶尔会因资源争夺发生冲突；3. 虫巢舰队先遣队：来自 Tyranid 虫巢舰队的少量单位，隐藏在阴影星附近，以生物为食，不断繁殖，若不及时清剿，将形成巨大的威胁。",
+        "tags": ["xenos", "orks", "tau", "tyranids"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-008",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "人类",
+        "content": "人类是帝国的主体，寿命约60-80年，繁衍速度快，适应能力强，分布在星系的各个宜居星球。帝国公民分为平民、贵族、国教信徒、帝国卫队士兵等，大部分平民生活贫瘠，被繁重的赋税与劳作压迫，一生都无法离开自己的星球。部分人类拥有特殊天赋（如星语者、导航员），会被帝国征召，成为帝国的特殊力量。人类对帝皇信仰的坚定程度，决定了他们在帝国中的地位与生存几率。",
+        "tags": ["human", "imperial citizens"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-009",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "阿斯塔特",
+        "content": "由帝皇基因种子改造而成的精英战士，种族本质仍为人类，但经过19道基因改造程序，拥有远超普通人类的力量、速度与耐力，寿命可达数百年。阿斯塔特身披动力甲，配备爆弹枪、动力剑等先进武器，每个战团都有自己的基因缺陷与战斗风格（如极限战士的严谨、太空野狼的狂暴）。他们一生都在为帝皇而战，是帝国对抗混沌与异形的核心力量，不参与帝国的政治斗争，只忠诚于帝皇与自己的战团。",
+        "tags": ["astartes", "gene-enhanced"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-010",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "赛博格",
+        "content": "人类与机械的结合体，本质是信奉万机之神的人类，通过替换自身肉体为机械部件，获得更强的力量、耐力与技术能力。机械神教的成员会不断改造自己，从学徒神甫的简单机械手臂，到技术大贤者的全身机械化，改造程度越高，对万机之神的虔诚度越高。他们失去了部分人类的情感，痴迷于技术研究与修复，掌握着帝国所有的先进技术，是帝国不可或缺的力量。",
+        "tags": ["cyborg", "tech-priest"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-011",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "混沌信徒",
+        "content": "被混沌腐蚀的人类（或其他种族），种族本质随腐蚀程度变化，轻度腐蚀者仍保留人类外形，重度腐蚀者会出现肉体扭曲（如犄角、翅膀、鳞片），彻底堕落者会沦为混沌 daemon 的宿主。他们抛弃了帝皇信仰，信奉混沌四神（恐虐、奸奇、纳垢、色孽），以传播混沌腐蚀、摧毁帝国为目标，战斗力随腐蚀程度增强，但心智会逐渐被混沌吞噬，最终丧失自我。",
+        "tags": ["chaos cultist", "corrupted"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-012",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "兽人",
+        "content": "绿色皮肤的人形异形，身高1.8-2.5米，拥有强大的肉体力量与恢复能力，好战、残暴、贪婪，以战争与掠夺为乐。兽人没有复杂的文明，依靠本能聚集形成 waaagh! 部落，部落规模越大，兽人的战斗力越强。他们擅长制造简陋但威力巨大的武器（如兽人喷火器、巨型斧头），不畏惧死亡，越是战斗越是狂暴，是巴尔之陨星系边缘的主要威胁之一。",
+        "tags": ["ork", "greenskin"],
+        "scaling_modes": {},
+        "suffix_names": [],
+        "step": 20
+      },
+      {
+        "id": "setting-013",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "class",
+        "title": "阿斯塔特",
+        "content": "阿斯塔特职业专精战斗与战术，具备超人的力量与耐力，擅长使用爆弹枪、动力剑等重型武器。",
+        "tags": ["astartes class"],
+        "scaling_modes": {},
+        "suffix_names": ["新兵", "战术兵", "资深战兵", "队长", "连长"],
+        "step": 20
+      },
+      {
+        "id": "setting-014",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "class",
+        "title": "技术神甫",
+        "content": "技术神甫专精机械修复与技术研究，可以操作复杂的帝国科技设备，拥有机械改造能力。",
+        "tags": ["tech-priest class"],
+        "scaling_modes": {},
+        "suffix_names": ["学徒", "神甫", "高级神甫", "技术神甫", "贤者"],
+        "step": 20
+      },
+      {
+        "id": "setting-015",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "class",
+        "title": "帝国卫队",
+        "content": "帝国卫队是帝国的常规军队，使用激光枪等标准武器，依靠数量与战术取胜。",
+        "tags": ["imperial guard class"],
+        "scaling_modes": {},
+        "suffix_names": ["新兵", "列兵", "班长", "军官", "将军"],
+        "step": 20
+      },
+      {
+        "id": "setting-016",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "level",
+        "title": "等级体系",
+        "content": "战锤40k的等级体系根据角色的所属阵营有不同的称号前缀。",
+        "tags": ["level system"],
+        "scaling_modes": {
+          "阿斯塔特": {
+            "step": 20,
+            "prefix_names": ["新兵", "战术小队成员", "小队队长", "连长", "战团长"]
+          },
+          "机械神教": {
+            "step": 20,
+            "prefix_names": ["学徒神甫", "技术神甫", "高级技术神甫", "技术贤者", "技术大贤者"]
+          },
+          "帝国卫队": {
+            "step": 20,
+            "prefix_names": ["新兵", "士兵", "班长", "军官", "将军"]
+          },
+          "国教": {
+            "step": 20,
+            "prefix_names": ["见习神甫", "神甫", "高级神甫", "主教", "大主教"]
+          },
+          "混沌战帮": {
+            "step": 20,
+            "prefix_names": ["混沌信徒", "混沌战士", "混沌百夫长", "混沌领主", "混沌战争领主"]
+          }
+        },
+        "suffix_names": [],
+        "step": 20,
+        "default_mode": "帝国卫队"
+      }
+    ],
+    "chapter_cards": [
+      {
+        "id": "chapter-001",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "忠诚之刃·启航",
+        "summary": "玩家角色作为帝国的忠诚战士，被紧急征召，登上忠诚之刃号星舰，前往守望星支援防御。在星舰航行过程中，遭遇混沌信徒的破坏与混沌 daemon 的袭击，同时面临导航失灵的危机。玩家角色需团结协作，击退混沌势力，修复导航系统，确保星舰顺利抵达守望星，为后续的兽人防御战做好准备。",
+        "objective": "击退混沌势力，修复导航系统，抵达守望星",
+        "status": "active",
+        "is_current": true,
+        "plot_points": [
+          {
+            "id": "plot-1770708802384",
+            "title": "紧急征召",
+            "content": "玩家角色们因各自的原因（帝国卫队征召、机械神教任务、国教指派、阿斯塔特协助）聚集在巴尔主星的帝国军港，接到紧急命令：兽人 waaagh! 正在袭击守望星，帝国卫队损失惨重，需立即登上忠诚之刃号星舰，前往支援。星舰将在1小时后启航，玩家角色需在启航前准备好装备，接受舰长的任务简报，并应对军港内的突发状况（如混沌信徒的暗中破坏、兽人侦察兵的袭击）。",
+            "secret_notes": "忠诚之刃号星舰上隐藏着一名混沌信徒，正在暗中破坏星舰导航系统，试图将星舰引向阴影星；舰长与机械神教贤者之间存在矛盾，因技术资源分配问题互不信任"
+          }
+        ],
+        "rewards": [],
+        "tags": ["prologue", "space travel"]
+      }
+    ],
+    "character_cards": [
+      {
+        "id": "char-001",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "马库斯·索恩",
+        "prefix_name": "",
+        "race": ["人类"],
+        "age": 18,
+        "gender": "男",
+        "class": "帝国卫队",
+        "level": 1,
+        "affiliation": ["帝国卫队"],
+        "status": ["健康"],
+        "attributes": {
+          "str": 8,
+          "dex": 7,
+          "con": 8,
+          "int": 6,
+          "wis": 9,
+          "cha": 7
+        },
+        "personality": ["忠诚", "勇敢", "鲁莽"],
+        "inventory": [
+          {
+            "item": "激光步枪",
+            "description": "帝国卫队的基础武器，威力较低，弹药充足，适合近距离作战",
+            "effect": null
+          }
+        ],
+        "background": ["出身于巴尔主星的平民家庭，父亲是帝国卫队士兵，在对抗兽人时牺牲，马库斯从小立志成为像父亲一样的战士，保卫帝国与帝皇。16岁时加入帝国卫队，经过两年训练，被征召参与此次支援任务，渴望通过战斗证明自己，获得阿斯塔特战团的认可，成为一名星际战士。"],
+        "tags": ["player", "imperial guard"],
+        "location": "巴尔主星"
+      },
+      {
+        "id": "char-002",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "卡瑞娜·铁手",
+        "prefix_name": "",
+        "race": ["赛博格"],
+        "age": 45,
+        "gender": "女",
+        "class": "技术神甫",
+        "level": 15,
+        "affiliation": ["机械神教"],
+        "status": ["健康"],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 15,
+          "wis": 12,
+          "cha": 8
+        },
+        "personality": ["理性", "痴迷技术", "冷漠"],
+        "inventory": [
+          {
+            "item": "机械手臂",
+            "description": "替换了右手的机械部件，可变形为维修工具或近战武器",
+            "effect": null
+          }
+        ],
+        "background": ["出身于铁砧星的机械神教学徒，因在技术修复方面展现出极高的天赋，被晋升为技术神甫。此次被指派前往守望星，负责修复被兽人损坏的防御工事与武器装备，同时秘密寻找一枚失落的机械神教技术芯片，该芯片存储着先进的动力甲修复技术。卡瑞娜的左手与右眼已被替换为机械部件，对万机之神极度虔诚，漠视人类的情感。"],
+        "tags": ["tech-priest", "mechanicus"],
+        "location": "铁砧星"
+      }
+    ],
+    "interaction_cards": [
+      {
+        "id": "interaction-001",
+        "type": "interaction",
+        "name": "激光射击",
+        "min_level": 1,
+        "element": "能量",
+        "cost": "1 弹药",
+        "d20_logic": "d20 12",
+        "effect": "使用激光武器进行远程攻击，造成中等伤害",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        }
+      },
+      {
+        "id": "interaction-002",
+        "type": "interaction",
+        "name": "机械修复",
+        "min_level": 5,
+        "element": "技术",
+        "cost": "10 分钟",
+        "d20_logic": "d20 15",
+        "effect": "修复损坏的机械设备或武器，需要技术检定",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": "机械神教角色"
+        }
+      }
+    ]
+  }
+}

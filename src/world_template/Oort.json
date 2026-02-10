@@ -1,0 +1,267 @@
+{
+  "world_meta": {
+    "uuid": "oort-001-default-world",
+    "name": "奥尔特大陆",
+    "version": "0.0.1",
+    "author": "Nobeta",
+    "description": "西幻世界"
+  },
+  "entries": {
+    "setting_cards": [
+      {
+        "id": "setting-001",
+        "type": "setting",
+        "category": "background",
+        "content": "世界的初始是一位至高神性「圣心」，它创造了这个平面世界，但没有创造生命。随后它创造了另外两位至高神性「混沌」与「秩序」，他们一起创造了世界树，赋予世界树[生命]的权柄，创造了植物。但这之后，圣心被混沌与秩序联合击杀，世界文明有记载的至高神性只有混沌与秩序。\\n至高神性并非实体，而是概念的总和。",
+        "visible": {
+          "public_visible": false,
+          "player_visible": false,
+          "unlock_condition": null
+        },
+        "title": "至高神性与世界起源",
+        "tags": [
+          "supreme divinity",
+          "history"
+        ]
+      },
+      {
+        "id": "setting-002",
+        "type": "setting",
+        "visible": {
+          "public_visible": false,
+          "player_visible": false,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "文明起源",
+        "content": "世界树诞生后，混沌与秩序赋予世界树[文明]的权柄，世界树创造了最初的精灵。精灵们是世界树的孩子，他们天生拥有魔法能力，建立了辉煌的精灵文明。但随着时间推移，精灵们开始分裂，一部分追求秩序，一部分追求混沌，最终导致了精灵内战。",
+        "tags": [
+          "civilization",
+          "origin"
+        ]
+      },
+      {
+        "id": "setting-003",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "人类",
+        "content": "人类是精灵内战后的新兴种族，他们不像精灵那样天生拥有魔法能力，但拥有极强的适应性和繁衍能力。人类建立了多个王国和城邦，是奥尔特大陆上分布最广泛的种族。",
+        "tags": [
+          "race",
+          "human"
+        ]
+      },
+      {
+        "id": "setting-004",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "精灵",
+        "content": "精灵是世界树的直接造物，拥有悠久的寿命和天生的魔法亲和力。他们分为高等精灵、木精灵和暗精灵三个主要分支。高等精灵追求秩序，木精灵与自然和谐共处，暗精灵则拥抱混沌。",
+        "tags": [
+          "race",
+          "elf"
+        ]
+      },
+      {
+        "id": "setting-005",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "矮人",
+        "content": "矮人是由大地孕育的种族，他们擅长锻造和工艺，居住在深山和地下城中。矮人性格固执但忠诚，是优秀的战士和工匠。",
+        "tags": [
+          "race",
+          "dwarf"
+        ]
+      },
+      {
+        "id": "setting-006",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "class",
+        "title": "战士",
+        "content": "战士是掌握武器和战斗技巧的近战职业，他们依靠强健的体魄和精湛的武艺在战场上生存。战士可以选择专精某种武器或成为武器大师。",
+        "tags": [
+          "class",
+          "warrior"
+        ],
+        "step": 20,
+        "suffix_names": [
+          "见习战士",
+          "正式战士",
+          "资深战士",
+          "战士队长",
+          "战斗大师"
+        ]
+      },
+      {
+        "id": "setting-007",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "class",
+        "title": "法师",
+        "content": "法师是研究和使用魔法的职业，他们通过学习和理解世界的法则来施展魔法。法师需要大量的知识积累，因此通常是学者型人物。",
+        "tags": [
+          "class",
+          "mage"
+        ],
+        "step": 20,
+        "suffix_names": [
+          "魔法学徒",
+          "初级法师",
+          "中级法师",
+          "高级法师",
+          "大法师"
+        ]
+      },
+      {
+        "id": "setting-008",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "level",
+        "title": "等级体系",
+        "content": "奥尔特大陆采用通用的1-100等级体系。每提升一级，角色的各项能力都会有所提升。等级提升需要通过战斗、完成任务或训练获得经验值。",
+        "tags": [
+          "level",
+          "system"
+        ],
+        "step": 20,
+        "default_mode": "冒险者",
+        "scaling_modes": {
+          "冒险者": {
+            "step": 20,
+            "prefix_names": [
+              "新手",
+              "初级",
+              "中级",
+              "高级",
+              "大师"
+            ]
+          }
+        }
+      }
+    ],
+    "chapter_cards": [
+      {
+        "id": "chapter-001",
+        "type": "chapter",
+        "title": "觉醒之日",
+        "objective": "探索主角的魔法觉醒，了解世界的基本规则",
+        "plot_points": [
+          {
+            "id": "plot-001",
+            "title": "魔法觉醒",
+            "content": "主角在一次意外中觉醒了自己的魔法天赋，这引起了当地法师塔的注意。",
+            "secret_notes": "主角的觉醒并非偶然，而是世界树意志的指引"
+          }
+        ],
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "summary": "主角的冒险从这里开始，魔法觉醒将改变他/她的命运。",
+        "status": "active",
+        "is_current": true,
+        "rewards": [],
+        "tags": [
+          "beginning",
+          "awakening"
+        ]
+      }
+    ],
+    "character_cards": [
+      {
+        "id": "char-001",
+        "type": "character",
+        "name": "伊森",
+        "race": [
+          "人类"
+        ],
+        "age": 18,
+        "gender": "男",
+        "class": "法师",
+        "level": 1,
+        "attributes": {
+          "str": 8,
+          "dex": 10,
+          "con": 9,
+          "int": 15,
+          "wis": 12,
+          "cha": 11
+        },
+        "personality": [
+          "好奇",
+          "谨慎",
+          "好学"
+        ],
+        "inventory": [
+          {
+            "item": "旧法杖",
+            "description": "一根普通的橡木法杖，是主角觉醒时使用的",
+            "effect": "基础施法工具"
+          }
+        ],
+        "background": [
+          "出身于边境小镇的普通家庭，父母都是农民。"
+        ],
+        "tags": [
+          "player",
+          "protagonist"
+        ],
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "status": [
+          "健康"
+        ],
+        "location": "边境小镇"
+      }
+    ],
+    "interaction_cards": [
+      {
+        "id": "interaction-001",
+        "type": "interaction",
+        "name": "火球术",
+        "min_level": 1,
+        "element": "火",
+        "cost": "10 MP",
+        "d20_logic": "d20 10",
+        "effect": "发射一个火球，对目标造成火焰伤害",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        }
+      }
+    ]
+  }
+}
