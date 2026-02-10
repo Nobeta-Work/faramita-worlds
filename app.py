@@ -213,10 +213,7 @@ world_options = ["默认"] + list(world_templates.keys())
 
 default_world_name = DEFAULT_WORLD if DEFAULT_WORLD in world_templates else ("默认" if world_options else "默认")
 
-with gr.Blocks(title="Faramita Worlds - TRPG", css="""
-    .gradio-container {max-width: 1200px !important}
-    .chatbot {min-height: 450px}
-""") as demo:
+with gr.Blocks(title="Faramita Worlds - TRPG") as demo:
     gr.Markdown("# 🎭 Faramita Worlds - TRPG 世界")
     gr.Markdown("AI 驱动的多世界 TRPG 沙盒系统")
     
@@ -229,7 +226,7 @@ with gr.Blocks(title="Faramita Worlds - TRPG", css="""
                 info="选择不同的世界模板，AI 将根据该世界的设定进行叙事"
             )
             
-            chatbot = gr.Chatbot(label="编年史", height=400, bubble_full_width=False)
+            chatbot = gr.Chatbot(label="编年史", height=400)
             
             with gr.Row():
                 msg = gr.Textbox(label="输入指令", placeholder="输入你的行动或描述...", scale=5)
@@ -268,4 +265,11 @@ with gr.Blocks(title="Faramita Worlds - TRPG", css="""
     clear_btn.click(lambda: ([], ""), outputs=[chatbot, msg])
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        css="""
+            .gradio-container {max-width: 1200px !important}
+            .chatbot {min-height: 450px}
+        """
+    )
