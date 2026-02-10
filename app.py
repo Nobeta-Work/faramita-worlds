@@ -189,14 +189,39 @@ def faramita_chat(message: str, history_state: List[List[str]], world_name: str)
         return f"🎲 D20 掷骰结果:\n{format_roll_result(result)}"
     
     messages = [{"role": "system", "content": current_prompt}]
+    
+    # 确保历史记录格式正确
     for h in history_state[-10:]:
-        if len(h) >= 2:
-            messages.append({"role": "user", "content": h[0]})
-            messages.append({"role": "assistant", "content": h[1]})
+        if isinstance(h, (list, tuple)) and len(h) >= 2:
+            # 确保内容是字符串
+            user_content = str(h[0]) if h[0] is not None else ""
+            assistant_content = str(h[1]) if h[1] is not None else ""
+            
+            if user_content.strip():
+                messages.append({"role": "user", "content": user_content})
+            if assistant_content.strip():
+                messages.append({"role": "assistant", "content": assistant_content})
+        elif isinstance(h, dict) and "role" in h and "content" in h:
+            # 如果已经是正确的消息格式
+            messages.append(h)
     
     messages.append({"role": "user", "content": message})
     
-    assistant_message = call_api(messages)
+    # 验证消息格式
+    validated_messages = []
+    for msg in messages:
+        if isinstance(msg, dict) and "role" in msg and "content" in msg:
+            # 确保内容是字符串
+            content = str(msg["content"]) if msg["content"] is not None else ""
+            validated_messages.append({
+                "role": str(msg["role"]),
+                "content": content
+            })
+    
+    if not validated_messages:
+        return "错误: 消息格式无效"
+    
+    assistant_message = call_api(validated_messages)
     
     if assistant_message:
         ai_rolls = extract_rolls(assistant_message)
