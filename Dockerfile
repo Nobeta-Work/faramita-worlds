@@ -4,6 +4,6 @@ WORKDIR /home/user/app
 
 COPY ./ /home/user/app
 
-RUN pip install gradio openai
+RUN pip install gradio httpx
 
 ENTRYPOINT ["python", "-u", "app.py"]
