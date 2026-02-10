@@ -33,3 +33,6 @@ Thumbs.db
 # Processed files
 dist/
 out/
+
+# Sub projects
+faramita-explore-worlds/
