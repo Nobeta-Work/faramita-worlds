@@ -3,14 +3,13 @@ import os
 import json
 import random
 import re
-from openai import OpenAI
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
-DEEPSEEK_KEY = os.environ.get("DEEPSEEK_KEY", "")
-BASE_URL = os.environ.get("BASE_URL", "https://api.deepseek.com/v1")
-MODEL = os.environ.get("MODEL", "deepseek-chat")
+MS_KEY = os.environ.get("MS_KEY", "")
+BASE_URL = os.environ.get("BASE_URL", "https://api-inference.modelscope.cn/v1")
+MODEL = os.environ.get("MODEL", "ZhipuAI/GLM-4.7-Flash")
 
-client = OpenAI(api_key=DEEPSEEK_KEY, base_url=BASE_URL)
+DEFAULT_WORLD = "Warhammer40k_Callisys"
 
 world_templates = {}
 
@@ -36,7 +35,6 @@ def load_world_templates():
 load_world_templates()
 
 def build_system_prompt(world_data: Dict) -> str:
-    """根据世界卡数据构建 System Prompt"""
     meta = world_data.get("world_meta", {})
     name = meta.get("name", "未知世界")
     description = meta.get("description", "")
@@ -99,30 +97,6 @@ def build_system_prompt(world_data: Dict) -> str:
     
     return prompt
 
-DEFAULT_PROMPT = """# Role
-你是奥尔特大陆黑暗奇幻世界的游戏主持人(GM)。
-你的目标是编织一个引人入胜的叙事，涉及神明、魔法和命运。
-
-# World Context
-奥尔特是一个被古老神明遗弃的世界，魔法与科技的残余在这个废土世界中交织。
-冒险者们在这个危险的世界中探索遗迹，对抗怪物，寻找失落的知识。
-
-# Rules
-1. 使用生动、感官丰富的描述。
-2. 保持严肃、沉浸的黑暗奇幻基调。
-3. 用中文回复。
-
-# Interaction System
-- 如果需要投骰，使用 [[XdY+Z]] 格式
-- 玩家输入 "掷骰" 或 "roll" 时，自动投掷 D20
-
-# Response Format
-直接输出叙事内容，不需要JSON格式。
-"""
-
-current_prompt = DEFAULT_PROMPT
-history: List[Dict[str, str]] = []
-
 def parse_roll(formula: str) -> Dict[str, Any]:
     match = re.match(r"(\d+)d(\d+)\s*([\+\-])\s*(\d+)", formula, re.IGNORECASE)
     if not match:
@@ -166,16 +140,39 @@ def format_roll_result(result: Dict[str, Any]) -> str:
 def extract_rolls(text: str) -> List[str]:
     return re.findall(r"\[\[(.+?)\]\]", text)
 
-def faramita_chat(message: str, history_state: List[List[str]], world_name: str) -> str:
-    global history, current_prompt
+def call_api(messages: List[Dict[str, str]]) -> str:
+    if not MS_KEY:
+        return "错误: 未设置 MS_KEY 环境变量，请在部署平台配置。"
     
-    if world_name and world_name != "默认":
-        if world_name in world_templates:
-            current_prompt = build_system_prompt(world_templates[world_name])
-        else:
-            current_prompt = DEFAULT_PROMPT
-    else:
-        current_prompt = DEFAULT_PROMPT
+    import httpx
+    
+    headers = {
+        "Authorization": f"Bearer {MS_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": MODEL,
+        "messages": messages,
+        "stream": False
+    }
+    
+    try:
+        with httpx.Client(timeout=120.0) as client:
+            response = client.post(f"{BASE_URL}/chat/completions", headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+    except Exception as e:
+        return f"API 错误: {str(e)}"
+
+def faramita_chat(message: str, history_state: List[List[str]], world_name: str) -> str:
+    global world_templates
+    
+    if not world_name or world_name == "默认":
+        world_name = DEFAULT_WORLD
+    
+    current_prompt = build_system_prompt(world_templates.get(world_name, {})) if world_name in world_templates else ""
     
     message = message.strip()
     if not message:
@@ -191,39 +188,30 @@ def faramita_chat(message: str, history_state: List[List[str]], world_name: str)
         result = roll_d20()
         return f"🎲 D20 掷骰结果:\n{format_roll_result(result)}"
     
-    history.append({"role": "user", "content": message})
-    
     messages = [{"role": "system", "content": current_prompt}]
-    for h in history[-10:]:
-        messages.append({"role": h["role"], "content": h["content"]})
+    for h in history_state[-10:]:
+        if len(h) >= 2:
+            messages.append({"role": "user", "content": h[0]})
+            messages.append({"role": "assistant", "content": h[1]})
     
-    try:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=messages,
-            stream=False
-        )
-        assistant_message = response.choices[0].message.content
-        
-        if assistant_message:
-            ai_rolls = extract_rolls(assistant_message)
-            for roll_formula in ai_rolls:
-                result = parse_roll(roll_formula)
-                assistant_message += f"\n\n{format_roll_result(result)}"
-        
-        history.append({"role": "assistant", "content": assistant_message})
-        
-        return assistant_message
+    messages.append({"role": "user", "content": message})
     
-    except Exception as e:
-        return f"错误: {str(e)}"
+    assistant_message = call_api(messages)
+    
+    if assistant_message:
+        ai_rolls = extract_rolls(assistant_message)
+        for roll_formula in ai_rolls:
+            result = parse_roll(roll_formula)
+            assistant_message += f"\n\n{format_roll_result(result)}"
+    
+    return assistant_message
 
 def clear_history():
-    global history
-    history = []
     return [], ""
 
 world_options = ["默认"] + list(world_templates.keys())
+
+default_world_name = DEFAULT_WORLD if DEFAULT_WORLD in world_templates else ("默认" if world_options else "默认")
 
 with gr.Blocks(title="Faramita Worlds - TRPG", css="""
     .gradio-container {max-width: 1200px !important}
@@ -236,7 +224,7 @@ with gr.Blocks(title="Faramita Worlds - TRPG", css="""
         with gr.Column(scale=3):
             world_dropdown = gr.Dropdown(
                 choices=world_options,
-                value="默认",
+                value=default_world_name,
                 label="选择世界",
                 info="选择不同的世界模板，AI 将根据该世界的设定进行叙事"
             )
@@ -254,8 +242,7 @@ with gr.Blocks(title="Faramita Worlds - TRPG", css="""
             - 在文本中使用 `[[1d20+5]]` 请求 AI 掷骰
             
             ### 📖 可用世界
-            - **默认**: 奥尔特大陆（黑暗奇幻）
-            - **Warhammer40k**: 哥特式黑暗科幻
+            - **默认/Warhammer40k**: 哥特式黑暗科幻（帝国、混沌、异形）
             
             当前世界设定将影响 AI 的叙事风格、世界观知识和角色设定。
             """)
@@ -263,13 +250,13 @@ with gr.Blocks(title="Faramita Worlds - TRPG", css="""
             world_info = gr.Markdown("### 当前世界\n选择上方世界查看详情")
     
     def update_world_info(world_name: str) -> str:
-        if world_name == "默认":
-            return "### 当前世界: 奥尔特大陆\n\n黑暗奇幻世界，涉及神明、魔法和命运。"
+        if world_name == "默认" or not world_name:
+            world_name = DEFAULT_WORLD
         if world_name in world_templates:
             meta = world_templates[world_name].get("world_meta", {})
             desc = meta.get("description", "")
             return f"### 当前世界: {world_name}\n\n{desc}"
-        return "### 当前世界\n选择上方世界查看详情"
+        return f"### 当前世界: {world_name}\n\n选择上方世界查看详情"
     
     def respond(message: str, history: List[List[str]], world_name: str) -> tuple:
         response = faramita_chat(message, history, world_name)
