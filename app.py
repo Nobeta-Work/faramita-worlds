@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 import gradio as gr
 
 # === 配置部分 ===
-API_KEY = os.getenv("API_KEY")  # 从环境变量加载API KEY
+API_KEY = os.getenv("MS_KEY")  # 从环境变量加载API KEY
 BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"  # 默认使用通义千问
 MODEL = "qwen-plus"
 
@@ -42,7 +42,7 @@ class SimpleAIService:
     def send_message(self, user_prompt: str, history: List[Dict]) -> str:
         """发送消息给AI"""
         if not self.api_key:
-            return "错误: 未配置 API KEY，请设置环境变量 API_KEY"
+            return "错误: 未配置 API KEY，请设置环境变量 MS_KEY"
         
         # 构建对话历史
         messages = []
