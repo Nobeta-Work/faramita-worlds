@@ -35,7 +35,12 @@ export class AIService {
   private chatConfig: AIConfig
 
   constructor(config: AIConfig) {
-    this.chatConfig = config
+    // 优先从环境变量读取API KEY
+    const envKey = typeof process !== 'undefined' && process.env && process.env.MS_KEY ? process.env.MS_KEY : '';
+    this.chatConfig = {
+      ...config,
+      apiKey: envKey || config.apiKey
+    }
   }
 
   async sendMessage(

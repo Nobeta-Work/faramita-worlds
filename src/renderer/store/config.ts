@@ -3,7 +3,7 @@ import { db } from '../db/db'
 
 export const useConfigStore = defineStore('config', {
   state: () => ({
-    apiKey: '',
+    apiKey: typeof process !== 'undefined' && process.env && process.env.MS_KEY ? process.env.MS_KEY : '',
     baseUrl: 'https://api.deepseek.com/v1',
     model: 'deepseek-chat'
   }),
