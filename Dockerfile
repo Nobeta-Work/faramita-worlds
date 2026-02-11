@@ -4,6 +4,6 @@ WORKDIR /home/user/app
 
 COPY ./ /home/user/app
 
-RUN pip install gradio requests
+RUN pip install --no-cache-dir --upgrade gradio requests
 
 ENTRYPOINT ["python", "-u", "app.py"]
