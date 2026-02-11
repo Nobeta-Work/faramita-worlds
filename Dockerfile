@@ -4,8 +4,6 @@ WORKDIR /home/user/app
 
 COPY ./ /home/user/app
 
-# Force upgrade/reinstall of gradio to the latest version and install openai
-RUN python -m pip uninstall -y gradio && \
-    python -m pip install --no-cache-dir --upgrade gradio openai requests
+RUN pip install --no-cache-dir --upgrade gradio requests
 
 ENTRYPOINT ["python", "-u", "app.py"]
