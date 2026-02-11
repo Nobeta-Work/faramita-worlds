@@ -10,18 +10,17 @@ WORLD_TEMPLATE_PATH = os.path.join("src", "world_template", "Warhammer40k_Callis
 
 # --- Feature Detection ---
 USE_MESSAGES = False
+GRADIO_VERSION = gr.__version__
 try:
-    # Try to instantiate Chatbot with type='messages' to see if it's supported
-    # We do this in a try/except block to handle older Gradio versions
-    # Note: We don't need to render it, just check __init__
+    # Try to instantiate Chatbot with type='messages'
     gr.Chatbot(type="messages")
     USE_MESSAGES = True
-    print(f"Gradio version {gr.__version__}: Supports 'messages' format.")
+    print(f"Gradio version {GRADIO_VERSION}: Supports 'messages' format.")
 except TypeError:
     USE_MESSAGES = False
-    print(f"Gradio version {gr.__version__}: Does NOT support 'messages' format type argument. Using 'tuples'.")
+    print(f"Gradio version {GRADIO_VERSION}: Does NOT support 'messages' format. Using 'tuples'.")
 except Exception as e:
-    print(f"Gradio version {gr.__version__}: Feature check failed ({e}). Defaulting to 'tuples'.")
+    print(f"Gradio version {GRADIO_VERSION}: Feature check failed ({e}). Defaulting to 'tuples'.")
     USE_MESSAGES = False
 
 # --- Logic & Helper Classes ---
@@ -44,7 +43,6 @@ class WorldManager:
                 
             # Parse entries
             if 'entries' in data:
-                # Handle different card types
                 for card in data['entries'].get('setting_cards', []):
                     self.cards[card['id']] = card
                 for card in data['entries'].get('character_cards', []):
@@ -54,7 +52,6 @@ class WorldManager:
                     if card.get('status') == 'active':
                         self.active_chapter_id = card['id']
                 
-                # Set initial active characters (simplified: take first 2)
                 chars = [c for c in self.cards.values() if c.get('type') == 'character']
                 if chars:
                     self.active_character_ids = [c['id'] for c in chars[:2]]
@@ -114,26 +111,24 @@ class AIService:
 
 class NarrativeEngine:
     @staticmethod
-    def format_history(history: Union[List[List[str]], List[Dict[str, str]]]) -> str:
+    def format_history(history: Any) -> str:
         formatted = ""
         if not history:
             return formatted
             
-        # Detect format based on first item
-        first_item = history[0]
-        
-        if isinstance(first_item, dict):
-            # Messages Format: [{'role': 'user', 'content': '...'}, ...]
-            for msg in history:
-                role = msg.get('role')
-                content = msg.get('content')
+        # Robust iteration
+        for item in history:
+            if isinstance(item, dict):
+                # Message format
+                role = item.get('role')
+                content = item.get('content')
                 if role == 'user':
                     formatted += f"[USER]: {content}\n"
                 elif role == 'assistant':
                     formatted += f"[ASSISTANT]: {content}\n"
-        elif isinstance(first_item, (list, tuple)):
-            # Tuple Format: [[user_msg, bot_msg], ...]
-            for user_msg, bot_msg in history:
+            elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                # Tuple format
+                user_msg, bot_msg = item[0], item[1]
                 if user_msg:
                     formatted += f"[USER]: {user_msg}\n"
                 if bot_msg:
@@ -151,24 +146,20 @@ class NarrativeEngine:
         
         return f"""
 # Role
-You are the "Librarian" of the Oort world database. Your job is to identify which World Cards are relevant to the user's latest input and the current context.
+You are the "Librarian" of the Oort world database.
 
 # Task
-1. Analyze the User Input and Recent History.
-2. Review the "World Index" below.
-3. Return a JSON object listing the IDs of the cards you need to read in detail to generate a narrative response.
+Identify which World Cards are relevant to the user's latest input.
+Return a JSON object listing the IDs of the cards you need to read.
 
 # Context
-## Active Chapter
-{active_chapter_text}
+Active Chapter: {active_chapter_text}
+Active Characters: {active_chars_text}
 
-## Active Characters
-{active_chars_text}
-
-## Recent History
+# Recent History
 {history_str}
 
-## User Input
+# User Input
 {user_input}
 
 # World Index
@@ -184,7 +175,6 @@ You are the "Librarian" of the Oort world database. Your job is to identify whic
     def construct_narrative_prompt(user_input: str, history_str: str, world_mgr: WorldManager, needed_ids: List[str]):
         snapshot = world_mgr.get_snapshot(world_mgr.active_character_ids)
         
-        # Fetch needed cards
         supp_context = "## Referenced Knowledge\n"
         for cid in needed_ids:
             card = world_mgr.cards.get(cid)
@@ -192,34 +182,26 @@ You are the "Librarian" of the Oort world database. Your job is to identify whic
                 supp_context += f"### [{card.get('type')}] {card.get('title') or card.get('name')} (ID: {card['id']})\n"
                 supp_context += json.dumps(card, ensure_ascii=False) + "\n"
 
-        # Build Context
-        world_context = "## Settings (Global Rules)\n"
+        world_context = "## Settings\n"
         for s in snapshot['settings']:
-            world_context += f"- {s.get('title')} ({s.get('category')}): {s.get('content')}\n"
+            world_context += f"- {s.get('title')}: {s.get('content')}\n"
             
         if snapshot['activeChapter']:
             c = snapshot['activeChapter']
-            world_context += f"\n## Current Chapter: {c.get('title')}\n"
-            world_context += f"Objective: {c.get('objective')}\n"
-            world_context += f"Summary: {c.get('summary')}\n"
+            world_context += f"\n## Current Chapter: {c.get('title')}\n{c.get('summary')}\n"
             
         char_context = "## Active Characters\n"
         for c in snapshot['activeCharacters']:
             char_context += f"### {c.get('name')} (ID: {c['id']})\n"
-            char_context += f"Race: {c.get('race')}, Class: {c.get('class')}\n"
             char_context += f"Attributes: {json.dumps(c.get('attributes'))}\n"
-            char_context += f"Status: {c.get('status')}\n"
 
         return f"""
 # Role
 You are the Game Master (GM) for the dark fantasy world.
-Your goal is to weave a compelling narrative involving gods, magic, and destiny.
 
 # World Context
 {world_context}
-
 {char_context}
-
 {supp_context}
 
 # History
@@ -227,9 +209,8 @@ Your goal is to weave a compelling narrative involving gods, magic, and destiny.
 
 # Instruction
 1. Respond to the User Input as the GM.
-2. Use the provided "Referenced Knowledge" to ensure accuracy.
-3. PROACTIVE STORYTELLING: Drive the narrative forward.
-4. Language: **Chinese (Simplified)**.
+2. Drive the narrative forward.
+3. Language: **Chinese (Simplified)**.
 
 # Response Format
 You MUST respond with a valid JSON object.
@@ -238,8 +219,7 @@ You MUST respond with a valid JSON object.
     {{ "type": "environment", "content": "Description..." }},
     {{ "type": "dialogue", "speaker_name": "Name", "content": "Speech..." }}
   ],
-  "interaction": {{ "needs_roll": false }},
-  "world_updates": []
+  "interaction": {{ "needs_roll": false }}
 }}
 
 [USER INPUT]: {user_input}
@@ -248,7 +228,6 @@ You MUST respond with a valid JSON object.
     @staticmethod
     def parse_response(text: str):
         try:
-            # Try to find JSON block
             match = re.search(r'```json\s*([\s\S]*?)\s*```', text)
             if match:
                 return json.loads(match.group(1))
@@ -261,7 +240,6 @@ You MUST respond with a valid JSON object.
 
 # --- Main App ---
 
-# Initialize World Manager
 wm = WorldManager(WORLD_TEMPLATE_PATH)
 
 def format_narrative(json_data):
@@ -280,10 +258,58 @@ def format_narrative(json_data):
         
     return output
 
-def game_loop(message, history, api_key, base_url, model_name):
-    # Initialize history if None
+def sanitize_history(history):
+    """
+    Ensure history matches the expected format (USE_MESSAGES).
+    Convert if necessary.
+    """
     if history is None:
-        history = []
+        return []
+    
+    sanitized = []
+    
+    if USE_MESSAGES:
+        # Target: List[Dict]
+        for item in history:
+            if isinstance(item, dict):
+                sanitized.append(item)
+            elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                # Convert tuple to dicts
+                if item[0]: # User
+                    sanitized.append({"role": "user", "content": item[0]})
+                if item[1]: # Assistant
+                    sanitized.append({"role": "assistant", "content": item[1]})
+    else:
+        # Target: List[List] (Tuples)
+        # Flatten dicts into pairs if possible, or just simple conversion
+        # This is trickier for dicts -> tuples because dicts are linear stream
+        # We'll try to group user+assistant
+        current_pair = [None, None]
+        for item in history:
+            if isinstance(item, (list, tuple)) and len(item) >= 2:
+                sanitized.append(item)
+            elif isinstance(item, dict):
+                role = item.get('role')
+                content = item.get('content')
+                if role == 'user':
+                    if current_pair[0] is not None: # Flush previous incomplete pair
+                        sanitized.append(current_pair)
+                        current_pair = [None, None]
+                    current_pair[0] = content
+                elif role == 'assistant':
+                    current_pair[1] = content
+                    sanitized.append(current_pair)
+                    current_pair = [None, None]
+        
+        # Flush last partial
+        if current_pair[0] is not None or current_pair[1] is not None:
+            sanitized.append(current_pair)
+            
+    return sanitized
+
+def game_loop(message, history, api_key, base_url, model_name):
+    # Sanitize history first
+    history = sanitize_history(history)
         
     # Helper to append user message and placeholder
     def append_turn(user_msg, bot_msg):
@@ -309,32 +335,23 @@ def game_loop(message, history, api_key, base_url, model_name):
     append_turn(message, "🔍 正在检索世界知识...")
     yield history, history
     
-    # 2. Format History (exclude the last turn)
-    # For messages: exclude last 2 (user, bot)
-    # For tuples: exclude last 1 ([user, bot])
-    if USE_MESSAGES:
-        relevant_history = history[:-2][-10:]
-    else:
-        relevant_history = history[:-1][-5:]
-        
-    history_str = NarrativeEngine.format_history(relevant_history)
+    # 2. Format History
+    history_str = NarrativeEngine.format_history(history)
     
-    # 3. Discovery Step (Dual Request - Step 1)
+    # 3. Discovery Step
     try:
         discovery_prompt = NarrativeEngine.construct_discovery_prompt(message, history_str, wm)
         
         discovery_res = AIService.call_chat(api_key, base_url, [{"role": "user", "content": discovery_prompt}], model_name)
         needed_ids = []
         try:
-            # Try parse discovery JSON
             d_json = NarrativeEngine.parse_response(discovery_res)
             if d_json:
                 needed_ids = d_json.get('needed_card_ids', [])
         except:
-            pass # Fallback to no extra cards
+            pass
             
-        # 4. Narrative Step (Dual Request - Step 2)
-        # Update placeholder to show next step
+        # 4. Narrative Step
         update_last_bot("🎲 正在生成剧情...")
         yield history, history
 
@@ -349,7 +366,6 @@ def game_loop(message, history, api_key, base_url, model_name):
         else:
             final_text = f"⚠️ 解析失败 (Raw): {narrative_res}"
             
-        # Update the final response
         update_last_bot(final_text)
         yield history, history
         
@@ -363,46 +379,6 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
     gr.Markdown("# 彼岸·绘世行纪 Faramita Explore Worlds")
     
     with gr.Tabs():
-        # Tab 1: Project Description
-        with gr.Tab("项目说明"):
-            gr.Markdown("""
-            ## 关于 Faramita Worlds
-            Faramita Worlds 是一个基于 Electron + Vue3 + TypeScript 构建的 AI 驱动跑团（TRPG）辅助工具。
-            
-            ### 核心特性
-            - **沉浸式叙事**: 通过 AI 实时生成剧情、对话与环境描述。
-            - **世界书系统**: 结构化的世界设定管理（World Cards），支持动态检索与注入。
-            - **规则引擎**: 内置骰子系统与检定逻辑（D20 等）。
-            - **本地优先**: 所有数据存储在本地 SQLite/IndexedDB，保障隐私。
-            
-            ### 开源地址
-            [GitHub: Nobeta-Work/faramita-worlds](https://github.com/Nobeta-Work/faramita-worlds)
-
-            本项目旨在探索 LLM 在长文本叙事与复杂规则交互下的潜力。
-            """)
-            
-        # Tab 2: Why Simple Demo
-        with gr.Tab("部署说明"):
-            gr.Markdown("""
-            ## 为什么这是一个简化 Demo？
-            
-            Faramita Worlds 的完整版本是一个 **桌面端应用 (Electron)**，依赖于本地文件系统、SQLite 数据库以及复杂的 Vue 前端交互（如 3D 骰子动画、动态气泡 UI）。
-            
-            ModelScope 的 Web 空间环境更适合运行 Python/Gradio 应用。因此，我们提取了项目的 **核心逻辑**（世界书结构 + AI 双重请求协议），构建了这个纯文本交互的 Demo。
-            
-            ### Demo 保留的功能
-            1. **Warhammer 40k 世界书**: 预加载了战锤 40k 的设定数据。
-            2. **双重请求机制 (Dual Request)**: 模拟了 "Discovery (检索)" -> "Narrative (生成)" 的 AI 思考链。
-            3. **结构化输出**: 展示 AI 如何以 JSON 格式输出剧情、对话与环境。
-            
-            ### 缺失的功能
-            - 存档/读档系统
-            - 3D 骰子动画
-            - 复杂的卡片编辑器 UI
-            - 本地数据库持久化
-            """)
-            
-        # Tab 3: Core Logic Demo
         with gr.Tab("完整功能演示"):
             with gr.Row():
                 with gr.Column(scale=1):
@@ -410,22 +386,18 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                     api_key = gr.Textbox(
                         label="API Key", 
                         value=os.environ.get("MS_KEY", ""), 
-                        type="password", 
-                        placeholder="环境变量 MS_KEY 已自动加载"
+                        type="password"
                     )
                     base_url = gr.Textbox(
                         label="Base URL", 
-                        value="https://api-inference.modelscope.cn/v1", 
-                        placeholder="https://api-inference.modelscope.cn/v1"
+                        value="https://api-inference.modelscope.cn/v1"
                     )
                     model_name = gr.Textbox(
                         label="Model", 
                         value="ZhipuAI/GLM-4.7-Flash"
                     )
                     
-                    gr.Markdown("### 📖 世界书概览 (JSON)")
-                    # Display a part of the world book
-                    world_viewer = gr.JSON(value=wm.cards, label="Current World Data (Read-only)")
+                    gr.Markdown(f"Status: Gradio {GRADIO_VERSION}, Mode: {'Messages' if USE_MESSAGES else 'Tuples'}")
                     
                 with gr.Column(scale=2):
                     if USE_MESSAGES:
@@ -433,15 +405,13 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                     else:
                         chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600)
                         
-                    msg = gr.Textbox(label="你的行动", placeholder="输入你的行动，例如：'我环顾四周，寻找是否有可疑的人。'")
+                    msg = gr.Textbox(label="你的行动", placeholder="输入你的行动...")
                     with gr.Row():
                         submit_btn = gr.Button("发送", variant="primary")
                         clear_btn = gr.Button("清除历史")
                         
-            # State
             state_history = gr.State([])
             
-            # Events
             submit_btn.click(
                 game_loop, 
                 inputs=[msg, state_history, api_key, base_url, model_name], 
@@ -454,35 +424,33 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
             )
             clear_btn.click(lambda: ([], []), None, [chatbot, state_history])
 
-        # Tab 4: Resources
+        with gr.Tab("项目说明"):
+            gr.Markdown("""
+            ## 关于 Faramita Worlds
+            Faramita Worlds 是一个基于 Electron + Vue3 + TypeScript 构建的 AI 驱动跑团（TRPG）辅助工具。
+            [GitHub: Nobeta-Work/faramita-worlds](https://github.com/Nobeta-Work/faramita-worlds)
+            """)
+
+        with gr.Tab("部署说明"):
+            gr.Markdown("简化 Demo，仅保留 AI 核心逻辑。")
+
         with gr.Tab("资源演示"):
             gr.Markdown("### 演示视频与图片")
-            
-            # Helper to find resources
             def get_resource_path(name):
                 return os.path.join("resources", name)
-                
+            
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("#### 演示视频")
-                    # Assuming file exists
                     if os.path.exists("resources/演示demo.mp4"):
                         gr.Video("resources/演示demo.mp4")
-                    else:
-                        gr.Markdown("*视频文件未找到*")
-                        
                 with gr.Column():
-                    gr.Markdown("#### 界面截图")
                     gallery_files = []
                     for f in ["faramita.png", "演示图片1.png"]:
                         p = get_resource_path(f)
                         if os.path.exists(p):
                             gallery_files.append(p)
-                            
                     if gallery_files:
-                        gr.Gallery(gallery_files, label="App Screenshots")
-                    else:
-                        gr.Markdown("*图片文件未找到*")
+                        gr.Gallery(gallery_files)
 
 if __name__ == "__main__":
     demo.queue().launch(server_name="0.0.0.0", server_port=7860)
