@@ -98,14 +98,16 @@ class AIService:
 
 class NarrativeEngine:
     @staticmethod
-    def format_history(history: List[List[str]]) -> str:
-        # Classic Tuple Format: [[user_msg, bot_msg], ...]
+    def format_history(history: List[Dict[str, str]]) -> str:
+        # Messages Format: [{'role': 'user', 'content': '...'}, ...]
         formatted = ""
-        for user_msg, bot_msg in history:
-            if user_msg:
-                formatted += f"[USER]: {user_msg}\n"
-            if bot_msg:
-                formatted += f"[ASSISTANT]: {bot_msg}\n"
+        for msg in history:
+            role = msg.get('role')
+            content = msg.get('content')
+            if role == 'user':
+                formatted += f"[USER]: {content}\n"
+            elif role == 'assistant':
+                formatted += f"[ASSISTANT]: {content}\n"
         return formatted
 
     @staticmethod
@@ -253,19 +255,18 @@ def game_loop(message, history, api_key, base_url, model_name):
         history = []
         
     if not api_key or not base_url:
-        history.append([message, "⚠️ 请先在侧边栏输入 API Key 和 Base URL。"])
+        history.append({"role": "user", "content": message})
+        history.append({"role": "assistant", "content": "⚠️ 请先在侧边栏输入 API Key 和 Base URL。"})
         yield history, history
         return
 
     # 1. Update User Message with Placeholder
-    # history format: [[user, bot], ...]
-    # Append [message, None] to show typing animation if supported, or just a loading text
-    history.append([message, "🔍 正在检索世界知识..."])
+    history.append({"role": "user", "content": message})
+    history.append({"role": "assistant", "content": "🔍 正在检索世界知识..."})
     yield history, history
     
-    # 2. Format History (exclude the last item which is the current turn placeholder)
-    # We take history[:-1] because the last item is the current turn we just added
-    history_str = NarrativeEngine.format_history(history[:-1][-5:]) # Last 5 completed turns
+    # 2. Format History (exclude the last 2 items)
+    history_str = NarrativeEngine.format_history(history[:-2][-10:]) 
     
     # 3. Discovery Step (Dual Request - Step 1)
     try:
@@ -283,7 +284,7 @@ def game_loop(message, history, api_key, base_url, model_name):
             
         # 4. Narrative Step (Dual Request - Step 2)
         # Update placeholder to show next step
-        history[-1][1] = "🎲 正在生成剧情..."
+        history[-1]['content'] = "🎲 正在生成剧情..."
         yield history, history
 
         narrative_prompt = NarrativeEngine.construct_narrative_prompt(message, history_str, wm, needed_ids)
@@ -297,12 +298,12 @@ def game_loop(message, history, api_key, base_url, model_name):
         else:
             final_text = f"⚠️ 解析失败 (Raw): {narrative_res}"
             
-        # Update the final response in the tuple
-        history[-1][1] = final_text
+        # Update the final response
+        history[-1]['content'] = final_text
         yield history, history
         
     except Exception as e:
-        history[-1][1] = f"❌ 系统错误: {str(e)}"
+        history[-1]['content'] = f"❌ 系统错误: {str(e)}"
         yield history, history
 
 # --- UI Layout ---
@@ -376,8 +377,7 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                     world_viewer = gr.JSON(value=wm.cards, label="Current World Data (Read-only)")
                     
                 with gr.Column(scale=2):
-                    # REMOVED type="messages" to support older Gradio versions
-                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600)
+                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600, type="messages")
                     msg = gr.Textbox(label="你的行动", placeholder="输入你的行动，例如：'我环顾四周，寻找是否有可疑的人。'")
                     with gr.Row():
                         submit_btn = gr.Button("发送", variant="primary")
