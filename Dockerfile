@@ -4,6 +4,9 @@ WORKDIR /home/user/app
 
 COPY ./ /home/user/app
 
-RUN pip install --no-cache-dir --upgrade gradio requests
+# Force upgrade/reinstall of gradio to the latest version
+# We uninstall first to ensure no conflicts with system packages
+RUN python -m pip uninstall -y gradio && \
+    python -m pip install --no-cache-dir --upgrade gradio requests
 
 ENTRYPOINT ["python", "-u", "app.py"]

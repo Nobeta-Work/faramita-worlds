@@ -3,10 +3,26 @@ import json
 import os
 import requests
 import re
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Union
 
 # Configuration
 WORLD_TEMPLATE_PATH = os.path.join("src", "world_template", "Warhammer40k_Callisys.json")
+
+# --- Feature Detection ---
+USE_MESSAGES = False
+try:
+    # Try to instantiate Chatbot with type='messages' to see if it's supported
+    # We do this in a try/except block to handle older Gradio versions
+    # Note: We don't need to render it, just check __init__
+    gr.Chatbot(type="messages")
+    USE_MESSAGES = True
+    print(f"Gradio version {gr.__version__}: Supports 'messages' format.")
+except TypeError:
+    USE_MESSAGES = False
+    print(f"Gradio version {gr.__version__}: Does NOT support 'messages' format type argument. Using 'tuples'.")
+except Exception as e:
+    print(f"Gradio version {gr.__version__}: Feature check failed ({e}). Defaulting to 'tuples'.")
+    USE_MESSAGES = False
 
 # --- Logic & Helper Classes ---
 
@@ -98,16 +114,31 @@ class AIService:
 
 class NarrativeEngine:
     @staticmethod
-    def format_history(history: List[Dict[str, str]]) -> str:
-        # Messages Format: [{'role': 'user', 'content': '...'}, ...]
+    def format_history(history: Union[List[List[str]], List[Dict[str, str]]]) -> str:
         formatted = ""
-        for msg in history:
-            role = msg.get('role')
-            content = msg.get('content')
-            if role == 'user':
-                formatted += f"[USER]: {content}\n"
-            elif role == 'assistant':
-                formatted += f"[ASSISTANT]: {content}\n"
+        if not history:
+            return formatted
+            
+        # Detect format based on first item
+        first_item = history[0]
+        
+        if isinstance(first_item, dict):
+            # Messages Format: [{'role': 'user', 'content': '...'}, ...]
+            for msg in history:
+                role = msg.get('role')
+                content = msg.get('content')
+                if role == 'user':
+                    formatted += f"[USER]: {content}\n"
+                elif role == 'assistant':
+                    formatted += f"[ASSISTANT]: {content}\n"
+        elif isinstance(first_item, (list, tuple)):
+            # Tuple Format: [[user_msg, bot_msg], ...]
+            for user_msg, bot_msg in history:
+                if user_msg:
+                    formatted += f"[USER]: {user_msg}\n"
+                if bot_msg:
+                    formatted += f"[ASSISTANT]: {bot_msg}\n"
+                    
         return formatted
 
     @staticmethod
@@ -254,19 +285,39 @@ def game_loop(message, history, api_key, base_url, model_name):
     if history is None:
         history = []
         
+    # Helper to append user message and placeholder
+    def append_turn(user_msg, bot_msg):
+        if USE_MESSAGES:
+            history.append({"role": "user", "content": user_msg})
+            history.append({"role": "assistant", "content": bot_msg})
+        else:
+            history.append([user_msg, bot_msg])
+            
+    # Helper to update last bot message
+    def update_last_bot(new_content):
+        if USE_MESSAGES:
+            history[-1]['content'] = new_content
+        else:
+            history[-1][1] = new_content
+
     if not api_key or not base_url:
-        history.append({"role": "user", "content": message})
-        history.append({"role": "assistant", "content": "⚠️ 请先在侧边栏输入 API Key 和 Base URL。"})
+        append_turn(message, "⚠️ 请先在侧边栏输入 API Key 和 Base URL。")
         yield history, history
         return
 
     # 1. Update User Message with Placeholder
-    history.append({"role": "user", "content": message})
-    history.append({"role": "assistant", "content": "🔍 正在检索世界知识..."})
+    append_turn(message, "🔍 正在检索世界知识...")
     yield history, history
     
-    # 2. Format History (exclude the last 2 items)
-    history_str = NarrativeEngine.format_history(history[:-2][-10:]) 
+    # 2. Format History (exclude the last turn)
+    # For messages: exclude last 2 (user, bot)
+    # For tuples: exclude last 1 ([user, bot])
+    if USE_MESSAGES:
+        relevant_history = history[:-2][-10:]
+    else:
+        relevant_history = history[:-1][-5:]
+        
+    history_str = NarrativeEngine.format_history(relevant_history)
     
     # 3. Discovery Step (Dual Request - Step 1)
     try:
@@ -284,7 +335,7 @@ def game_loop(message, history, api_key, base_url, model_name):
             
         # 4. Narrative Step (Dual Request - Step 2)
         # Update placeholder to show next step
-        history[-1]['content'] = "🎲 正在生成剧情..."
+        update_last_bot("🎲 正在生成剧情...")
         yield history, history
 
         narrative_prompt = NarrativeEngine.construct_narrative_prompt(message, history_str, wm, needed_ids)
@@ -299,11 +350,11 @@ def game_loop(message, history, api_key, base_url, model_name):
             final_text = f"⚠️ 解析失败 (Raw): {narrative_res}"
             
         # Update the final response
-        history[-1]['content'] = final_text
+        update_last_bot(final_text)
         yield history, history
         
     except Exception as e:
-        history[-1]['content'] = f"❌ 系统错误: {str(e)}"
+        update_last_bot(f"❌ 系统错误: {str(e)}")
         yield history, history
 
 # --- UI Layout ---
@@ -377,7 +428,11 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                     world_viewer = gr.JSON(value=wm.cards, label="Current World Data (Read-only)")
                     
                 with gr.Column(scale=2):
-                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600, type="messages")
+                    if USE_MESSAGES:
+                        chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600, type="messages")
+                    else:
+                        chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600)
+                        
                     msg = gr.Textbox(label="你的行动", placeholder="输入你的行动，例如：'我环顾四周，寻找是否有可疑的人。'")
                     with gr.Row():
                         submit_btn = gr.Button("发送", variant="primary")
