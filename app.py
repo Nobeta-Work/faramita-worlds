@@ -99,18 +99,16 @@ class AIService:
 
 class NarrativeEngine:
     @staticmethod
-    def format_history(history: List[List[str]]) -> str:
-        # History in Gradio is [[user, bot], [user, bot]...]
+    def format_history(history: List[Dict[str, str]]) -> str:
+        # History in Gradio 'messages' type is [{"role": "user", "content": ...}, ...]
         formatted = ""
-        for user_msg, bot_msg in history:
-            formatted += f"[USER]: {user_msg}\n"
-            # Try to parse bot_msg if it looks like JSON from previous turn
-            try:
-                # If bot_msg is just text, use it. If it was JSON, we might want to extract narrative.
-                # For simplicity in this demo, we assume the bot output displayed to user is already clean text.
-                formatted += f"[ASSISTANT]: {bot_msg}\n"
-            except:
-                formatted += f"[ASSISTANT]: {bot_msg}\n"
+        for msg in history:
+            role = msg.get("role", "unknown").upper()
+            content = msg.get("content", "")
+            if role == "USER":
+                formatted += f"[USER]: {content}\n"
+            elif role == "ASSISTANT":
+                formatted += f"[ASSISTANT]: {content}\n"
         return formatted
 
     @staticmethod
@@ -253,18 +251,28 @@ def format_narrative(json_data):
     return output
 
 def game_loop(message, history, api_key, base_url, model_name):
+    # Initialize history if None (though state usually handles this)
+    if history is None:
+        history = []
+        
     if not api_key or not base_url:
-        yield history + [[message, "⚠️ 请先在侧边栏输入 API Key 和 Base URL。"]], history
+        history.append({"role": "user", "content": message})
+        history.append({"role": "assistant", "content": "⚠️ 请先在侧边栏输入 API Key 和 Base URL。"})
+        yield history, history
         return
 
-    # 1. Format History
+    # 1. Update User Message immediately
+    history.append({"role": "user", "content": message})
+    # Yield with placeholder
+    loading_msg = {"role": "assistant", "content": "🔍 正在检索世界知识..."}
+    yield history + [loading_msg], history # Don't save loading msg to state history yet
+    
+    # 2. Format History
     history_str = NarrativeEngine.format_history(history[-5:]) # Last 5 turns
     
-    # 2. Discovery Step (Dual Request - Step 1)
+    # 3. Discovery Step (Dual Request - Step 1)
     try:
         discovery_prompt = NarrativeEngine.construct_discovery_prompt(message, history_str, wm)
-        # Yield status
-        # yield history + [[message, "🔍 正在检索世界知识..."]], history
         
         discovery_res = AIService.call_chat(api_key, base_url, [{"role": "user", "content": discovery_prompt}], model_name)
         needed_ids = []
@@ -276,7 +284,7 @@ def game_loop(message, history, api_key, base_url, model_name):
         except:
             pass # Fallback to no extra cards
             
-        # 3. Narrative Step (Dual Request - Step 2)
+        # 4. Narrative Step (Dual Request - Step 2)
         narrative_prompt = NarrativeEngine.construct_narrative_prompt(message, history_str, wm, needed_ids)
         
         narrative_res = AIService.call_chat(api_key, base_url, [{"role": "user", "content": narrative_prompt}], model_name)
@@ -288,11 +296,11 @@ def game_loop(message, history, api_key, base_url, model_name):
         else:
             final_text = f"⚠️ 解析失败 (Raw): {narrative_res}"
             
-        history.append([message, final_text])
+        history.append({"role": "assistant", "content": final_text})
         yield history, history
         
     except Exception as e:
-        history.append([message, f"❌ 系统错误: {str(e)}"])
+        history.append({"role": "assistant", "content": f"❌ 系统错误: {str(e)}"})
         yield history, history
 
 # --- UI Layout ---
@@ -366,7 +374,8 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                     world_viewer = gr.JSON(value=wm.cards, label="Current World Data (Read-only)")
                     
                 with gr.Column(scale=2):
-                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600)
+                    # Explicitly set type="messages" to match Gradio 5.x+ expectations for dict formats
+                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600, type="messages")
                     msg = gr.Textbox(label="你的行动", placeholder="输入你的行动，例如：'我环顾四周，寻找是否有可疑的人。'")
                     with gr.Row():
                         submit_btn = gr.Button("发送", variant="primary")
