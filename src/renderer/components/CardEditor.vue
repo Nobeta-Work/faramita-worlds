@@ -173,10 +173,16 @@ const removeListItem = (field: 'background' | 'tags' | 'race' | 'setting_tags' |
 }
 
 const addScalingMode = () => {
-  const modeName = prompt('输入新的从属/阵营名称:')
-  if (modeName && editedCard.value?.type === 'setting') {
+  if (editedCard.value?.type === 'setting') {
     if (!editedCard.value.scaling_modes) editedCard.value.scaling_modes = {}
-    editedCard.value.scaling_modes[modeName] = {
+    const base = '新阵营'
+    let idx = 1
+    let name = `${base}-${idx}`
+    while (editedCard.value.scaling_modes[name]) {
+      idx++
+      name = `${base}-${idx}`
+    }
+    editedCard.value.scaling_modes[name] = {
       step: 20,
       prefix_names: ['']
     }
@@ -621,21 +627,17 @@ const attributeLabels: Record<keyof Attributes, string> = {
 
 <style scoped>
 .card-editor {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: relative;
   width: 100%;
-  height: 100%;
-  background-color: #1a1a1a;
-  z-index: 100;
+  height: auto;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.5);
 }
 
 .editor-header {
   padding: 15px;
-  background-color: #252525;
+  background-color: transparent;
   border-bottom: 1px solid #333;
   display: flex;
   justify-content: space-between;
@@ -760,7 +762,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
 }
 
 .plot-point-item, .inventory-item {
-  background-color: #222;
+  background-color: transparent;
   border: 1px solid #333;
   padding: 10px;
   border-radius: 4px;
@@ -784,7 +786,7 @@ const attributeLabels: Record<keyof Attributes, string> = {
 .btn-remove:hover { color: #f44336; }
 
 .mode-item {
-  background-color: #222;
+  background-color: transparent;
   border: 1px solid #333;
   padding: 10px;
   border-radius: 4px;
@@ -839,7 +841,7 @@ textarea {
 
 .editor-footer {
   padding: 10px 15px;
-  background-color: #252525;
+  background-color: transparent;
   border-top: 1px solid #333;
   display: flex;
   justify-content: flex-end;

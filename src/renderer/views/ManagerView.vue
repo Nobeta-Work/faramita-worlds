@@ -14,6 +14,9 @@ const configStore = useConfigStore()
 
 const viewMode = ref<'cards' | 'worldbook'>('cards')
 
+const isCardsView = computed(() => viewMode.value === 'cards')
+const isWorldbookView = computed(() => viewMode.value === 'worldbook')
+
 const categories = ref([
   { id: 'character', name: '人物卡', isCore: true, type: 'character' },
   { id: 'chapter', name: '章节卡', isCore: true, type: 'chapter' },
@@ -156,7 +159,9 @@ const filteredCards = computed(() => {
 })
 
 const handleEdit = (card: WorldCard) => {
+  viewMode.value = 'cards'
   editingCard.value = JSON.parse(JSON.stringify(card))
+  showStatus(`已打开编辑：${card.id}`)
 }
 
 const handleDelete = async (id: string) => {
@@ -234,7 +239,9 @@ const handleAddNew = () => {
     newCard = { ...newCard, category: activeCategory.value, title: '新卡片', content: '', tags: [] }
   }
 
+  viewMode.value = 'cards'
   editingCard.value = newCard
+  showStatus(`已创建新卡：${newId}`)
 }
 
 const handleSave = async (card: WorldCard) => {
@@ -619,7 +626,7 @@ const expandedSections = ref<Record<string, boolean>>({
           v-for="cat in categories"
           :key="cat.id"
           class="nav-item"
-          :class="{ active: activeCategory === cat.id && viewMode === 'cards' }"
+          :class="{ active: activeCategory === cat.id && isCardsView }"
           @click="activeCategory = cat.id; editingCard = null; viewMode = 'cards'"
         >
           <span class="cat-name">{{ cat.name }}</span>
@@ -628,14 +635,14 @@ const expandedSections = ref<Record<string, boolean>>({
           </button>
         </div>
         <div class="sidebar-footer">
-          <button class="btn-action" :class="{ active: viewMode === 'worldbook' }" @click="viewMode = 'worldbook'; editingCard = null" title="选择或创建世界书">
+          <button class="btn-action" :class="{ active: isWorldbookView }" @click="viewMode = 'worldbook'; editingCard = null" title="选择或创建世界书">
             <FolderOpen :size="14" /> 世界书
           </button>
         </div>
       </div>
 
     <!-- Cards View -->
-    <div v-if="viewMode === 'cards'" class="main-content">
+    <div v-if="isCardsView" class="main-content">
         <div class="toolbar">
           <div class="search-box">
             <Search :size="16" />
@@ -664,21 +671,46 @@ const expandedSections = ref<Record<string, boolean>>({
           </div>
         </div>
 
-        <div class="card-grid">
-          <div v-for="card in filteredCards" :key="card.id" class="manager-card" @click="handleEdit(card)">
-            <div class="card-info">
-              <div class="card-name">{{ (card as any).name || (card as any).title || card.id }}</div>
-              <div class="card-id">{{ card.id }}</div>
+        <div class="content-area">
+          <template v-if="editingCard">
+            <div class="breadcrumb">
+              <span class="crumb clickable" @click="editingCard = null">卡片</span>
+              <ChevronRight :size="14" />
+              <span class="crumb current">{{ (editingCard as any).name || (editingCard as any).title || editingCard.id }}</span>
+              <div class="breadcrumb-actions">
+                <button class="btn-secondary" @click="editingCard = null">返回列表</button>
+                <button class="btn-primary" @click="handleSave(editingCard as any)" :disabled="worldStore.loading">
+                  <Save :size="16" /> 保存
+                </button>
+              </div>
             </div>
-            <button class="btn-delete" @click.stop="handleDelete(card.id)">
-              <Trash2 :size="16" />
-            </button>
-          </div>
+            <div class="editor-full">
+              <CardEditor
+                :key="editingCard.id"
+                :card="editingCard"
+                @save="handleSave"
+                @close="editingCard = null"
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div class="card-grid">
+              <div v-for="card in filteredCards" :key="card.id" class="manager-card" @click="handleEdit(card)">
+                <div class="card-info">
+                  <div class="card-name">{{ (card as any).name || (card as any).title || card.id }}</div>
+                  <div class="card-id">{{ card.id }}</div>
+                </div>
+                <button class="btn-delete" @click.stop="handleDelete(card.id)">
+                  <Trash2 :size="16" />
+                </button>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
 
     <!-- World Book Management View -->
-    <div v-if="viewMode === 'worldbook'" class="worldbook-view">
+    <div v-if="!isCardsView" class="worldbook-view">
       <div class="worldbook-header">
         <h2>世界书管理</h2>
         <p class="worldbook-hint">管理世界书模板，从模板加载或创建新的世界书</p>
@@ -779,18 +811,7 @@ const expandedSections = ref<Record<string, boolean>>({
         </div>
     </div>
 
-    <div v-if="(viewMode as 'cards') === 'cards'" class="editor-pane" :class="{ open: !!editingCard }">
-      <CardEditor
-          v-if="editingCard"
-          :key="editingCard.id"
-          :card="editingCard"
-          @save="handleSave"
-          @close="editingCard = null"
-        />
-        <div v-else class="editor-placeholder">
-          请选择或创建一个卡片进行编辑
-        </div>
-      </div>
+    
   </div>
 
   <!-- Custom Category Modal -->
@@ -1161,17 +1182,46 @@ const expandedSections = ref<Record<string, boolean>>({
   color: #f44336;
 }
 
-.editor-pane {
-  width: 0;
-  overflow: hidden;
-  transition: width 0.3s ease;
-  position: relative;
-  border-left: 0 solid #333;
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #333;
+  margin-bottom: 16px;
 }
-
-.editor-pane.open {
-  width: 450px;
-  border-left-width: 1px;
+.crumb {
+  font-size: 13px;
+  color: #888;
+}
+.crumb.clickable {
+  cursor: pointer;
+}
+.crumb.clickable:hover {
+  color: #eee;
+}
+.crumb.current {
+  color: #d4af37;
+}
+.breadcrumb-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+.editor-full {
+  background-color: transparent;
+  border: none;
+  padding: 15px;
+}
+.content-area {
+  margin-top: 16px;
+}
+.card-grid {
+  background-color: transparent;
+}
+.manager-card {
+  background-color: transparent;
 }
 
 .editor-placeholder {
