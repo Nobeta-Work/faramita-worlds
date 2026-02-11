@@ -247,23 +247,52 @@ def ensure_list_of_dicts(history) -> List[Dict[str, str]]:
     for item in history:
         if isinstance(item, dict) and 'role' in item and 'content' in item:
             sanitized.append(item)
-        # We purposely ignore tuples now to avoid any ambiguity
     return sanitized
 
+def history_to_tuples(history: List[Dict[str, str]]) -> List[List[Optional[str]]]:
+    """
+    Converts Messages format (List[Dict]) to Tuples format (List[List]) for UI display.
+    Handles user/assistant pairing.
+    """
+    tuples = []
+    current_user_msg = None
+    
+    for msg in history:
+        role = msg.get('role')
+        content = msg.get('content')
+        
+        if role == 'user':
+            if current_user_msg is not None:
+                # Previous user msg had no response, push it as [msg, None]
+                tuples.append([current_user_msg, None])
+            current_user_msg = content
+        elif role == 'assistant':
+            if current_user_msg is not None:
+                tuples.append([current_user_msg, content])
+                current_user_msg = None
+            else:
+                # Assistant msg without user (e.g. system greeting)
+                tuples.append([None, content])
+                
+    if current_user_msg is not None:
+        tuples.append([current_user_msg, None])
+        
+    return tuples
+
 def game_loop(message, history, api_key, base_url, model_name):
-    # Enforce strict format
+    # Enforce strict format for internal state
     history = ensure_list_of_dicts(history)
     
     if not api_key or not base_url:
         history.append({"role": "user", "content": message})
         history.append({"role": "assistant", "content": "⚠️ 请先在侧边栏输入 API Key 和 Base URL。"})
-        yield history, history
+        yield history_to_tuples(history), history
         return
 
     # 1. Update User Message with Placeholder
     history.append({"role": "user", "content": message})
     history.append({"role": "assistant", "content": "🔍 正在检索世界知识..."})
-    yield history, history
+    yield history_to_tuples(history), history
     
     # 2. Format History (Use all previous except the current turn placeholder)
     history_str = NarrativeEngine.format_history(history[:-2][-10:])
@@ -290,7 +319,7 @@ def game_loop(message, history, api_key, base_url, model_name):
             
         # 4. Narrative Step
         history[-1]['content'] = "🎲 正在生成剧情..."
-        yield history, history
+        yield history_to_tuples(history), history
 
         narrative_prompt = NarrativeEngine.construct_narrative_prompt(message, history_str, wm, needed_ids)
         
@@ -310,11 +339,11 @@ def game_loop(message, history, api_key, base_url, model_name):
             final_text = f"⚠️ 解析失败 (Raw): {narrative_res}"
             
         history[-1]['content'] = final_text
-        yield history, history
+        yield history_to_tuples(history), history
         
     except Exception as e:
         history[-1]['content'] = f"❌ 系统错误: {str(e)}"
-        yield history, history
+        yield history_to_tuples(history), history
 
 # --- UI Layout ---
 
@@ -340,11 +369,11 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                         value="ZhipuAI/GLM-4.7-Flash"
                     )
                     
-                    gr.Markdown("Status: OpenAI SDK Enabled, Strict Messages Mode")
+                    gr.Markdown("Status: Hybrid Mode (Logic: Messages, UI: Tuples)")
                     
                 with gr.Column(scale=2):
-                    # STRICTLY use type="messages"
-                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600, type="messages")
+                    # REMOVED type="messages" to match older Gradio versions
+                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600)
                         
                     msg = gr.Textbox(label="你的行动", placeholder="输入你的行动...")
                     with gr.Row():
