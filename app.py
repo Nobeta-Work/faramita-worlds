@@ -298,7 +298,7 @@ def game_loop(message, history, api_key, base_url, model_name):
 # --- UI Layout ---
 
 with gr.Blocks(title="Faramita Worlds Demo") as demo:
-    gr.Markdown("# Faramita Worlds: Explore the Unknown")
+    gr.Markdown("# 彼岸·绘世行纪 Faramita Explore Worlds")
     
     with gr.Tabs():
         # Tab 1: Project Description
@@ -313,6 +313,9 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
             - **规则引擎**: 内置骰子系统与检定逻辑（D20 等）。
             - **本地优先**: 所有数据存储在本地 SQLite/IndexedDB，保障隐私。
             
+            ### 开源地址
+            [GitHub: Nobeta-Work/faramita-worlds](https://github.com/Nobeta-Work/faramita-worlds)
+
             本项目旨在探索 LLM 在长文本叙事与复杂规则交互下的潜力。
             """)
             
@@ -342,9 +345,21 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
             with gr.Row():
                 with gr.Column(scale=1):
                     gr.Markdown("### ⚙️ 设置")
-                    api_key = gr.Textbox(label="API Key", type="password", placeholder="sk-...")
-                    base_url = gr.Textbox(label="Base URL", value="https://api.openai.com/v1", placeholder="https://api.openai.com/v1")
-                    model_name = gr.Textbox(label="Model", value="gpt-3.5-turbo")
+                    api_key = gr.Textbox(
+                        label="API Key", 
+                        value=os.environ.get("MS_KEY", ""), 
+                        type="password", 
+                        placeholder="环境变量 MS_KEY 已自动加载"
+                    )
+                    base_url = gr.Textbox(
+                        label="Base URL", 
+                        value="https://api-inference.modelscope.cn/v1", 
+                        placeholder="https://api-inference.modelscope.cn/v1"
+                    )
+                    model_name = gr.Textbox(
+                        label="Model", 
+                        value="ZhipuAI/GLM-4.7-Flash"
+                    )
                     
                     gr.Markdown("### 📖 世界书概览 (JSON)")
                     # Display a part of the world book
