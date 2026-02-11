@@ -1,27 +1,12 @@
 import gradio as gr
 import json
 import os
-import requests
 import re
-from typing import List, Dict, Any, Optional, Tuple, Union
+from typing import List, Dict, Any, Optional
+from openai import OpenAI
 
 # Configuration
 WORLD_TEMPLATE_PATH = os.path.join("src", "world_template", "Warhammer40k_Callisys.json")
-
-# --- Feature Detection ---
-USE_MESSAGES = False
-GRADIO_VERSION = gr.__version__
-try:
-    # Try to instantiate Chatbot with type='messages'
-    gr.Chatbot(type="messages")
-    USE_MESSAGES = True
-    print(f"Gradio version {GRADIO_VERSION}: Supports 'messages' format.")
-except TypeError:
-    USE_MESSAGES = False
-    print(f"Gradio version {GRADIO_VERSION}: Does NOT support 'messages' format. Using 'tuples'.")
-except Exception as e:
-    print(f"Gradio version {GRADIO_VERSION}: Feature check failed ({e}). Defaulting to 'tuples'.")
-    USE_MESSAGES = False
 
 # --- Logic & Helper Classes ---
 
@@ -91,49 +76,41 @@ class AIService:
         if not api_key or not base_url:
             raise ValueError("API Key and Base URL are required.")
             
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-        
-        payload = {
-            "model": model,
-            "messages": messages,
-            "temperature": 0.7
-        }
+        client = OpenAI(
+            base_url=base_url,
+            api_key=api_key,
+        )
         
         try:
-            response = requests.post(f"{base_url}/chat/completions", headers=headers, json=payload, timeout=60)
-            response.raise_for_status()
-            return response.json()['choices'][0]['message']['content']
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=0.7
+            )
+            return response.choices[0].message.content
         except Exception as e:
             return f"Error: {str(e)}"
 
 class NarrativeEngine:
     @staticmethod
-    def format_history(history: Any) -> str:
+    def format_history(history: List[Dict[str, str]]) -> str:
+        """
+        Formats history for the prompt.
+        Expects strictly List[Dict] format: [{'role': 'user', 'content': '...'}, ...]
+        """
         formatted = ""
         if not history:
             return formatted
             
-        # Robust iteration
         for item in history:
             if isinstance(item, dict):
-                # Message format
                 role = item.get('role')
                 content = item.get('content')
                 if role == 'user':
                     formatted += f"[USER]: {content}\n"
                 elif role == 'assistant':
                     formatted += f"[ASSISTANT]: {content}\n"
-            elif isinstance(item, (list, tuple)) and len(item) >= 2:
-                # Tuple format
-                user_msg, bot_msg = item[0], item[1]
-                if user_msg:
-                    formatted += f"[USER]: {user_msg}\n"
-                if bot_msg:
-                    formatted += f"[ASSISTANT]: {bot_msg}\n"
-                    
+        
         return formatted
 
     @staticmethod
@@ -258,91 +235,51 @@ def format_narrative(json_data):
         
     return output
 
-def sanitize_history(history):
+def ensure_list_of_dicts(history) -> List[Dict[str, str]]:
     """
-    Ensure history matches the expected format (USE_MESSAGES).
-    Convert if necessary.
+    Strictly enforce List[Dict] format.
+    If any item is not a dict, try to convert or discard.
     """
     if history is None:
         return []
     
     sanitized = []
-    
-    if USE_MESSAGES:
-        # Target: List[Dict]
-        for item in history:
-            if isinstance(item, dict):
-                sanitized.append(item)
-            elif isinstance(item, (list, tuple)) and len(item) >= 2:
-                # Convert tuple to dicts
-                if item[0]: # User
-                    sanitized.append({"role": "user", "content": item[0]})
-                if item[1]: # Assistant
-                    sanitized.append({"role": "assistant", "content": item[1]})
-    else:
-        # Target: List[List] (Tuples)
-        # Flatten dicts into pairs if possible, or just simple conversion
-        # This is trickier for dicts -> tuples because dicts are linear stream
-        # We'll try to group user+assistant
-        current_pair = [None, None]
-        for item in history:
-            if isinstance(item, (list, tuple)) and len(item) >= 2:
-                sanitized.append(item)
-            elif isinstance(item, dict):
-                role = item.get('role')
-                content = item.get('content')
-                if role == 'user':
-                    if current_pair[0] is not None: # Flush previous incomplete pair
-                        sanitized.append(current_pair)
-                        current_pair = [None, None]
-                    current_pair[0] = content
-                elif role == 'assistant':
-                    current_pair[1] = content
-                    sanitized.append(current_pair)
-                    current_pair = [None, None]
-        
-        # Flush last partial
-        if current_pair[0] is not None or current_pair[1] is not None:
-            sanitized.append(current_pair)
-            
+    for item in history:
+        if isinstance(item, dict) and 'role' in item and 'content' in item:
+            sanitized.append(item)
+        # We purposely ignore tuples now to avoid any ambiguity
     return sanitized
 
 def game_loop(message, history, api_key, base_url, model_name):
-    # Sanitize history first
-    history = sanitize_history(history)
-        
-    # Helper to append user message and placeholder
-    def append_turn(user_msg, bot_msg):
-        if USE_MESSAGES:
-            history.append({"role": "user", "content": user_msg})
-            history.append({"role": "assistant", "content": bot_msg})
-        else:
-            history.append([user_msg, bot_msg])
-            
-    # Helper to update last bot message
-    def update_last_bot(new_content):
-        if USE_MESSAGES:
-            history[-1]['content'] = new_content
-        else:
-            history[-1][1] = new_content
-
+    # Enforce strict format
+    history = ensure_list_of_dicts(history)
+    
     if not api_key or not base_url:
-        append_turn(message, "⚠️ 请先在侧边栏输入 API Key 和 Base URL。")
+        history.append({"role": "user", "content": message})
+        history.append({"role": "assistant", "content": "⚠️ 请先在侧边栏输入 API Key 和 Base URL。"})
         yield history, history
         return
 
     # 1. Update User Message with Placeholder
-    append_turn(message, "🔍 正在检索世界知识...")
+    history.append({"role": "user", "content": message})
+    history.append({"role": "assistant", "content": "🔍 正在检索世界知识..."})
     yield history, history
     
-    # 2. Format History
-    history_str = NarrativeEngine.format_history(history)
+    # 2. Format History (Use all previous except the current turn placeholder)
+    history_str = NarrativeEngine.format_history(history[:-2][-10:])
     
     # 3. Discovery Step
     try:
         discovery_prompt = NarrativeEngine.construct_discovery_prompt(message, history_str, wm)
         
-        discovery_res = AIService.call_chat(api_key, base_url, [{"role": "user", "content": discovery_prompt}], model_name)
+        # Call AI using OpenAI SDK
+        discovery_res = AIService.call_chat(
+            api_key, 
+            base_url, 
+            [{"role": "user", "content": discovery_prompt}], 
+            model_name
+        )
+        
         needed_ids = []
         try:
             d_json = NarrativeEngine.parse_response(discovery_res)
@@ -352,12 +289,18 @@ def game_loop(message, history, api_key, base_url, model_name):
             pass
             
         # 4. Narrative Step
-        update_last_bot("🎲 正在生成剧情...")
+        history[-1]['content'] = "🎲 正在生成剧情..."
         yield history, history
 
         narrative_prompt = NarrativeEngine.construct_narrative_prompt(message, history_str, wm, needed_ids)
         
-        narrative_res = AIService.call_chat(api_key, base_url, [{"role": "user", "content": narrative_prompt}], model_name)
+        # Call AI using OpenAI SDK
+        narrative_res = AIService.call_chat(
+            api_key, 
+            base_url, 
+            [{"role": "user", "content": narrative_prompt}], 
+            model_name
+        )
         
         n_json = NarrativeEngine.parse_response(narrative_res)
         
@@ -366,11 +309,11 @@ def game_loop(message, history, api_key, base_url, model_name):
         else:
             final_text = f"⚠️ 解析失败 (Raw): {narrative_res}"
             
-        update_last_bot(final_text)
+        history[-1]['content'] = final_text
         yield history, history
         
     except Exception as e:
-        update_last_bot(f"❌ 系统错误: {str(e)}")
+        history[-1]['content'] = f"❌ 系统错误: {str(e)}"
         yield history, history
 
 # --- UI Layout ---
@@ -397,19 +340,18 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                         value="ZhipuAI/GLM-4.7-Flash"
                     )
                     
-                    gr.Markdown(f"Status: Gradio {GRADIO_VERSION}, Mode: {'Messages' if USE_MESSAGES else 'Tuples'}")
+                    gr.Markdown("Status: OpenAI SDK Enabled, Strict Messages Mode")
                     
                 with gr.Column(scale=2):
-                    if USE_MESSAGES:
-                        chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600, type="messages")
-                    else:
-                        chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600)
+                    # STRICTLY use type="messages"
+                    chatbot = gr.Chatbot(label="Faramita Narrative Engine", height=600, type="messages")
                         
                     msg = gr.Textbox(label="你的行动", placeholder="输入你的行动...")
                     with gr.Row():
                         submit_btn = gr.Button("发送", variant="primary")
                         clear_btn = gr.Button("清除历史")
                         
+            # State strictly for List[Dict]
             state_history = gr.State([])
             
             submit_btn.click(
@@ -422,6 +364,7 @@ with gr.Blocks(title="Faramita Worlds Demo") as demo:
                 inputs=[msg, state_history, api_key, base_url, model_name], 
                 outputs=[chatbot, state_history]
             )
+            # Clear logic
             clear_btn.click(lambda: ([], []), None, [chatbot, state_history])
 
         with gr.Tab("项目说明"):
