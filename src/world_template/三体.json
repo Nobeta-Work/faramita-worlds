@@ -1,0 +1,3891 @@
+{
+  "world_meta": {
+    "uuid": "bcaf7886-23a8-4229-8913-a7e600cd818a",
+    "name": "三体",
+    "version": "1.0.0",
+    "author": "",
+    "description": "",
+    "schema_version": 3,
+    "default_language": "zh-CN",
+    "tags": [],
+    "player_character_id": "char-2"
+  },
+  "entries": {
+    "setting_cards": [
+      {
+        "id": "setting-1",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "三体世界观",
+        "content": "地球文明向宇宙发出信号，被四光年外的三体文明接收，三体文明利用技术锁死地球基础科学并派出舰队入侵地球。人类面临生存危机，制定“面壁计划”对抗三体侵略。",
+        "tags": [
+          "科幻",
+          "星际战争",
+          "文明冲突",
+          "科学边界"
+        ]
+      },
+      {
+        "id": "setting-10",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "faction",
+        "title": "文革时期的红卫兵组织",
+        "content": "文革初期诞生的红卫兵组织，经历过大检阅和大串联，相对成熟。与“四·二八兵团”对立并发生武装冲突。",
+        "tags": [
+          "红卫兵",
+          "武斗派",
+          "激进"
+        ]
+      },
+      {
+        "id": "setting-11",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "绝密国防科研基地",
+        "content": "一个位于雷达峰上的绝密国防工程基地。拥有巨大的抛物面天线（红岸系统），主要用于向太空发射高功率微波，以攻击敌方航天器。保密级别极高，工作人员需要长期隔离。",
+        "tags": [
+          "绝密项目",
+          "微波武器",
+          "雷达峰",
+          "与世隔绝"
+        ]
+      },
+      {
+        "id": "setting-12",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "item",
+        "title": "科普观测装置",
+        "content": "为天文馆制作的科普装置。能将接收到的宇宙3K背景辐射（波长7厘米）的波长压缩七个数量级，转换成可见红光，使佩戴者能在夜晚直接用肉眼看到宇宙背景辐射，理论上也能看到“宇宙闪烁”。",
+        "tags": [
+          "观测工具",
+          "科普设备",
+          "波长转换"
+        ]
+      },
+      {
+        "id": "setting-13",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "item",
+        "title": "高功率微波发射武器",
+        "content": "红岸基地的核心设备，实质上是一台峰值功率高达25兆瓦的无线电（微波）发射机。其设计用途是向太空中的航天器发射高能量微波束，当能量密度达到0.1~1瓦/平方厘米时，可致使卫星的通信、雷达、导航等电子设备失效或烧毁。",
+        "tags": [
+          "定向能武器",
+          "反卫星",
+          "高功率微波",
+          "国防科技"
+        ]
+      },
+      {
+        "id": "setting-14",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "接触符号理论",
+        "content": "比尔·马修在《十万光年铁幕：SETI社会学》中提出。认为与外星文明的接触（即使是元接触）本身作为一个符号或开关，将通过人类群体的心理和文化透镜被放大，对文明进程产生巨大实质影响，且效应与接触内容、方式、外星文明形态无关。",
+        "tags": [
+          "社会学",
+          "SETI",
+          "文明冲击"
+        ]
+      },
+      {
+        "id": "setting-15",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "卡尔达肖夫文明指数",
+        "content": "苏联天体物理学家卡达谢夫提出，根据文明用于通讯的能量分级：Ⅰ型（10^15-10^16瓦，相当地球总输出）、Ⅱ型（10^26瓦，相当恒星）、Ⅲ型（10^36瓦，相当星系）。地球文明约0.7型。",
+        "tags": [
+          "文明分级",
+          "能源",
+          "天文学"
+        ]
+      },
+      {
+        "id": "setting-16",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "三体游戏（欧洲中世纪副本）",
+        "content": "游戏根据玩家ID生成独立进程的文明副本。汪淼以“哥白尼”ID进入欧洲中世纪副本，场景为哥特式金字塔，人物包括格里高利教皇、亚里士多德、伽利略等历史人物变体，讨论太阳运行规律。",
+        "tags": [
+          "虚拟现实",
+          "文明模拟",
+          "历史错位"
+        ]
+      },
+      {
+        "id": "setting-17",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "宇宙橄榄球模型",
+        "content": "汪淼在三体游戏中提出的理论：三体世界中有三颗太阳做无法预测的三体运动，行星像橄榄球在三颗太阳的引力间被夺走或捕获，导致乱纪元与恒纪元的交替。",
+        "tags": [
+          "天体力学",
+          "三体问题",
+          "游戏理论"
+        ]
+      },
+      {
+        "id": "setting-18",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "人列计算机",
+        "content": "冯·诺依曼在三体游戏中提出的设想：用三千万士兵手持黑白旗构成逻辑门，通过总线（轻骑兵）传递信号，模拟计算机运算以求解三体方程。游戏中推测三体人可能具有全反射镜面外表，适应此计算方式。",
+        "tags": [
+          "计算体系",
+          "人海战术",
+          "三体科技"
+        ]
+      },
+      {
+        "id": "setting-19",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "大撕裂",
+        "content": "三体游戏中提到的过去事件，可能指巨型天体（如巨月）因引力等原因发生的解体或灾难性变化。爱因斯坦提及幼时巨月尚热，核心有红光，现已冷却。",
+        "tags": [
+          "天文灾难",
+          "世界历史",
+          "游戏背景"
+        ]
+      },
+      {
+        "id": "setting-2",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "faction",
+        "title": "科学边界",
+        "content": "国际性学术组织，成员多为著名学者。被军方和警方关注，多名物理学家自杀被认为与该组织有关。",
+        "tags": [
+          "学术组织",
+          "国际",
+          "争议",
+          "科学家"
+        ]
+      },
+      {
+        "id": "setting-20",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "巨摆纪念碑",
+        "content": "三体游戏后期出现的现代化巨型单摆，金属结构，电镀镜面摆锤。由联合国大厦后各国首脑启动，作为三体纪念碑和墓碑，象征对三体问题求解努力的终结。",
+        "tags": [
+          "文明象征",
+          "纪念碑",
+          "绝望标志"
+        ]
+      },
+      {
+        "id": "setting-21",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "三体星际舰队",
+        "content": "由约一千艘恒星际飞船组成的方形阵列，每艘可达十分之一光速，从三体世界起航，目的地为四光年外带有行星的恒星（太阳系）。起航时星体亮度剧增，宛如千颗太阳，标志着三体文明对“新世界”的远征开始。",
+        "tags": [
+          "星际航行",
+          "舰队",
+          "远征",
+          "文明希望"
+        ]
+      },
+      {
+        "id": "setting-22",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "faction",
+        "title": "地球三体组织",
+        "content": "由叶文洁创立，信奉三体文明为“主”的地球叛军组织。内部有降临派（希望三体文明降临改造或毁灭人类）和拯救派（希望借助三体文明拯救人类）等派系。成员包括社会名流、精英。口号为“消灭人类暴政，世界属于三体”。",
+        "tags": [
+          "叛军组织",
+          "降临派",
+          "拯救派",
+          "秘密结社"
+        ]
+      },
+      {
+        "id": "setting-23",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "日凌干扰",
+        "content": "红岸监听系统面临的难题：当太阳位于外太空发射源与接收器之间时，太阳的电磁辐射会干扰接收信号。叶文洁的研究目标是通过数字滤波滤除太阳正常活动时的干扰，但太阳剧烈爆发活动期间干扰无法排除。",
+        "tags": [
+          "射电天文",
+          "信号处理",
+          "技术难题"
+        ]
+      },
+      {
+        "id": "setting-24",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "纳米材料威胁",
+        "content": "叶文洁解释三体文明（主）害怕纳米材料的原因：其超高强度可能使人类建造太空电梯，从而大规模进入近地空间并建立太空防御体系，阻碍三体文明的降临。",
+        "tags": [
+          "技术遏制",
+          "太空电梯",
+          "战略威胁"
+        ]
+      },
+      {
+        "id": "setting-25",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "齐家屯",
+        "content": "红岸基地附近的一个东北村庄。当地农民在叶文洁危难时伸出援手，为其献血并接她回家照料，体现了人性的温暖一面。",
+        "tags": [
+          "村庄",
+          "大兴安岭",
+          "农民",
+          "温情"
+        ]
+      },
+      {
+        "id": "setting-26",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "物种共产主义",
+        "content": "伊文斯所信奉的理念，认为所有物种平等，人类并无特殊尊贵地位。这种对地球物种大灭绝的绝望，后来演变为对人类文明本身的憎恨，是降临派的思想根源之一。",
+        "tags": [
+          "哲学",
+          "环保",
+          "平等",
+          "反人类中心"
+        ]
+      },
+      {
+        "id": "setting-27",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "审判日号",
+        "content": "由六万吨级油轮改建的第二红岸基地，装备有巨大的抛物面天线。它是地球三体组织降临派的核心基地和指挥中心，常驻着伊文斯等核心人物。",
+        "tags": [
+          "巨轮",
+          "移动基地",
+          "天线",
+          "降临派总部"
+        ]
+      },
+      {
+        "id": "setting-28",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "faction",
+        "title": "地球三体运动 (地球三体叛军)",
+        "content": "由对人类文明绝望的高级知识阶层和精英组成的组织，旨在迎接三体文明改造或取代人类文明。组织内部主要分为降临派、拯救派和后来的幸存派。诞生于“审判日”号上。",
+        "tags": [
+          "叛军组织",
+          "精神贵族",
+          "异化力量",
+          "多派别"
+        ]
+      },
+      {
+        "id": "setting-29",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "降临派",
+        "content": "地球三体叛军中最本原的一派，主要由伊文斯的物种共产主义信奉者组成。他们对人类本性彻底绝望，背叛源于憎恨，目标就是借助外星力量毁灭人类。座右铭：“我们不知道外星文明是什么样子，但知道人类。”",
+        "tags": [
+          "极端",
+          "反人类",
+          "毁灭派",
+          "伊文斯派"
+        ]
+      },
+      {
+        "id": "setting-3",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "作战中心",
+        "content": "军方秘密机构，处理三体危机相关事务，位于城市近郊，设有会议室，参与者包括军方、警方、专家学者及外国联络员。",
+        "tags": [
+          "军方",
+          "秘密机构",
+          "指挥中心",
+          "国际合作"
+        ]
+      },
+      {
+        "id": "setting-30",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "拯救派",
+        "content": "地球三体叛军中较晚产生的派别，本质上是一个宗教团体（三体教）。他们将三体文明神化，怀有宗教感情，其理想是在解决三体问题的同时拯救两个文明。成员多通过《三体》游戏皈依。",
+        "tags": [
+          "宗教派",
+          "崇拜三体",
+          "拯救主",
+          "通过游戏招募"
+        ]
+      },
+      {
+        "id": "setting-31",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "三体教",
+        "content": "拯救派信仰的宗教，崇拜真实存在的三体文明。三体世界被视为神的住所（太空中的奥林匹斯山），信徒负有拯救“主”（三体文明）的责任。",
+        "tags": [
+          "宗教",
+          "偶像崇拜",
+          "救主情结"
+        ]
+      },
+      {
+        "id": "setting-32",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "三体质子探测器",
+        "content": "三体世界在六年前将两个氢原子核（质子）加速到接近光速射向太阳系，于两年前抵达地球。这是除电波外，三体世界向地球发送的物质实体。",
+        "tags": [
+          "微观武器",
+          "探测器",
+          "光速发射",
+          "质子"
+        ]
+      },
+      {
+        "id": "setting-33",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "skill",
+        "title": "智子",
+        "content": "三体“智子工程”的产物。通过将九维的质子展开成二维巨膜，蚀刻智能电路后缩回十一维，从而被改造成具有超级计算和通讯能力的智能粒子。可光速运动，实现与三体世界的实时通讯，并能潜伏于地球高能加速器中，干扰实验结果以锁死人类基础科学。",
+        "tags": [
+          "智能粒子",
+          "超级计算机",
+          "实时通讯",
+          "科学锁死",
+          "微观监视"
+        ]
+      },
+      {
+        "id": "setting-34",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "染色计划",
+        "content": "三体遏制地球文明计划之一。利用科技发展产生的环境问题等副作用，使公众对科学产生恐惧和厌恶，从而抑制科学发展。",
+        "tags": [
+          "舆论战",
+          "制造恐惧",
+          "反科学"
+        ]
+      },
+      {
+        "id": "setting-35",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "神迹计划",
+        "content": "三体遏制地球文明计划之一。通过智子制造超自然现象（“神迹”），扰乱科学家的思想，使其怀疑物理规律，甚至使其绝望自杀。",
+        "tags": [
+          "心理战",
+          "制造奇迹",
+          "打击科学家"
+        ]
+      },
+      {
+        "id": "setting-36",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "智子计划",
+        "content": "三体遏制地球文明的核心计划。通过向地球派遣智子，实时监视人类一切活动，并干扰高能物理实验，锁死人类在基础科学领域的进步。",
+        "tags": [
+          "技术封锁",
+          "全面监视",
+          "战略遏制"
+        ]
+      },
+      {
+        "id": "setting-37",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "黑暗森林",
+        "content": "作者刘慈欣在《三体》系列中将要展开的宇宙文明关系图景。其灵感来源于“城市就是森林，每一个男人都是猎手，每一个女人都是陷阱”这句话。被预告为系列下一部的标题和核心概念。",
+        "tags": [
+          "宇宙社会学",
+          "生存法则",
+          "系列续作",
+          "核心隐喻"
+        ]
+      },
+      {
+        "id": "setting-38",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "宇宙社会学",
+        "content": "叶文洁向罗辑提出的研究课题。其两大公理为：1. 生存是文明的第一需要。2. 文明不断增长和扩张，但宇宙中的物质总量不变。并引入两个重要概念：猜疑链和技术爆炸。",
+        "tags": [
+          "社会学",
+          "宇宙法则",
+          "公理",
+          "猜疑链",
+          "技术爆炸"
+        ]
+      },
+      {
+        "id": "setting-39",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "面壁计划",
+        "content": "人类为对抗智子监视而启动的战略计划，选拔四位面壁者（弗雷德里克·泰勒、曼努尔·雷迪亚兹、比尔·希恩斯、罗辑），赋予其调用全球资源的权力，以全封闭思维制定对抗三体世界的战略。",
+        "tags": []
+      },
+      {
+        "id": "setting-4",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "射手假说",
+        "content": "假说描述一名神枪手在靶子上每隔十厘米打一个洞，二维生物观察后认为这是宇宙规律。比喻智慧生命可能错误理解更高层次存在的随机行为为自然规律。",
+        "tags": [
+          "假说",
+          "哲学",
+          "规律",
+          "维度"
+        ]
+      },
+      {
+        "id": "setting-40",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "破壁计划",
+        "content": "地球三体组织（ETO）针对面壁计划启动的反制措施，为每位面壁者指定一名破壁人（冯·诺伊曼、墨子、亚里士多德），借助智子监视分析面壁者行为，破解其真实战略意图。",
+        "tags": []
+      },
+      {
+        "id": "setting-41",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "罗辑的咒语计划",
+        "content": "罗辑领悟黑暗森林理论后，计划通过某种方式向宇宙广播一颗恒星的坐标，以此作为对三体世界的威慑或打击手段。具体方法仍在探索中。",
+        "tags": []
+      },
+      {
+        "id": "setting-42",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "faction",
+        "title": "威慑纪元初期的社会风貌",
+        "content": "此时已进入威慑纪元初期。科技高度发达，社会人性化、整洁高雅。人们目光中充满睿智、真诚和阳光般的自信。社会福利完善，地球生态环境已恢复。地球三体组织（ETO）早已被剿灭。",
+        "tags": []
+      },
+      {
+        "id": "setting-43",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "三体探测器“水滴”",
+        "content": "三体世界发送至太阳系的强互作用力材料探测器，表面绝对光滑，呈水滴状。能够以超高速（近光速）运动，并进行锐角转向。在末日战役中，以单纯撞击方式几乎摧毁全部人类恒星级战舰。",
+        "tags": []
+      },
+      {
+        "id": "setting-44",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "黑暗森林恐惧症",
+        "content": "人类在得知宇宙的黑暗森林状态后产生的集体心理症状。表现为对向太空发射任何电磁信息的极端恐惧和严格管制，甚至一度禁止民用移动通信，象征人类文明从外向乐观变得孤僻自闭。",
+        "tags": []
+      },
+      {
+        "id": "setting-45",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "掩体世界社会状况",
+        "content": "广播纪元7年后，人类进入掩体纪元。世界因引力波广播后出现的短暂狂欢和对黑暗森林理论的质疑而暂时恢复繁荣。城市和工业设施因地球治安军的保护得以保存，经济快速复苏。人类社会经历对地球治安军的报复性审判后逐渐平静，人们开始享受生活，但出现极低出生率，因为普遍认为太阳系最终会被黑暗森林打击毁灭。掩体世界中，男人的外形重新出现，忙碌的社会结构回归，大部分人不再是有闲阶级。技术呈现复古特征，如手动门、有线电器等，信息显示简化。",
+        "tags": [
+          "末日社会",
+          "技术倒退",
+          "低出生率",
+          "男性回归",
+          "忙碌经济"
+        ]
+      },
+      {
+        "id": "setting-46",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "木星背面的掩体太空城",
+        "content": "位于木星背阳面阴影中的圆柱形太空城，是木星太空城群落（共26座）的一部分。直径约八千米。内部环境呈现技术倒退特征，如手动门、可见电线、简单金属墙壁。城市需要周期性启动推进器进行位置维持，以保持在木星轨道外侧与木星平行绕太阳运行，长期隐藏于木星阴影中。",
+        "tags": [
+          "圆柱体",
+          "位置维持",
+          "木星阴影",
+          "复古技术"
+        ]
+      },
+      {
+        "id": "setting-47",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "巨行星背面的城市集群",
+        "content": "总共26座（比计划多6座）太空城，隐藏在木星的背阳阴影中，排成不太整齐的四列纵队。形态多样，包括纯球体（如北美一号）、圆柱体（如亚洲一号）、椭球体、轮辐形、纺锤形等。它们并非木星卫星，而是在木星轨道外侧与木星平行绕太阳运行，依靠推进器抵抗木星引力维持位置。此外，在土星、海王星、天王星背面还有另外三个群落，共38座太空城。",
+        "tags": [
+          "掩体工程",
+          "巨行星阴影",
+          "多样形态",
+          "位置维持"
+        ]
+      },
+      {
+        "id": "setting-48",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "item",
+        "title": "歌者使用的清理工具",
+        "content": "歌者从种子仓库中取出的某种武器或工具，用于实施坐标清理。疑似为光粒或其他宇宙规律武器。操作方式是通过力场触角握住并弹出。清理过程简单，几乎不耗费什么。",
+        "tags": [
+          "清理武器",
+          "宇宙规律",
+          "歌者文明"
+        ]
+      },
+      {
+        "id": "setting-49",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "宇宙中的低熵体清理员",
+        "content": "一个在宇宙中从事“清理”工作的低熵体个体。其文明（母世界）与边缘世界发生战争。歌者的工作是翻阅坐标数据并判断其“诚意”，对具有诚意的坐标（往往代表恐惧）执行清理。拥有基于时间积累的直觉判断能力，能通过坐标细节感受广播者的精神。遵循“藏好自己，做好清理”的准则。生活在“种子”上，吟唱古歌谣。",
+        "tags": [
+          "清理员",
+          "低熵体",
+          "直觉判断",
+          "种子",
+          "古歌谣"
+        ]
+      },
+      {
+        "id": "setting-5",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "农场主假说",
+        "content": "假说描述农场主每天上午十一点给火鸡喂食，火鸡科学家总结出规律，但在感恩节这天规律被打破，所有火鸡被宰杀。比喻人类对宇宙规律的认识可能同样脆弱。",
+        "tags": [
+          "假说",
+          "哲学",
+          "规律",
+          "认知局限"
+        ]
+      },
+      {
+        "id": "setting-50",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "低光速黑洞航迹",
+        "content": "出现在被广播坐标世界附近的低光速区域，由光速飞船频繁航行产生。在歌者看来，慢雾表明那是个“危险的世界”（已掌握曲率驱动技术），因此清理会来得更快。慢雾距离世界约半个构造长度。",
+        "tags": [
+          "低光速",
+          "航迹",
+          "危险标志",
+          "曲率驱动"
+        ]
+      },
+      {
+        "id": "setting-51",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "程心与AA的逃亡目的地",
+        "content": "距太阳系约286.5光年的恒星系。恒星大小与太阳接近，发光偏红。拥有两颗固态行星：灰星（体积如火星，无大气，表面荒凉）和蓝星（体积如地球，有含氧大气和生命迹象，但无农业工业文明痕迹；蓝色来自植被，海洋呈淡黄色，占表面积五分之一）。该星系由AA在四个世纪前通过太阳引力透镜数据发现。",
+        "tags": [
+          "类地行星",
+          "生命迹象",
+          "蓝星",
+          "灰星",
+          "遥远星系"
+        ]
+      },
+      {
+        "id": "setting-52",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "黑暗森林打击的最终形态",
+        "content": "来自歌者文明或类似存在的二向箔打击，将整个太阳系从三维空间跌落至二维平面。过程从太阳开始，逐步蔓延至所有行星。冥王星上观测到二维太阳和行星持续膨胀。木星也随后二维化。过程中太阳系内充满绝望的音频信息流，政府广播中断。逃亡飞船仍在不断飞离。向二维的跌落可能永不停止。",
+        "tags": [
+          "降维打击",
+          "二向箔",
+          "宇宙清理",
+          "不可逆",
+          "全域毁灭"
+        ]
+      },
+      {
+        "id": "setting-6",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "虚拟现实游戏《三体》",
+        "content": "一款需要V装具（虚拟现实装备）登录的网络游戏。游戏世界呈现为一个太阳运行无规律、存在“乱纪元”与“恒纪元”交替的荒芜行星。玩家在游戏中扮演角色，体验该世界的生存与文明演进。游戏注册界面显示“三体”字样，隐藏着海量信息。",
+        "tags": [
+          "虚拟现实",
+          "天文模拟",
+          "文明演化",
+          "乱纪元"
+        ]
+      },
+      {
+        "id": "setting-7",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "三体世界的不稳定时期",
+        "content": "在《三体》游戏世界及设定的三体行星上，太阳运行完全无规律、无法预测的时期。与“恒纪元”相对。在此期间，气候极端寒冷或炎热，文明生存艰难。",
+        "tags": [
+          "天文异常",
+          "极端气候",
+          "生存挑战"
+        ]
+      },
+      {
+        "id": "setting-8",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "三体世界的稳定时期",
+        "content": "在《三体》游戏世界及设定的三体行星上，太阳运行规律、可预测的短暂稳定时期。与“乱纪元”相对。是文明得以发展的宝贵窗口。",
+        "tags": [
+          "稳定期",
+          "文明窗口",
+          "稀有资源"
+        ]
+      },
+      {
+        "id": "setting-9",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "射电天文观测基地",
+        "content": "位于北京密云黑龙潭附近的射电天文观测基地，拥有28面9米抛物面天线和两台50米口径射电望远镜。主要进行宇宙微波背景辐射等项目的观测研究，但受到移动通信等无线电干扰严重。",
+        "tags": [
+          "科研基地",
+          "射电望远镜",
+          "受干扰"
+        ]
+      }
+    ],
+    "chapter_cards": [
+      {
+        "id": "chapter-1",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第1章 科学边界",
+        "summary": "汪淼被卷入调查，参加作战中心会议。",
+        "objective": "调查“科学边界”组织与物理学家自杀事件的关联。",
+        "status": "completed",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": [
+          "调查",
+          "会议",
+          "科学边界",
+          "引入"
+        ]
+      },
+      {
+        "id": "chapter-10",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第10章 宇宙闪烁之二",
+        "summary": "沙瑞山向汪淼讲述了叶文洁后来的一些经历。凌晨一点，观测数据证实宇宙背景辐射真的在同步波动（宇宙闪烁）。汪淼将波动曲线转换为莫尔斯码，证实了倒计时的存在（剩余约1108小时）。沙瑞山提出可以用“3K眼镜”肉眼观测到这一现象。汪淼决定连夜去天文馆取眼镜。沙瑞山则对深入探究此事表现出恐惧。",
+        "objective": "通过多源数据交叉验证，确证宇宙背景辐射存在人为（或超自然）的同步波动，即“宇宙闪烁”，并将波动解码为倒计时，推动汪淼前往获取直接观测手段。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-11",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第11章 大史",
+        "summary": "汪淼在街头遇到史强，两人去小饭店喝酒。汪淼醉酒后向史强倾诉了三天来的全部经历（倒计时、宇宙闪烁）。史强不以为然地用“邪乎到家必有鬼”总结，认为背后是人在捣鬼，并劝汪淼吃饭睡觉，正常上班。汪淼在车里睡了一下午，醒来后史强再次出现，透露自己级别低不知内情，但将近期一系列异常事件（科研犯罪、科学边界、环保激进活动等）串联起来，暗示背后有更大的阴谋。",
+        "objective": "通过汪淼与史强的对话，缓解汪淼的心理压力，并通过史强的刑警视角，将个人遭遇与更广泛的社会异常现象联系起来，提升事件格局。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-12",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第12章 三体、墨子、烈焰",
+        "summary": "汪淼再次登录《三体》游戏。游戏内时间已过去漫长岁月，文明重启多次。他登上已变为阿兹特克式观星台的金字塔，遇到了新的引导者“墨子”。墨子展示了上一个文明（蒸汽时代）的遗迹和孔子冻僵的骷髅，并讲述太阳突然熄灭、出现飞星的案例。墨子提出了自己的宇宙模型（火海中的空心球），并展示了他制造的复杂机械模型（大铜球），试图模拟和预测太阳运行。",
+        "objective": "汪淼在游戏中继续探索三体世界的运行规律，通过墨子了解到更多文明尝试和失败案例（如孔子礼法、墨子机械模型），并接触到“太阳突然熄灭”这一关键异常现象，深化对三体问题复杂性的理解。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-13",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第13章 红岸之二",
+        "summary": "叶文洁在红岸基地初期从事技术杂务，后因扎实的射电天文和电子技术功底，逐渐成为发射部的技术骨干。她发现基地人员因条件艰苦、前途无望而故意表现平庸，同时发现红岸系统部分技术并不先进。雷政委找她谈话，透露红岸系统实质上是一台超大功率的微波发射器，用于攻击太空中的航天器（卫星）。",
+        "objective": "描述叶文洁在红岸基地的早期工作，揭示她如何凭借才能获得信任，并逐步了解红岸系统的真实用途（太空微波攻击武器）。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-14",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第14章 红岸之三",
+        "summary": "本章以解密文件形式披露了红岸工程的决策背景、理论基础及与国际研究动态的比较。",
+        "objective": "展现红岸工程作为外星文明探索计划的立项依据、技术突变的风险认知以及冷战格局下的战略考量。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-15",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第15章 红岸之四",
+        "summary": "汪淼与叶文洁讨论红岸工程的结局、接触符号理论以及三体文明的卡尔达肖夫指数。",
+        "objective": "探讨与外星文明接触的社会学后果、红岸工程的现实局限性以及地球文明的脆弱性。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-16",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第16章 三体、哥白尼、宇宙橄榄球、三日凌空",
+        "summary": "汪淼以“哥白尼”ID进入三体游戏欧洲中世纪副本，提出三体运动模型，但被教皇判处火刑。",
+        "objective": "通过游戏进程揭示三体世界的天文规律假设及游戏中科学探索与权威的冲突。",
+        "status": "active",
+        "is_current": true,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-17",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第17章 三体问题",
+        "summary": "魏成向大史、徐冰冰和汪淼讲述自己的数学天赋、人生经历以及在寺庙中对三体问题的初步思考。",
+        "objective": "引入魏成这一关键角色，铺垫三体问题的数学求解尝试及与申玉菲的关联。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-18",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第18章 三体、牛顿、冯·诺依曼、秦始皇、三日连珠",
+        "summary": "汪淼进入三体游戏第二级东方副本，目睹牛顿与莱布尼茨决斗，与冯·诺依曼、牛顿一同觐见秦始皇，提出用人列计算机求解三体问题。",
+        "objective": "展示游戏中用三千万人构建人列计算机以求解三体方程的宏大设想，体现文明对规律的绝望求索。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-19",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第19章 聚会",
+        "summary": "汪淼参加《三体》网友小型聚会，参与者为社会精英，潘寒作为组织者宣称三体世界真实存在，并透露脱水功能、人列计算机等设定。",
+        "objective": "揭示《三体》游戏玩家的构成及三体组织通过游戏筛选、吸纳成员，并逐步透露三体世界的“真实”信息。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-2",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第2章 台球",
+        "summary": "丁仪用台球实验探讨物理规律的稳定性。",
+        "objective": "通过思想实验揭示物理规律可能出现的异常。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": [
+          "实验",
+          "物理",
+          "哲学",
+          "对话"
+        ]
+      },
+      {
+        "id": "chapter-20",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第20章 三体、爱因斯坦、单摆、大撕裂",
+        "summary": "汪淼进入三体游戏更高级副本，遇见流浪的爱因斯坦，了解大撕裂事件，目睹巨摆纪念碑的启动仪式，得知三体问题被证明无解。",
+        "objective": "展现三体文明对求解三体问题的最终失败以及由此导致的文明绝望感。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-21",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第21章 三体、远征",
+        "summary": "汪淼目睹三体世界所有人聚集观看三体星际舰队起航远征，目的地为四光年外带行星的恒星（即太阳系）。游戏结束，邀请玩家参加地球三体组织聚会。",
+        "objective": "揭示三体文明已具备星际航行能力并开始向地球进军，将游戏剧情与现实危机直接关联。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-22",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第22章 地球叛军",
+        "summary": "汪淼参加地球三体组织大型聚会，目睹组织内降临派与拯救派的争执，潘寒被指责杀人并试图清除拯救派，统帅叶文洁出现并处理潘寒。",
+        "objective": "展现地球三体组织内部派系矛盾、叶文洁的统帅权威以及组织的最终理想。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-23",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第23章 红岸之五",
+        "summary": "叶文洁在红岸基地的研究经历：负责解决日凌干扰问题，发现太阳辐射的异常突变，研究陷入僵局后转向建立太阳数学模型，并在期刊上看到木星强发射源的论文。",
+        "objective": "回溯叶文洁在红岸的技术工作，铺垫其后续重大发现的科学背景与个人状态。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-24",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第24章 红岸之六",
+        "summary": "叶文洁在红岸基地婚后的平静生活与精神危机，值夜班时首次发现宇宙中带有智能调制特征的电波信号，识别度达AAAAA，并使用红岸译解系统尝试破译。",
+        "objective": "描述叶文洁对人类文明的理性反思及其孤独的精神状态，为首次接触三体信号做情节铺垫。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-25",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第25章 叛乱",
+        "summary": "叶文洁讲述历史后，汪淼询问三体组织发展及纳米材料威胁，随后军方突袭聚会现场，三体叛军成员亮出原子弹胁持，史强指挥应对。",
+        "objective": "将红岸历史叙述拉回现实危机现场，展现地球三体组织与当局的武装对峙，情节推向高潮。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-26",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第26章 雷志成、杨卫宁之死",
+        "summary": "叶文洁接受审问，讲述她在红岸基地谋杀雷志成与杨卫宁的经过。叶文洁在得知雷志成也截获了三体信息并企图独占功劳后，设计制造事故，在维修接地线时使两人坠崖身亡。",
+        "objective": "通过叶文洁的供述，揭示红岸基地内部的政治斗争以及她为保护三体通信秘密所采取的极端行动。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-27",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第27章 无人忏悔",
+        "summary": "事故处理后，叶文洁生活恢复平静。因红岸保密级别降低，当地孩子开始上雷达峰向她请教学习问题。叶文洁在齐家屯农民的帮助下度过难产，产后被猎户齐猎头一家接回家照顾。",
+        "objective": "展现叶文洁在红岸悲剧后与当地人的温情互动，以及她个人生命的延续（孩子出生）与脆弱。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-28",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第28章 伊文斯",
+        "summary": "叶文洁参与射电天文观测基地选址，在西北山区遇见了美国人麦克·伊文斯。伊文斯在此独自植树数年，目的是保护濒危的西北褐燕亚种。他向叶文洁讲述了自己因童年目睹油污导致海鸟死亡事件而萌生的环保理念，以及对人类本性的深刻失望。",
+        "objective": "引入关键人物麦克·伊文斯，揭示其物种共产主义思想和对人类的绝望，为地球三体组织降临派的形成埋下伏笔。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-29",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第29章 第二红岸基地",
+        "summary": "三年后，叶文洁受邀访学，被带往大西洋上的“审判日”号油轮。伊文斯宣布他们已证实收到三体信息，三体舰队已启航。叶文洁被推举为地球三体运动的最高统帅，该运动正式诞生。",
+        "objective": "展示地球三体叛军的正式成立，叶文洁成为精神领袖，以及“审判日”号作为第二红岸基地和降临派核心的登场。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-3",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第3章 射手和农场主",
+        "summary": "汪淼发现胶片上的倒计时，联想到宇宙规律假说。",
+        "objective": "展现汪淼接触超自然现象并开始怀疑现实规律。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": [
+          "倒计时",
+          "摄影",
+          "假说",
+          "神秘现象"
+        ]
+      },
+      {
+        "id": "chapter-30",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第30章 地球三体运动",
+        "summary": "深入分析地球三体叛军的成员构成、发展速度、内部派别（降临派、拯救派）及其思想根源。介绍《三体》游戏作为拯救派的摇篮和传教手段的功能。",
+        "objective": "系统阐述地球三体叛军的性质、社会基础、内部矛盾以及其利用《三体》游戏进行传播和招募的策略。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-31",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第31章 两个质子",
+        "summary": "叶文洁继续接受审问。她透露降临派截留了部分三体信息，并承认伊文斯欺骗了她。她说明三体舰队需要四百年到达的原因（加速缓慢、反物质收集）。最关键的是，她透露三体世界在六年前向地球发射了两个被加速到接近光速的质子。",
+        "objective": "揭示三体世界向地球派遣微观探测器（质子）这一关键情报，为后续智子封锁科技做铺垫，并进一步说明三体舰队的时间表。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-32",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第32章 古筝行动",
+        "summary": "全球军方代表开会讨论夺取“审判日”号上被截留的三体信息的行动方案。目标是全面占领该船并防止敌人删除信息。各种方案（球状闪电、中子弹、震荡炸弹等）均被否决。史强在会上提出一个未详述的“邪招”。",
+        "objective": "为夺取关键情报“古筝行动”做战略铺垫，展示任务的极端困难性，并引出史强非传统的解决方案。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-33",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第33章 监听员",
+        "summary": "视角转入三体世界。1379号监听员在值班时首次接收到来自地球的信息（即叶文洁的回复）。他阅读了地球文明的介绍，为那个美好的世界所震撼，但也因想到三体舰队可能毁灭它而陷入痛苦。最终，他冒着生命危险向地球回复了警告信息：“不要回答！”。",
+        "objective": "从三体文明内部视角揭示他们接收到地球信息的反应，塑造一位充满同情心和良知的监听员形象，并解释“不要回答”警告的来源。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-34",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第34章 智子",
+        "summary": "三体元首召开紧急会议，宣布收到地球回电并确认其距离仅四光年。科学执政官指出地球文明技术加速发展的可怕潜力。为遏制地球科技，三体世界启动了“染色”、“神迹”、“智子”三个计划。重点描述了“智子工程”：将九维的质子展开成二维，蚀刻电路后缩回十一维，改造成可实时通讯、监控并干扰地球高能物理实验的智能粒子。",
+        "objective": "揭示三体文明应对地球威胁的整体战略，并详细阐述其终极技术封锁武器“智子”的制造原理与功能。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-35",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第35章 虫子",
+        "summary": "汪淼与丁仪在丁仪家喝酒，因智子锁死科学而陷入绝望，自嘲为即将灭绝的“虫子”。史强到来，带两人驱车前往华北平原的农田，让他们看蝗灾中顽强生存的蝗虫，以此激励他们不要放弃希望。",
+        "objective": "在人类科学被锁死的绝境中，通过史强朴素的类比（人类像虫子一样杀不完），为故事注入一线希望和反抗精神。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-36",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第36章 尾声·遗址",
+        "summary": "叶文洁在生命最后时刻重返雷达峰红岸基地遗址。遗址已几乎无迹可寻，只剩天线基座和一块小石碑。她在悬崖边回忆往事，眺望齐家屯方向，最终在壮丽的血色日落中逝世，留下“这是人类的落日……”的叹息。",
+        "objective": "为叶文洁的故事画上句号，通过重返故地、凭吊遗址和目睹落日，完成其人物弧光，并赋予其结局深刻的象征意义。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-37",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "后记",
+        "summary": "作者刘慈欣阐述创作《三体》的初衷：探讨在零道德或道德准则未知的宇宙中，有道德的人类文明如何生存。他提及自己曾模拟宇宙点状文明体系的演化，并预告系列下一部为《黑暗森林》。",
+        "objective": "作者自述创作动机、科幻理念，并对整个系列进行展望。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-38",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "序章（三体2：黑暗森林）",
+        "summary": "一只褐蚁在“墓碑”（罗辑未来墓碑的基座）上爬行，留下“1417”的痕迹。罗辑与叶文洁在杨冬墓前相遇。叶文洁向罗辑提出了“宇宙社会学”的基本公理和概念（生存是文明的第一需要；文明不断增长和扩张，但宇宙中的物质总量不变；猜疑链；技术爆炸），建议他研究这个领域。",
+        "objective": "开启《三体2：黑暗森林》的序幕，通过叶文洁与罗辑的对话，引出贯穿第二部的核心理论框架——宇宙社会学和黑暗森林法则。",
+        "status": "completed",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-39",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "上部 面壁者",
+        "summary": "危机纪年第3年，三体舰队距太阳系4.21光年。吴岳和章北海面对建造中的“唐”号航母感到迷茫，突接紧急命令前往总参。地球发射拦截核弹攻击三体探测器但失败。虚拟三体世界中，秦始皇宣布启动破壁计划，为泰勒、雷迪亚兹、希恩斯指定破壁人，但罗辑的破壁人是他自己。",
+        "objective": "介绍面壁计划启动后的世界局势，聚焦于吴岳、章北海等太空军军人的心理状态和使命转变，同时描绘破壁计划的启动。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-4",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第4章 三体、周文王、长夜",
+        "summary": "汪淼深夜联系丁仪，提及宇宙背景辐射，并被建议拜访杨冬母亲叶文洁。之后汪淼出于对科学边界和申玉菲的好奇，登录了《三体》游戏，在游戏中以ID“海人”注册，遇到了自称周文王及其追随者，首次接触到“乱纪元”和“恒纪元”的概念，体验了游戏世界中寒冷且太阳运行无规律的诡异环境。",
+        "objective": "汪淼试图通过《三体》游戏探查申玉菲及“科学边界”的线索，并在游戏中初步了解三体世界的设定。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-40",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "中部 咒语",
+        "summary": "危机纪年第8年，泰勒因实验等待而焦躁，在家中接待了自称其破壁人的卑微访客，遭受巨大心理冲击。章北海在与常伟思的谈话中，首次提出“增援未来”的建议。",
+        "objective": "聚焦面壁者弗雷德里克·泰勒的焦躁等待及其被破壁人访问的震撼时刻，同时描绘章北海向常伟思提出“增援未来”建议。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-41",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "罗辑站在冰面上",
+        "summary": "罗辑在冰面上自我宣告成为自己的破壁人，患上星空恐惧症。他要求坎特为其寻找绝对安全地点，转入地下生活。随后咨询天文学家林格，探讨向宇宙标示恒星位置的技术可能性，为后续的“咒语”计划做铺垫。",
+        "objective": "描述罗辑领悟黑暗森林理论后患上星空恐惧症，开始主动寻求绝对安全庇护，并与天文学家林格探讨宇宙文明暴露问题。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-42",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "下部 黑暗森林",
+        "summary": "危机纪年第205年，罗辑从持续一百八十五年的冬眠中苏醒。他发现世界科技发达、人性友善、充满自信，与预期中的绝望时代截然不同。从特派员乔纳森处得知ETO早已覆灭，自己已失去面壁者身份，变为普通人。随后与同样苏醒的史强重逢。",
+        "objective": "描绘罗辑从持续冬眠中苏醒，适应危机纪年205年的新世界，并逐渐了解到面壁计划已成为历史，自己恢复普通人身份。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-43",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "山杉惠子揭露破壁人身份",
+        "summary": "在罗辑的听证会结束后，山杉惠子不顾无发言权的规定，当众对希恩斯宣布：“面壁者比尔·希恩斯，我是你的破壁人。”导致希恩斯跌坐回椅子，脸色苍白，会场一片哗然。",
+        "objective": "在罗辑听证会结束后，山杉惠子突然公开宣布自己是希恩斯的破壁人，引发会场震惊。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-44",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第二部 威慑纪元与“青铜时代”号返航",
+        "summary": "威慑纪元12年，“青铜时代”号在监听到地球电磁静默后，通过三体智子建立的量子通信证实威慑成功，开始返航。十一年后抵达太阳系，受到“万有引力”号迎接。文中穿插《时间之外的往事》节选，描述人类得知黑暗森林状态后产生的“黑暗森林恐惧症”，对电磁发射进行严格管制。",
+        "objective": "描述“青铜时代”号在黑暗战役后收到返航命令，返回地球并被奉为英雄，以及威慑建立后人类的“黑暗森林恐惧症”。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-45",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第三部",
+        "summary": "故事时间跳转到广播纪元7年及掩体纪元，描述程心苏醒后掩体世界的状况、社会心态、技术特征，以及她与AA参观太空城、目睹木卫二掠过等事件。",
+        "objective": "展现黑暗森林威慑后的人类社会变迁，以及掩体工程的现实与局限。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-46",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第四部",
+        "summary": "程心在掩体纪元11年于亚洲一号冬眠中心苏醒，发现世界技术倒退，社会忙碌。曹彬接她并展示掩体世界，包括太空城群落和木卫二掠过的奇观。",
+        "objective": "描绘掩体纪元的社会与技术图景，为后续情节铺垫。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-47",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第五部",
+        "summary": "视角切换到银河系猎户旋臂，以歌者文明的低熵体“歌者”为主角。描述其日常工作（翻阅坐标、判断诚意、执行清理）、宇宙观（熵增与意义之塔）、以及发现并放弃清理一个已被慢雾标记的坐标（疑似太阳系）的过程。",
+        "objective": "从更高维宇宙文明视角揭示黑暗森林状态的普遍性与清理机制，暗示太阳系被清理的原因和过程。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-48",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第六部",
+        "summary": "程心与AA乘坐“星环”号以光速航行至DX3906星系。航行中程心内心愧疚，AA试图安慰。飞船抵达后探查星系，降落蓝星，遇到关一帆，得知太阳系二维化结局以及此地存在人类殖民点（“世界”）。",
+        "objective": "完成程心与AA的星际逃亡，开启太阳系毁灭后的新篇章，引入新的人类幸存者据点。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-5",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第5章 叶文洁",
+        "summary": "汪淼结束游戏后冷汗淋漓，驱车拜访杨冬的母亲叶文洁。叶文洁是一位和蔼的老知识分子，独自居住并照顾邻居的孩子。汪淼在叶文洁的示意下进入了杨冬生前的房间，感受到森林般的气息，并看到了杨冬幼年与母亲的合影以及杨冬的桦皮本。",
+        "objective": "汪淼拜访叶文洁，表面是为询问宇宙背景辐射观测机构，实则内心希望探寻与杨冬之死及当前事件相关的线索。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-6",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第6章 宇宙闪烁之一",
+        "summary": "汪淼前往密云射电天文观测基地，寻找叶文洁的学生沙瑞山博士，要求观测宇宙背景辐射的整体波动。沙瑞山起初认为这是不可能的（意味着宇宙像坏了的灯管一样闪烁），但出于叶文洁的交待还是启动了观测，使用COBE卫星数据进行低精度监测，设定在凌晨一点查看结果。汪淼和沙瑞山参观了被通信干扰的射电望远镜阵列。",
+        "objective": "汪淼试图通过专业观测验证宇宙背景辐射是否存在异常波动，以证实幽灵倒计时的真实性。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-7",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第7章 疯狂年代",
+        "summary": "回忆章节，时间切换到1967年文革初期。描述了“红色联合”与“四·二八兵团”的武斗冲突，以及在一所大学操场上举行的批斗大会。重点刻画了物理学家叶哲泰（叶文洁的父亲）作为“反动学术权威”被残酷批斗的过程，他坚持不认罪，展现了知识分子的风骨与时代的疯狂。",
+        "objective": "展现叶文洁家庭背景和父亲叶哲泰的遭遇，解释叶文洁性格与历史创伤的根源，为后续情节铺垫。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-8",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第8章 寂静的春天",
+        "summary": "时间推进到两年后（约1969年），叶文洁在内蒙大兴安岭的生产建设兵团劳动，参与砍伐森林。她结识了兵团《大生产报》的记者白沐霖，二人都对疯狂的生态破坏感到痛心。白沐霖偷偷借给叶文洁一本英文版《寂静的春天》，这本书深刻影响了叶文洁的思想。",
+        "objective": "描述叶文洁在兵团的生活，展现其生态意识的觉醒以及与白沐霖的相遇，这是她思想转变的重要节点。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-9",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第9章 红岸之一",
+        "summary": "叶文洁在高烧昏迷中被直升机接走，醒来后发现自己在飞机上，遇到了红岸基地的政委雷志成和总工程师杨卫宁（她父亲以前的学生）。他们确认了叶文洁的一篇论文，并决定将她调往红岸基地。对话揭示红岸基地保密级别高、人员难找。飞机降落在雷达峰，叶文洁意识到自己来到了一个拥有巨大抛物面天线（红岸系统）的机密基地。",
+        "objective": "叶文洁被意外选调进入高度机密的红岸基地，开启她人生和命运的重大转折。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "rewards": [],
+        "tags": []
+      }
+    ],
+    "character_cards": [
+      {
+        "id": "char-1",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "刘慈欣",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "中国科幻作家，祖籍河南，长于山西，中国科普作家协会会员，山西省作家协会会员，高级工程师。代表作《三体》《球状闪电》《黑暗森林》等。",
+          "《三体》系列作者，中国科幻代表作家。"
+        ],
+        "tags": [
+          "作家",
+          "科幻",
+          "银河奖",
+          "工程师"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-10",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "白沐霖",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "记者",
+        "level": 1,
+        "affiliation": [
+          "内蒙古生产建设兵团",
+          "《大生产报》"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "内蒙古生产建设兵团的记者，戴眼镜，身材瘦弱，文笔细腻敏感。与叶文洁一样，对兵团过度砍伐森林、破坏环境的行为感到痛心和质疑。他主动与叶文洁交流，并借给她英文版的《寂静的春天》，成为叶文洁在孤独环境中的思想共鸣者。",
+          "兵团记者，有环保意识，向叶文洁介绍了《寂静的春天》，影响了她的思想。"
+        ],
+        "tags": [
+          "环保主义者",
+          "知识分子",
+          "敏感",
+          "启迪者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-11",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "雷志成",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "政委",
+        "level": 1,
+        "affiliation": [
+          "红岸基地",
+          "军队"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "红岸基地的政委，军人。在直升机上与杨卫宁一起接走叶文洁。对调叶文洁进入基地一事 initially 有所顾虑，认为违反常规，但最终被杨卫宁说服。负责基地的政治与保密工作。",
+          "红岸基地的政委，负责基地的政治和保密事务。"
+        ],
+        "tags": [
+          "政工干部",
+          "谨慎",
+          "决策者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-12",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "杨卫宁",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "总工程师",
+        "level": 1,
+        "affiliation": [
+          "红岸基地"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "红岸基地的总工程师，叶哲泰以前的研究生。他认出了叶文洁但未声张。在飞机上坚持调叶文洁进入基地，并表示愿意为此负责。性格务实，专注于技术，似乎对政治复杂性了解不深。他是叶文洁进入红岸的关键人物。",
+          "红岸基地总工程师，叶哲泰的学生，力排众议将叶文洁调入基地。"
+        ],
+        "tags": [
+          "技术专家",
+          "果敢",
+          "叶哲泰学生",
+          "保护者？[inferred]"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-13",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "墨子（游戏角色）",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "三体游戏世界"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "《三体》游戏中的一名NPC，自称墨子，身着黑色长袍。他是一名实践派学者，致力于通过观测和制造精密机械（如大型浑天仪式铜球）来理解并预测太阳运行。他向汪淼介绍了游戏内文明多次重启的历史，展示了孔子失败的理论，并提出了“宇宙是悬浮于火海中的大空心球”的模型。",
+          "游戏内代表“实践观测与机械模型”路线的引导者，试图用物理装置解决三体问题。"
+        ],
+        "tags": [
+          "机械师",
+          "观测者",
+          "模型建造者",
+          "实践派"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-14",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "格里高利教皇（游戏角色）",
+        "prefix_name": "",
+        "race": "人类（游戏角色）",
+        "age": 20,
+        "gender": "男",
+        "class": "宗教领袖",
+        "level": 1,
+        "affiliation": [
+          "三体游戏（欧洲中世纪副本）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体游戏欧洲中世纪副本中的角色，戴金冠穿红袍，主持对哥白尼（汪淼）的审判。"
+        ],
+        "tags": [
+          "宗教权威",
+          "审判者",
+          "游戏NPC"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-15",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "亚里士多德（游戏角色）",
+        "prefix_name": "",
+        "race": "人类（游戏角色）",
+        "age": 20,
+        "gender": "男",
+        "class": "哲学家",
+        "level": 1,
+        "affiliation": [
+          "三体游戏（欧洲中世纪副本）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体游戏欧洲中世纪副本中的角色，穿古希腊长袍，白色鬈发，认同伽利略对哥白尼的批评。"
+        ],
+        "tags": [
+          "古典哲学",
+          "思辨者",
+          "游戏NPC"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-16",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "伽利略（游戏角色）",
+        "prefix_name": "",
+        "race": "人类（游戏角色）",
+        "age": 20,
+        "gender": "男",
+        "class": "科学家",
+        "level": 1,
+        "affiliation": [
+          "三体游戏（欧洲中世纪副本）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体游戏欧洲中世纪副本中的角色，留着上翘山羊胡，主张从实验和观测认识世界，起初对哥白尼（汪淼）的理论抱有希望。"
+        ],
+        "tags": [
+          "实验科学",
+          "现实主义者",
+          "游戏NPC"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-17",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "魏成",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 40,
+        "gender": "男",
+        "class": "数学家",
+        "level": 1,
+        "affiliation": [
+          "申玉菲的丈夫"
+        ],
+        "status": [
+          "生命受威胁",
+          "被警方询问"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "数学天才但性格懒散，高中时被老师发现对数形的直觉，获奥林匹克数学竞赛冠军，后被大学免试录取，但社会适应不良，一度寄居寺庙，研究三体问题。"
+        ],
+        "tags": [
+          "数学直觉",
+          "懒散",
+          "避世",
+          "三体研究者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-18",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "牛顿（游戏角色）",
+        "prefix_name": "",
+        "race": "人类（游戏角色）",
+        "age": 20,
+        "gender": "男",
+        "class": "科学家",
+        "level": 1,
+        "affiliation": [
+          "三体游戏（东方副本）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体游戏东方副本中的角色，与莱布尼茨争夺微积分发明权，相信力学三定律和微积分能掌握太阳运行规律。"
+        ],
+        "tags": [
+          "经典力学",
+          "争强好胜",
+          "游戏NPC"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-19",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "冯·诺依曼（游戏角色）",
+        "prefix_name": "",
+        "race": "人类（游戏角色）",
+        "age": 20,
+        "gender": "男",
+        "class": "数学家",
+        "level": 1,
+        "affiliation": [
+          "三体游戏（东方副本）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体游戏东方副本中的角色，提出用人列计算机（三千万士兵）进行海量计算以求解三体方程，并前往东方寻求秦始皇的支持。"
+        ],
+        "tags": [
+          "人列计算机",
+          "计算理论",
+          "游戏NPC"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-2",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "汪淼",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "未知",
+        "class": "科学家",
+        "level": 1,
+        "affiliation": [
+          "科学边界(疑似关联)",
+          "超导中心"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "从事纳米材料研究，业余摄影爱好者。",
+          "纳米材料研究专家，摄影爱好者，卷入“科学边界”事件，被军方和警方调查。",
+          "纳米材料科学家，被卷入三体危机相关事件。"
+        ],
+        "tags": [
+          "科学家",
+          "纳米材料",
+          "摄影",
+          "调查对象"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-20",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "秦始皇（游戏角色）",
+        "prefix_name": "",
+        "race": "人类（游戏角色）",
+        "age": 20,
+        "gender": "男",
+        "class": "皇帝",
+        "level": 1,
+        "affiliation": [
+          "三体游戏（东方副本）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体游戏东方副本中的统治者，拥有三千万大军，眼睛与纣王、格里高利教皇相同，被牛顿和冯·诺依曼说服支持人列计算机计划。"
+        ],
+        "tags": [
+          "绝对权力",
+          "征服者",
+          "游戏NPC"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-21",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "潘寒",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "环保人士",
+        "level": 1,
+        "affiliation": [
+          "科学边界",
+          "地球三体组织（降临派）"
+        ],
+        "status": [
+          "杀害申玉菲的嫌疑人",
+          "组织聚会的领导者"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "表面为知名环保人士，实为地球三体组织降临派成员，在聚会上宣称三体世界真实存在并透露相关信息。"
+        ],
+        "tags": [
+          "环保领袖",
+          "降临派",
+          "激进",
+          "演说家"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-22",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "爱因斯坦（游戏角色）",
+        "prefix_name": "",
+        "race": "人类（游戏角色）",
+        "age": 20,
+        "gender": "男",
+        "class": "科学家",
+        "level": 1,
+        "affiliation": [
+          "三体游戏（后期副本）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体游戏后期副本中的角色，蓬松银发，流浪拉琴，自称被上帝抛弃。认为牛顿的模型差引力摄动，加入广义相对论修正后可建正确模型，但计算结果未被天文观测证实。"
+        ],
+        "tags": [
+          "相对论",
+          "流浪者",
+          "悲观的先知",
+          "游戏NPC"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-23",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "美丽女孩（三体叛军成员）",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "三体叛军成员",
+        "level": 1,
+        "affiliation": [
+          "地球三体组织"
+        ],
+        "status": [
+          "胁持核弹"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "地球三体组织成员，曾扭断潘寒脖子，在军方突袭时与另外两人持三枚声称是原子弹的金属球进行胁持。"
+        ],
+        "tags": [
+          "激进分子",
+          "胁持者",
+          "亡命徒"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-24",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "齐猎头",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "猎户",
+        "level": 1,
+        "affiliation": [
+          "齐家屯"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "齐家屯的老猎户，后改种地。在叶文洁产后虚弱无人照料时，与老伴一起将她接回家中照顾。"
+        ],
+        "tags": [
+          "猎户",
+          "农民",
+          "热心",
+          "救助者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-25",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "麦克·伊文斯",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "环保活动家",
+        "level": 1,
+        "affiliation": [
+          "物种共产主义信奉者",
+          "后期：地球三体组织（降临派）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "美国跨国石油公司总裁之子，因童年目睹油轮泄漏导致海鸟大量死亡而对人类文明产生绝望。在中国西北山区独自植树，保护濒危燕子。他后来成为地球三体组织降临派的领袖。"
+        ],
+        "tags": [
+          "环保主义者",
+          "反人类",
+          "亿万富翁",
+          "理想主义者",
+          "降临派核心"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-26",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "斯坦顿",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "上校",
+        "level": 1,
+        "affiliation": [
+          "美国海军陆战队"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "参与“古筝行动”策划会议的美国军官，提出了球状闪电和中子弹等方案。对史强的举止表示鄙夷。"
+        ],
+        "tags": [
+          "美军上校",
+          "会议代表",
+          "传统思维"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-27",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "1379号监听员",
+        "prefix_name": "",
+        "race": "三体人",
+        "age": 20,
+        "gender": "未知",
+        "class": "监听员",
+        "level": 1,
+        "affiliation": [],
+        "status": [
+          "已接受审判"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体世界数千个监听站中的一名卑微工作者，在孤独中聆听着宇宙噪声。他是第一个接收到地球回复信息的三体人，并被地球世界的美丽所感动，出于良知向地球发送了警告信息。"
+        ],
+        "tags": [
+          "监听员",
+          "良知者",
+          "警告发送者",
+          "背叛三体",
+          "悲剧角色"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-28",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "三体元首",
+        "prefix_name": "",
+        "race": "三体人",
+        "age": 20,
+        "gender": "未知",
+        "class": "元首",
+        "level": 1,
+        "affiliation": [
+          "三体世界"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体世界的最高领导者。在得知地球文明的位置和其技术加速特性后，果断决定派遣舰队并启动遏制地球科学发展的三大计划。"
+        ],
+        "tags": [
+          "统治者",
+          "决策者",
+          "冷静",
+          "战略家"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-29",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "科学执政官",
+        "prefix_name": "",
+        "race": "三体人",
+        "age": 20,
+        "gender": "未知",
+        "class": "执政官",
+        "level": 1,
+        "affiliation": [
+          "三体世界"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "三体世界负责科学的最高官员。在会议上分析了地球文明加速进化的威胁，并具体介绍了“染色”、“神迹”、“智子”三大计划。"
+        ],
+        "tags": [
+          "科学家",
+          "计划制定者",
+          "智子工程负责人"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-3",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "史强",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "未知",
+        "class": "刑警",
+        "level": 1,
+        "affiliation": [
+          "警方",
+          "作战中心"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "有过失误记录的刑警，被调入秘密作战中心。",
+          "粗鲁直接的刑警队长，曾因行动失误导致人质死亡，涉嫌与黑社会有联系，因刑讯逼供被停职，后被调入作战中心。",
+          "性格粗鲁、有争议的刑警，参与三体危机相关调查。"
+        ],
+        "tags": [
+          "警察",
+          "粗鲁",
+          "争议人物",
+          "作战中心"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-30",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "罗辑",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "社会学学者",
+        "level": 1,
+        "affiliation": [],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "杨冬的高中同学，社会学研究者。在杨冬墓前与叶文洁相遇，被叶文洁指引去思考“宇宙社会学”问题。叶文洁称杨冬说他“很聪明”但“心很散”。"
+        ],
+        "tags": [
+          "社会学家",
+          "杨冬同学",
+          "被选中者",
+          "思维发散"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-31",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "吴岳",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "舰长",
+        "level": 1,
+        "affiliation": [
+          "中国太空军",
+          "唐号航空母舰（预定）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "“唐”号航空母舰的预定舰长，对航母的未来和太空军使命感到迷茫和悲观。"
+        ],
+        "tags": [
+          "太空军军官",
+          "迷茫",
+          "使命困惑"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-32",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "章北海",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "政委",
+        "level": 1,
+        "affiliation": [
+          "中国太空军",
+          "唐号航空母舰（预定）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "“唐”号航空母舰的预定政委，思维深邃，善于洞察他人，对太空军的未来有独立见解。"
+        ],
+        "tags": [
+          "政委",
+          "洞察力强",
+          "战略思维",
+          "坚定"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-33",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "冯·诺伊曼",
+        "prefix_name": "",
+        "race": "人类（游戏角色",
+        "age": 20,
+        "gender": "未知",
+        "class": "破壁人一号",
+        "level": 1,
+        "affiliation": [
+          "地球三体组织",
+          "破壁人"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "被秦始皇指定为面壁者弗雷德里克·泰勒的破壁人。"
+        ],
+        "tags": [
+          "破壁人",
+          "泰勒的破壁人",
+          "ETO精英"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-34",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "墨子",
+        "prefix_name": "",
+        "race": "人类（游戏角色",
+        "age": 20,
+        "gender": "未知",
+        "class": "破壁人二号",
+        "level": 1,
+        "affiliation": [
+          "地球三体组织",
+          "破壁人"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "被秦始皇指定为面壁者曼努尔·雷迪亚兹的破壁人，高傲自信。"
+        ],
+        "tags": [
+          "破壁人",
+          "雷迪亚兹的破壁人",
+          "高傲",
+          "ETO精英"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-35",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "亚里士多德",
+        "prefix_name": "",
+        "race": "人类（游戏角色",
+        "age": 20,
+        "gender": "未知",
+        "class": "破壁人三号",
+        "level": 1,
+        "affiliation": [
+          "地球三体组织",
+          "破壁人"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "被秦始皇指定为面壁者比尔·希恩斯的破壁人，认为无需冬眠即可完成破壁。"
+        ],
+        "tags": [
+          "破壁人",
+          "希恩斯的破壁人",
+          "自信",
+          "ETO精英"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-36",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "弗雷德里克·泰勒",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "面壁者",
+        "level": 1,
+        "affiliation": [
+          "面壁者"
+        ],
+        "status": [
+          "焦躁",
+          "被破壁"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "前美国国防部长，面壁者之一，研究宏原子核和球状闪电，计划用于太空作战。"
+        ],
+        "tags": [
+          "面壁者",
+          "前国防部长",
+          "宏原子研究",
+          "战略迷茫"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-37",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "艾伯特·林格",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "天文学家",
+        "level": 1,
+        "affiliation": [],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "天文学家，澄清三体舰队航迹观测荣誉归属，为罗辑讲解宇宙间文明位置暴露的技术难题。"
+        ],
+        "tags": [
+          "天文学家",
+          "技术解释者",
+          "严谨"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-38",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "乔纳森",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "联合国特派员",
+        "level": 1,
+        "affiliation": [
+          "联合国"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "负责接待并告知罗辑新时代情况的联合国特派员，态度友善，认为罗辑的“咒语”想法很幽默。"
+        ],
+        "tags": [
+          "特派员",
+          "信息传达者",
+          "幽默感"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-39",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "山杉惠子",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "破壁人",
+        "level": 1,
+        "affiliation": [
+          "地球三体组织（最后成员）"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "比尔·希恩斯的妻子，同时也是蒂莫西·利里思想的信奉者。作为ETO最后成员，在听证会上公开宣布自己是希恩斯的破壁人。"
+        ],
+        "tags": [
+          "破壁人",
+          "希恩斯的妻子",
+          "ETO最后成员",
+          "思想控制信奉者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-4",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "丁仪",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "未知",
+        "class": "物理学家",
+        "level": 1,
+        "affiliation": [],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "研究基础理论，与杨冬有感情关系。",
+          "理论物理学家，杨冬的男友，居住在新装修的房屋中，喜欢打台球，用台球实验解释物理规律问题。",
+          "物理学家，用台球实验阐述物理规律均匀性问题。"
+        ],
+        "tags": [
+          "物理学家",
+          "理论派",
+          "台球",
+          "杨冬关联"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-40",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "比尔·希恩斯",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "面壁者",
+        "level": 1,
+        "affiliation": [
+          "面壁者"
+        ],
+        "status": [
+          "被破壁",
+          "震惊"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "脑科学家，面壁者之一。其妻子山杉惠子突然宣布是他的破壁人。"
+        ],
+        "tags": [
+          "面壁者",
+          "脑科学家",
+          "被妻子破壁"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-41",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "程心",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "公元时代冬眠者",
+        "level": 1,
+        "affiliation": [],
+        "status": [
+          "苏醒适应期"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "来自公元时代的女性，冬眠至威慑纪元后苏醒，拥有DX3906星系的所有权，被新时代社会所关注。"
+        ],
+        "tags": [
+          "冬眠者",
+          "星系所有者",
+          "时代不适应者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-42",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "AA",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "新时代公民",
+        "level": 1,
+        "affiliation": [],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "威慑纪元新时代的女性公民，性格活泼开朗，负责引导和照顾苏醒的程心适应新世界。"
+        ],
+        "tags": [
+          "引导者",
+          "开朗",
+          "新时代女性"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-43",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "艾AA",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "星环公司"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "星环公司首席执行官，曾发现DX3906恒星存在行星。",
+          "程心的朋友和公司首席执行官。移民的苦难和六年时光几乎没在她身上留下痕迹，像一株鲜活水灵的植物。活泼女孩的样子，运作程心的公司成为近地轨道太空建筑业巨头。掩体纪元末期陪同程心乘坐“星环”号逃亡。在DX3906航程中试图安慰程心。",
+          "程心的好友兼公司管理者，性格活泼，在掩体纪元陪伴程心逃亡。"
+        ],
+        "tags": [
+          "执行官",
+          "活泼",
+          "陪伴者",
+          "天文学者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-44",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "曹彬",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "不明"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "曾是最年轻执剑人候选人。",
+          "物理学家，曾经是最年轻的执剑人候选人。在掩体纪元11年出现时已显老态，头有少许白发，但看上去未经历六十二年全部岁月。受托马斯·维德委托接程心，并带她参观新世界（掩体世界）。",
+          "前执剑人候选人，掩体纪元的物理学家，维德的联络人。"
+        ],
+        "tags": [
+          "物理学家",
+          "执剑人候选",
+          "联络人"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-45",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "关一帆",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "蓝星人类据点"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "可能是“蓝色空间”号或人类逃亡舰队的幸存者后代。",
+          "在蓝星上等待程心和AA到来的人类男性。自称收到了她们的引力波信息。外貌被AA评价为“挺帅的”。可能是“蓝色空间”号或其后裔成员。他介绍了本地有四个“世界”（太空城或殖民地），其中两个正在拓荒中，并提及“博物馆”在一号和四号世界里。",
+          "在DX3906星系蓝星上接应程心与AA的人类。"
+        ],
+        "tags": [
+          "接应者",
+          "幸存者",
+          "信息接收者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-5",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "杨冬",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "未知",
+        "class": "物理学家",
+        "level": 1,
+        "affiliation": [],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "理论物理学家，与丁仪有感情关系，自杀身亡。",
+          "已故女物理学家，丁仪的女友，性格孤高，疑似因某种原因自杀。",
+          "已故物理学家，自杀身亡。"
+        ],
+        "tags": [
+          "物理学家",
+          "已故",
+          "自杀",
+          "神秘"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-6",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "周文王（游戏角色）",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "三体游戏世界"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "《三体》游戏中的一名NPC，自称是周文王，生活在游戏设定的“战国时代”。他背着一个大型沙漏计时器，与一名追随者长途旅行。他向玩家“海人”（汪淼）解释了“乱纪元”与“恒纪元”的概念。",
+          "游戏内引导玩家理解三体世界基本天文规律的角色。"
+        ],
+        "tags": [
+          "先知",
+          "旅行者",
+          "计时者",
+          "引导者"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-7",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "叶文洁",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "女",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "已退休",
+          "前红岸基地？"
+        ],
+        "status": [
+          "退休",
+          "丧女"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "杨冬的母亲，六十岁左右，头发花白，身材瘦削，戴眼镜。退休前是搞天体物理专业的，性格柔和。丈夫叶哲泰在文革中受害。目前独自居住，善良且善解人意。她向汪淼暗示可以去杨冬房间查看。早年可能参与过红岸基地等机密项目。",
+          "已故物理学家杨冬的母亲，退休天体物理学者，是汪淼获取宇宙背景辐射信息及了解过去的关键人物。"
+        ],
+        "tags": [
+          "天体物理",
+          "慈母",
+          "洞察力强",
+          "经历坎坷"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-8",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "沙瑞山",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "天体物理研究员",
+        "level": 1,
+        "affiliation": [
+          "中科院国家天文观测中心"
+        ],
+        "status": [],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "叶文洁的学生，在中科院国家天文观测中心的射电天文观测基地工作。负责接收并处理COBE、WMAP、Planck卫星的宇宙微波背景辐射数据，以绘制更精确的全宇宙微波辐射背景图。性格热情，对游客和外来者习惯性科普。对汪淼提出的观测宇宙整体背景辐射波动的请求感到奇怪，但最终配合。",
+          "天体物理学者，叶文洁的学生，协助汪淼进行宇宙背景辐射波动的观测。"
+        ],
+        "tags": [
+          "数据专家",
+          "热心",
+          "叶文洁学生",
+          "观测员"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-9",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "叶哲泰",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "大学教授"
+        ],
+        "status": [
+          "已故",
+          "受迫害"
+        ],
+        "traits": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "叶文洁的父亲，一位物理学教授。在1967年的文革批斗大会上，被扣上“反动学术权威”的帽子，遭受残酷迫害。他戴着钢筋焊的高帽和铁牌，被六名红卫兵押上台。他坚持不认罪、不自杀，保持着知识分子的尊严和沉默的抵抗。最终被害。",
+          "文革期间遭受迫害致死的物理学教授，叶文洁的父亲，其遭遇对叶文洁一生影响深远。"
+        ],
+        "tags": [
+          "物理学教授",
+          "坚守信仰",
+          "文革受难者",
+          "父亲"
+        ],
+        "voice_profile": null
+      }
+    ],
+    "interaction_cards": [
+      {
+        "id": "interaction-1",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "胶片倒计时",
+        "description": "汪淼冲洗的胶片上自动出现倒计时数字，从1200小时开始递减，数字自适应背景显示。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "汪淼意识到自己被某种未知力量标记，倒计时可能预示重大事件。"
+      },
+      {
+        "id": "interaction-10",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "史强展示虫子",
+        "description": "史强通过让汪淼和丁仪目睹蝗灾中无数蝗虫在人类扑杀下依然顽强生存的景象，暗示人类文明就像虫子一样，看似渺小脆弱，但历史悠久、生命力顽强，并非轻易能被灭绝。此举在一定程度上振作了汪淼和丁仪的精神。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "史强通过让汪淼和丁仪目睹蝗灾中无数蝗虫在人类扑杀下依然顽强生存的景象，暗示人类文明就像虫子一样，看似渺小脆弱，但历史悠久、生命力顽强，并非轻易能被灭绝。此举在一定程度上振作了汪淼和丁仪的精神。"
+      },
+      {
+        "id": "interaction-11",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "叶文洁之死",
+        "description": "叶文洁在红岸基地遗址，于一次壮丽的日落景象中，因心力衰竭而逝世。她的最后一句话“这是人类的落日……”充满寓意。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "叶文洁在红岸基地遗址，于一次壮丽的日落景象中，因心力衰竭而逝世。她的最后一句话“这是人类的落日……”充满寓意。"
+      },
+      {
+        "id": "interaction-12",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "泰勒遭遇破壁人",
+        "description": "一个外表卑微的访客突然到访泰勒家中，说出“面壁者弗雷德里克·泰勒，我是您的破壁人”，使泰勒感到极度眩晕和震撼。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "泰勒的心理防线被彻底击穿，意识到自己的战略意图可能已被完全识破。"
+      },
+      {
+        "id": "interaction-13",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "罗辑苏醒与身份转变",
+        "description": "罗辑冬眠苏醒后，从特派员乔纳森处得知ETO已灭亡、威慑已建立，自己失去面壁者身份和特权，成为新时代的普通公民。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "罗辑从面壁者、救世主身份转变为普通公民，开始面对全新的日常生活。"
+      },
+      {
+        "id": "interaction-14",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "水滴摧毁人类舰队",
+        "description": "水滴以每秒三十公里的速度，通过锐角转向连续击穿人类战舰的核燃料舱，引发核聚变爆炸。第一、第二队列共两百艘战舰在一分多钟内被毁灭，第三队列随后遭摧毁，舰队阵型被打乱。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "人类太空舰队在几分钟内被三体探测器“水滴”以撞击方式近乎全歼，仅存“蓝色空间”号和“青铜时代”号等少数战舰。"
+      },
+      {
+        "id": "interaction-15",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "木卫二近距离掠过",
+        "description": "木卫二以每秒十四千米的高速近距离掠过亚洲一号太空城，最近距离仅约一百五十千米。其巨大的体积（直径三千多千米）瞬间充斥视野，导致太空城引力扰动，产生疾风和结构应力隆隆声。事件持续约三分钟，随后多座太空城启动推进器调整位置。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "展示掩体太空城面临的轨道危险，以及木卫二作为主要水源和工业基地的临近性。"
+      },
+      {
+        "id": "interaction-16",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "程心与AA抵达蓝星",
+        "description": "“星环”号经过52小时（飞船参照系）曲率航行和8天亚光速航行后抵达DX3906星系蓝星。关一帆在飞船附近迎接，通过梯子帮助程心和AA下船。双方进行简短交流，确认太阳系已毁灭，并得知本地存在多个“世界”。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "程心与AA成功逃离太阳系，到达可能的人类新家园，并与先行者取得联系。"
+      },
+      {
+        "id": "interaction-17",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "冥王星告别",
+        "description": "在太阳系二维化过程中，程心与AA在冥王星与罗辑告别。罗辑坚持留在冥王星地球文明博物馆（方碑），拒绝一同乘坐“星环”号离开。他表示“在那里舒服一些”，并说“保持联系”。程心和AA尊重其决定，起飞离开。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "标志着罗辑作为人类文明最后守墓人的结局，程心与AA踏上最终逃亡之路。"
+      },
+      {
+        "id": "interaction-2",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "宇宙闪烁观测",
+        "description": "在特定时间点（凌晨一点后），宇宙背景辐射出现规律性波动，该现象被多台独立观测设备同时记录，证实其真实性，并指向超自然或人为操纵的可能性。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "通过COBE、WMAP、Planck三颗卫星及乌鲁木齐地面站数据同步证实，宇宙微波背景辐射在宏观尺度上发生了肉眼可见的同步波动。该波动可被解码为指向汪淼的倒计时信息。"
+      },
+      {
+        "id": "interaction-3",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "三体游戏网友聚会",
+        "description": "潘寒向与会者揭示三体世界的部分真实设定（如脱水功能、人列计算机），并暗示玩家与三体世界有缘，强化组织认同。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "潘寒向与会者揭示三体世界的部分真实设定（如脱水功能、人列计算机），并暗示玩家与三体世界有缘，强化组织认同。"
+      },
+      {
+        "id": "interaction-4",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "叶文洁处置潘寒",
+        "description": "叶文洁当众指出潘寒违反组织纪律，强调地球三体组织的终极目标是“失去一切”，剥夺其话语权，展现统帅权威与组织纲领。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "叶文洁当众指出潘寒违反组织纪律，强调地球三体组织的终极目标是“失去一切”，剥夺其话语权，展现统帅权威与组织纲领。"
+      },
+      {
+        "id": "interaction-5",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "红岸首次检测到智能信号",
+        "description": "叶文洁在监听中发现识别度为AAAAA的宇宙电波，判定为智能调制，启动红岸译解系统尝试翻译，标志着人类首次可能接收到外星文明信息。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "叶文洁在监听中发现识别度为AAAAA的宇宙电波，判定为智能调制，启动红岸译解系统尝试翻译，标志着人类首次可能接收到外星文明信息。"
+      },
+      {
+        "id": "interaction-6",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "核弹胁持与破解",
+        "description": "制造极端对峙局面，考验军方应急处理能力，悬念留待下章解决。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "制造极端对峙局面，考验军方应急处理能力，悬念留待下章解决。"
+      },
+      {
+        "id": "interaction-7",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "叶文洁的谋杀",
+        "description": "叶文洁制造了接地线故障，诱使雷志成和杨卫宁前往悬崖维修，导致两人坠崖身亡。这次事件被基地以普通工作事故处理，叶文洁未被怀疑。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "叶文洁制造了接地线故障，诱使雷志成和杨卫宁前往悬崖维修，导致两人坠崖身亡。这次事件被基地以普通工作事故处理，叶文洁未被怀疑。"
+      },
+      {
+        "id": "interaction-8",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "地球三体运动诞生",
+        "description": "在“审判日”号甲板上，伊文斯向近两千名首批成员宣布收到三体信息，三体舰队已启航。叶文洁被推举为最高统帅。组织口号为“消灭人类暴政，世界属于三体”。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "在“审判日”号甲板上，伊文斯向近两千名首批成员宣布收到三体信息，三体舰队已启航。叶文洁被推举为最高统帅。组织口号为“消灭人类暴政，世界属于三体”。"
+      },
+      {
+        "id": "interaction-9",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "监听员发送警告",
+        "description": "1379号监听员违背元首命令，向地球发送了警告信息：“这个世界收到了你们的信息。我是这个世界的一个和平主义者，我首先收到信息是你们文明的幸运，警告你们：不要回答！不要回答！不要回答！”。此举导致他被逮捕并接受审判。",
+        "difficulty": "normal",
+        "cost": "none",
+        "min_level": 1,
+        "element": "none",
+        "effect": "1379号监听员违背元首命令，向地球发送了警告信息：“这个世界收到了你们的信息。我是这个世界的一个和平主义者，我首先收到信息是你们文明的幸运，警告你们：不要回答！不要回答！不要回答！”。此举导致他被逮捕并接受审判。"
+      }
+    ],
+    "custom_cards": []
+  }
+}

@@ -2,15 +2,21 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useWorldStore } from '../store/world'
 import { useChronicleStore } from '../store/chronicle'
-import { useConfigStore } from '../store/config'
 import { db } from '../db/db'
-import CardEditor from '../components/CardEditor.vue'
-import { Plus, Trash2, Search, RefreshCw, Download, Upload, FolderOpen, Settings, Save, Check, AlertCircle, ChevronDown, ChevronRight, Book } from 'lucide-vue-next'
+import { migrateWorldData } from '../db/migrator'
+import { validateAndNormalizeWorldCards } from '../core/WorldValidator'
+import CardBrowser from '../components/CardBrowser.vue'
+import WorldSelector from '../components/WorldSelector.vue'
+import WorldExporter from '../components/WorldExporter.vue'
+import { Plus, Trash2, FolderOpen } from 'lucide-vue-next'
 import { WorldCard } from '@shared/Interface'
+
+const emit = defineEmits<{
+  (e: 'open-import-wizard'): void
+}>()
 
 const worldStore = useWorldStore()
 const chronicleStore = useChronicleStore()
-const configStore = useConfigStore()
 
 const viewMode = ref<'cards' | 'worldbook'>('cards')
 
@@ -114,6 +120,45 @@ watch(activeSettingCategory, (newVal) => {
   localStorage.setItem('faramita_manager_setting_category', newVal)
 })
 
+watch(
+  () => chronicleStore.jumpRequestTick,
+  async () => {
+    const cardId = chronicleStore.jumpTargetCardId
+    if (!cardId) return
+
+    let card = worldStore.cards.find((item) => item.id === cardId)
+    if (!card) {
+      await worldStore.loadWorld()
+      card = worldStore.cards.find((item) => item.id === cardId)
+    }
+
+    if (!card) {
+      showStatus(`未找到冲突关联卡片：${cardId}`, 'error')
+      chronicleStore.clearOpenCardRequest()
+      return
+    }
+
+    if (card.type === 'custom') {
+      activeCategory.value = (card as any).category || 'custom'
+      if (!categories.value.find((c) => c.id === activeCategory.value)) {
+        categories.value.push({
+          id: activeCategory.value,
+          name: activeCategory.value,
+          isCore: false,
+          type: 'custom'
+        })
+      }
+    } else {
+      activeCategory.value = card.type
+    }
+
+    viewMode.value = 'cards'
+    editingCard.value = JSON.parse(JSON.stringify(card))
+    showStatus(`已跳转到冲突卡片：${card.id}`)
+    chronicleStore.clearOpenCardRequest()
+  }
+)
+
 const settingCategories = [
   { id: 'all', name: '全部' },
   { id: 'background', name: '背景故事' },
@@ -175,6 +220,61 @@ const handleDelete = async (id: string) => {
     } catch (error: any) {
       showStatus(`删除失败: ${error.message}`, 'error')
     }
+  }
+}
+
+const handleBatchDelete = async (ids: string[]) => {
+  try {
+    for (const id of ids) {
+      await worldStore.deleteCard(id)
+      if (editingCard.value?.id === id) {
+        editingCard.value = null
+      }
+    }
+    const result = await worldStore.saveToFile()
+    if (result.success) {
+      showStatus(`已批量删除 ${ids.length} 张卡片`)
+    } else {
+      showStatus(`删除后保存失败: ${result.error}`, 'error')
+    }
+  } catch (error: any) {
+    showStatus(`批量删除失败: ${error.message}`, 'error')
+  }
+}
+
+const handleBatchSetAlwaysActive = async (ids: string[], value: boolean) => {
+  try {
+    for (const id of ids) {
+      const card = worldStore.cards.find(c => c.id === id)
+      if (card) {
+        (card as any).always_active = value
+        await worldStore.updateCard(card)
+      }
+    }
+    const result = await worldStore.saveToFile()
+    if (result.success) {
+      showStatus(`已${value ? '设为常驻' : '取消常驻'} ${ids.length} 张卡片`)
+    }
+  } catch (error: any) {
+    showStatus(`批量操作失败: ${error.message}`, 'error')
+  }
+}
+
+const handleBatchSetPriority = async (ids: string[], priority: number) => {
+  try {
+    for (const id of ids) {
+      const card = worldStore.cards.find(c => c.id === id)
+      if (card) {
+        (card as any).priority = priority
+        await worldStore.updateCard(card)
+      }
+    }
+    const result = await worldStore.saveToFile()
+    if (result.success) {
+      showStatus(`已设置 ${ids.length} 张卡片优先级为 ${priority}`)
+    }
+  } catch (error: any) {
+    showStatus(`批量操作失败: ${error.message}`, 'error')
   }
 }
 
@@ -288,6 +388,24 @@ const handleSave = async (card: WorldCard) => {
   }
 }
 
+const handleActivateChapter = async () => {
+  if (!editingCard.value || editingCard.value.type !== 'chapter') return
+  try {
+    await worldStore.setChapterActive(editingCard.value.id)
+    const result = await worldStore.saveToFile()
+    if (result.success) {
+      showStatus(`已将「${(editingCard.value as any).title}」设为当前章节`)
+      // Refresh the editing card to reflect new status
+      const updated = worldStore.cards.find(c => c.id === editingCard.value!.id)
+      if (updated) editingCard.value = updated
+    } else {
+      showStatus(`保存失败: ${result.error}`, 'error')
+    }
+  } catch (error: any) {
+    showStatus(`操作异常: ${error.message}`, 'error')
+  }
+}
+
 const handleSync = async () => {
   const result = await worldStore.syncWithTemplate()
   if (result.success) {
@@ -307,17 +425,9 @@ const handleSync = async () => {
   }
 }
 
-const saveSettings = () => {
-  configStore.saveConfig()
-}
-
 const templateFiles = ref<string[]>([])
-const showImportModal = ref(false)
-const showExportModal = ref(false)
-const selectedTemplateFile = ref('')
+const showExportDialog = ref(false)
 const selectedWorldFile = ref('')
-const exportFileName = ref('')
-const newWorldName = ref('')
 
 const loadTemplateFiles = async () => {
   const result = await (window as any).api.listWorldTemplates()
@@ -326,74 +436,100 @@ const loadTemplateFiles = async () => {
   }
 }
 
-const handleExportFile = async () => {
-  const fileName = exportFileName.value.trim() || 'my-world'
-  const content = JSON.stringify({
-    world_meta: worldStore.meta,
-    entries: {
-      setting_cards: worldStore.cards.filter(c => c.type === 'setting'),
-      chapter_cards: worldStore.cards.filter(c => c.type === 'chapter'),
-      character_cards: worldStore.cards.filter(c => c.type === 'character'),
-      interaction_cards: worldStore.cards.filter(c => c.type === 'interaction')
-    }
-  }, null, 2)
+const openImportWizard = () => {
+  emit('open-import-wizard')
+}
 
-  const result = await (window as any).api.saveWorldFileExternal(content, fileName)
-  if (result.success) {
-    showStatus(`导出成功: ${result.filePath}`)
-    showExportModal.value = false
-    exportFileName.value = ''
+const handleDeleteTemplate = async (fileName: string) => {
+  const displayName = fileName.replace('.json', '')
+  const confirmed = confirm(`确定删除世界书模板“${displayName}”吗？此操作不可撤销。`)
+  if (!confirmed) return
+
+  const api = (window as any).api
+  const electron = (window as any).electron
+
+  let result: { success: boolean; error?: string }
+  if (typeof api?.deleteWorldTemplate === 'function') {
+    result = await api.deleteWorldTemplate(fileName)
+  } else if (electron?.ipcRenderer?.invoke) {
+    result = await electron.ipcRenderer.invoke('delete-world-template', fileName)
   } else {
-    showStatus(`导出失败: ${result.error}`, 'error')
+    result = { success: false, error: '当前运行时缺少删除接口，请重启应用后重试。' }
   }
+
+  if (!result.success) {
+    showStatus(`删除失败: ${result.error || '未知错误'}`, 'error')
+    return
+  }
+
+  if (selectedWorldFile.value === fileName) {
+    selectedWorldFile.value = ''
+  }
+
+  await loadTemplateFiles()
+  showStatus(`已删除世界书模板: ${displayName}`)
 }
 
-const handleImportFile = async () => {
-  const result = await (window as any).api.loadWorldFileExternal()
-  if (result.success && result.content) {
-    try {
-      const data = JSON.parse(result.content)
-      let importCount = 0
-      let updateCount = 0
-
-      const allCards = [
-        ...(data.entries?.setting_cards || []),
-        ...(data.entries?.chapter_cards || []),
-        ...(data.entries?.character_cards || []),
-        ...(data.entries?.interaction_cards || [])
-      ]
-
-      const existingIds = new Set(worldStore.cards.map(c => c.id))
-
-      for (const card of allCards) {
-        if (!existingIds.has(card.id)) {
-          await worldStore.addCard(card)
-          importCount++
-        } else {
-          await worldStore.updateCard(card)
-          updateCount++
-        }
+const handleImportTemplate = async () => {
+  try {
+    const result = await window.api.loadWorldFileExternal()
+    if (!result.success) {
+      if (!result.cancelled) {
+        showStatus(`导入失败: ${result.error || '未知错误'}`, 'error')
       }
-
-      await worldStore.saveToFile()
-      showStatus(`导入成功: 新增 ${importCount} 个, 更新 ${updateCount} 个`)
-      showImportModal.value = false
-    } catch (e: any) {
-      showStatus(`导入失败: 文件格式错误 - ${e.message}`, 'error')
+      return
     }
-  } else if (!result.cancelled) {
-    showStatus(`导入失败: ${result.error}`, 'error')
+
+    if (!result.content) {
+      showStatus('导入失败: 文件内容为空', 'error')
+      return
+    }
+
+    const dataRaw = JSON.parse(result.content)
+    const migrated = migrateWorldData(dataRaw)
+    const data = migrated.data
+
+    if (!data.world_meta) {
+      showStatus('导入失败: 模板缺少 world_meta 信息', 'error')
+      return
+    }
+
+    await db.settings.put({ key: 'world_meta', value: data.world_meta })
+    worldStore.meta = data.world_meta as any
+
+    await db.world_cards.clear()
+
+    const allCards = [
+      ...(data.entries?.setting_cards || []),
+      ...(data.entries?.chapter_cards || []),
+      ...(data.entries?.character_cards || []),
+      ...(data.entries?.interaction_cards || []),
+      ...(data.entries?.custom_cards || [])
+    ]
+
+    if (allCards.length > 0) {
+      const validated = validateAndNormalizeWorldCards(allCards)
+      if (!validated.report.valid) {
+        const firstError = validated.report.issues.find(issue => issue.level === 'error')
+        showStatus(`导入失败: ${firstError?.message || '世界书校验失败'}`, 'error')
+        return
+      }
+      await db.world_cards.bulkAdd(validated.cards)
+    }
+
+    await worldStore.loadWorld()
+    await loadWorldArchive(data.world_meta)
+
+    showStatus(`已导入世界模板: ${data.world_meta.name}`)
+    viewMode.value = 'cards'
+    selectedWorldFile.value = ''
+    await loadTemplateFiles()
+  } catch (error: any) {
+    showStatus(`导入失败: ${error.message}`, 'error')
   }
 }
 
-const openImportModal = async () => {
-  showImportModal.value = true
-}
 
-const openExportModal = () => {
-  exportFileName.value = ''
-  showExportModal.value = true
-}
 
 const handleSelectWorld = async () => {
   if (!selectedWorldFile.value) return
@@ -404,7 +540,9 @@ const handleSelectWorld = async () => {
   if (result.success && result.content) {
     console.log('Content preview:', result.content.substring(0, 200))
     try {
-      const data = JSON.parse(result.content)
+      const dataRaw = JSON.parse(result.content)
+      const migrated = migrateWorldData(dataRaw)
+      const data = migrated.data
       console.log('World data loaded:', data.world_meta)
       console.log('Full data structure:', Object.keys(data))
       console.log('Entries:', data.entries)
@@ -412,13 +550,14 @@ const handleSelectWorld = async () => {
         setting: data.entries?.setting_cards?.length || 0,
         chapter: data.entries?.chapter_cards?.length || 0,
         character: data.entries?.character_cards?.length || 0,
-        interaction: data.entries?.interaction_cards?.length || 0
+        interaction: data.entries?.interaction_cards?.length || 0,
+        custom: data.entries?.custom_cards?.length || 0
       })
       
       // 1. 加载 world_meta
       if (data.world_meta) {
         await db.settings.put({ key: 'world_meta', value: data.world_meta })
-        worldStore.meta = data.world_meta
+        worldStore.meta = data.world_meta as any
         console.log('World meta saved:', worldStore.meta)
       } else {
         showStatus('世界书缺少 world_meta 信息', 'error')
@@ -433,13 +572,21 @@ const handleSelectWorld = async () => {
         ...(data.entries?.setting_cards || []),
         ...(data.entries?.chapter_cards || []),
         ...(data.entries?.character_cards || []),
-        ...(data.entries?.interaction_cards || [])
+        ...(data.entries?.interaction_cards || []),
+        ...(data.entries?.custom_cards || [])
       ]
       
       console.log('Total cards to add:', allCards.length)
       
       if (allCards.length > 0) {
-        await db.world_cards.bulkAdd(allCards)
+        const validated = validateAndNormalizeWorldCards(allCards)
+        if (!validated.report.valid) {
+          const firstError = validated.report.issues.find(issue => issue.level === 'error')
+          showStatus(`加载失败: ${firstError?.message || '世界书校验失败'}`, 'error')
+          return
+        }
+
+        await db.world_cards.bulkAdd(validated.cards)
         console.log('Cards added to database')
       }
       
@@ -493,8 +640,7 @@ const loadWorldArchive = async (worldMeta: any) => {
         if (archive.active_information && Array.isArray(archive.active_information)) {
           await worldStore.setActiveCharacters(archive.active_information)
         } else {
-          // 默认只激活玩家角色
-          await worldStore.setActiveCharacters(['char-001'])
+          await worldStore.setActiveCharacters(resolveDefaultActiveCharacterIds(worldMeta))
         }
         
         console.log('Archive loaded successfully')
@@ -511,6 +657,22 @@ const loadWorldArchive = async (worldMeta: any) => {
   }
 }
 
+const resolveDefaultActiveCharacterIds = (worldMeta: any): string[] => {
+  if (worldMeta?.player_character_id) {
+    return [worldMeta.player_character_id]
+  }
+
+  const taggedPlayer = worldStore.cards.find(card =>
+    card.type === 'character' && Array.isArray((card as any).tags) && (card as any).tags.includes('player')
+  )
+  if (taggedPlayer) {
+    return [taggedPlayer.id]
+  }
+
+  const firstCharacter = worldStore.cards.find(card => card.type === 'character')
+  return firstCharacter ? [firstCharacter.id] : []
+}
+
 const createEmptyArchive = async (worldMeta: any) => {
   try {
     // 清空历史记录
@@ -518,14 +680,14 @@ const createEmptyArchive = async (worldMeta: any) => {
     await chronicleStore.loadHistory()
     chronicleStore.clearInteraction()
     
-    // 重置活跃角色为默认（只有玩家）
-    await worldStore.setActiveCharacters(['char-001'])
+    const defaultActiveIds = resolveDefaultActiveCharacterIds(worldMeta)
+    await worldStore.setActiveCharacters(defaultActiveIds)
     
     // 创建并保存空存档
     const emptyArchive = {
       world_meta: worldMeta,
       timestamp: Date.now(),
-      active_information: ['char-001'],
+      active_information: defaultActiveIds,
       history: []
     }
     
@@ -549,6 +711,12 @@ const handleCreateWorld = async () => {
     return
   }
 
+  const normalizedTags = (worldMeta.value.tagsText || '')
+    .split(',')
+    .map(tag => tag.trim())
+    .filter(Boolean)
+  worldMeta.value.tags = normalizedTags
+
   try {
     // Generate UUID for the world
     const uuid = crypto.randomUUID()
@@ -559,19 +727,24 @@ const handleCreateWorld = async () => {
         name: worldMeta.value.name,
         version: worldMeta.value.version,
         author: worldMeta.value.author,
-        description: worldMeta.value.description
+        description: worldMeta.value.description,
+        schema_version: 2,
+        default_language: (worldMeta.value.default_language || 'zh-CN').trim() || 'zh-CN',
+        tags: normalizedTags,
+        player_character_id: worldMeta.value.player_character_id || undefined
       },
       entries: {
         setting_cards: [],
         chapter_cards: [],
         character_cards: [],
-        interaction_cards: []
+        interaction_cards: [],
+        custom_cards: []
       }
     }, null, 2)
 
-    console.log('Calling saveWorldCards with fileName:', fileName)
-    const result = await (window as any).api.saveWorldCards(content, fileName)
-    console.log('saveWorldCards result:', result)
+    console.log('Calling saveWorldFile with world name/uuid:', fileName, uuid)
+    const result = await window.api.saveWorldFile(content, worldMeta.value.name, uuid)
+    console.log('saveWorldFile result:', result)
     
     if (result.success) {
       showStatus(`已创建世界书: ${fileName}`)
@@ -581,7 +754,11 @@ const handleCreateWorld = async () => {
         name: '',
         version: '1.0.0',
         author: '',
-        description: ''
+        description: '',
+        default_language: 'zh-CN',
+        tagsText: '',
+        tags: [],
+        player_character_id: ''
       }
     } else {
       showStatus(`创建失败: ${result.error}`, 'error')
@@ -596,7 +773,11 @@ const worldMeta = ref({
   name: '',
   version: '1.0.0',
   author: '',
-  description: ''
+  description: '',
+  default_language: 'zh-CN',
+  tagsText: '',
+  tags: [] as string[],
+  player_character_id: ''
 })
 
 const expandedSections = ref<Record<string, boolean>>({
@@ -607,6 +788,7 @@ const expandedSections = ref<Record<string, boolean>>({
 </script>
 
 <template>
+  <div class="manager-root">
   <div class="manager-view">
     <!-- Global Status Toast -->
     <transition name="status-fade">
@@ -641,177 +823,47 @@ const expandedSections = ref<Record<string, boolean>>({
         </div>
       </div>
 
-    <!-- Cards View -->
-    <div v-if="isCardsView" class="main-content">
-        <div class="toolbar">
-          <div class="search-box">
-            <Search :size="16" />
-            <input v-model="searchQuery" placeholder="搜索卡片..." />
-          </div>
-          <div class="sync-section">
-            <button class="btn-sync" @click="handleSync" :disabled="worldStore.loading" title="从 JSON 模板同步新增项">
-              <RefreshCw :size="16" :class="{ spinning: worldStore.loading }" />
-              同步模板
-            </button>
-          </div>
-          <button class="btn-primary" @click="handleAddNew" :disabled="worldStore.loading">
-            <Plus :size="16" /> 新增{{ categories.find(c => c.id === activeCategory)?.name }}
-          </button>
-        </div>
+    <CardBrowser
+      v-if="isCardsView"
+      :categories="categories"
+      :active-category="activeCategory"
+      :setting-categories="settingCategories"
+      :active-setting-category="activeSettingCategory"
+      :search-query="searchQuery"
+      :editing-card="editingCard"
+      :filtered-cards="filteredCards"
+      :loading="worldStore.loading"
+      @update:search-query="searchQuery = $event"
+      @update:active-setting-category="activeSettingCategory = $event"
+      @update:editing-card="editingCard = $event"
+      @sync="handleSync"
+      @add-new="handleAddNew"
+      @save-card="handleSave"
+      @edit-card="handleEdit"
+      @delete-card="handleDelete"
+      @batch-delete="handleBatchDelete"
+      @batch-set-always-active="handleBatchSetAlwaysActive"
+      @batch-set-priority="handleBatchSetPriority"
+      @activate-chapter="handleActivateChapter"
+    />
 
-        <div v-if="activeCategory === 'setting'" class="secondary-tabs">
-          <div
-            v-for="scat in settingCategories"
-            :key="scat.id"
-            class="tab-item"
-            :class="{ active: activeSettingCategory === scat.id }"
-            @click="activeSettingCategory = scat.id"
-          >
-            {{ scat.name }}
-          </div>
-        </div>
+    <WorldSelector
+      v-else
+      :template-files="templateFiles"
+      :selected-world-file="selectedWorldFile"
+      :expanded-sections="expandedSections"
+      :world-meta="worldMeta"
+      @update:selected-world-file="selectedWorldFile = $event"
+      @update:world-meta="worldMeta = $event"
+      @toggle-section="(section) => expandedSections[section] = !expandedSections[section]"
+      @load-selected-world="handleSelectWorld"
+      @import-template="handleImportTemplate"
+      @delete-template="handleDeleteTemplate"
+      @open-import-wizard="openImportWizard"
+      @open-export-dialog="showExportDialog = true"
+      @create-world="handleCreateWorld"
+    />
 
-        <div class="content-area">
-          <template v-if="editingCard">
-            <div class="breadcrumb">
-              <span class="crumb clickable" @click="editingCard = null">卡片</span>
-              <ChevronRight :size="14" />
-              <span class="crumb current">{{ (editingCard as any).name || (editingCard as any).title || editingCard.id }}</span>
-              <div class="breadcrumb-actions">
-                <button class="btn-secondary" @click="editingCard = null">返回列表</button>
-                <button class="btn-primary" @click="handleSave(editingCard as any)" :disabled="worldStore.loading">
-                  <Save :size="16" /> 保存
-                </button>
-              </div>
-            </div>
-            <div class="editor-full">
-              <CardEditor
-                :key="editingCard.id"
-                :card="editingCard"
-                @save="handleSave"
-                @close="editingCard = null"
-              />
-            </div>
-          </template>
-          <template v-else>
-            <div class="card-grid">
-              <div v-for="card in filteredCards" :key="card.id" class="manager-card" @click="handleEdit(card)">
-                <div class="card-info">
-                  <div class="card-name">{{ (card as any).name || (card as any).title || card.id }}</div>
-                  <div class="card-id">{{ card.id }}</div>
-                </div>
-                <button class="btn-delete" @click.stop="handleDelete(card.id)">
-                  <Trash2 :size="16" />
-                </button>
-              </div>
-            </div>
-          </template>
-        </div>
-      </div>
-
-    <!-- World Book Management View -->
-    <div v-if="!isCardsView" class="worldbook-view">
-      <div class="worldbook-header">
-        <h2>世界书管理</h2>
-        <p class="worldbook-hint">管理世界书模板，从模板加载或创建新的世界书</p>
-      </div>
-
-      <div class="worldbook-content">
-        <!-- Load Template Section -->
-        <div class="config-section">
-          <div class="section-header" @click="expandedSections.load = !expandedSections.load">
-            <div class="section-title">
-              <FolderOpen :size="18" />
-              <span>加载世界书模板</span>
-            </div>
-            <ChevronDown v-if="expandedSections.load" :size="16" class="chevron" />
-            <ChevronRight v-else :size="16" class="chevron" />
-          </div>
-          <div v-if="expandedSections.load" class="section-content">
-            <p class="config-hint">
-              从以下预置模板中选择加载世界书。加载后可以从模板同步新增内容。
-            </p>
-            <div class="template-grid">
-              <div
-                v-for="file in templateFiles"
-                :key="file"
-                class="template-item"
-                :class="{ selected: selectedWorldFile === file }"
-                @click="selectedWorldFile = file"
-              >
-                <Book :size="20" />
-                <span class="template-name">{{ file.replace('.json', '') }}</span>
-              </div>
-              <div v-if="templateFiles.length === 0" class="no-templates">
-                暂无可用模板
-              </div>
-            </div>
-            <div class="section-actions">
-              <button class="btn-primary" @click="handleSelectWorld" :disabled="!selectedWorldFile">
-                <FolderOpen :size="16" /> 加载选中模板
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Create New World Section -->
-        <div class="config-section">
-          <div class="section-header" @click="expandedSections.create = !expandedSections.create">
-            <div class="section-title">
-              <Plus :size="18" />
-              <span>创建新世界书</span>
-            </div>
-            <ChevronDown v-if="expandedSections.create" :size="16" class="chevron" />
-            <ChevronRight v-else :size="16" class="chevron" />
-          </div>
-          <div v-if="expandedSections.create" class="section-content">
-            <p class="config-hint">
-              创建新的世界书。这将生成一个包含基础结构的空世界书文件。
-            </p>
-            <div class="field-row">
-              <div class="field flex-2">
-                <label>世界书名称 *</label>
-                <input
-                  v-model="worldMeta.name"
-                  type="text"
-                  placeholder="输入世界书名称"
-                />
-              </div>
-              <div class="field flex-1">
-                <label>版本</label>
-                <input
-                  v-model="worldMeta.version"
-                  type="text"
-                  placeholder="1.0.0"
-                />
-              </div>
-            </div>
-            <div class="field">
-              <label>作者</label>
-              <input
-                v-model="worldMeta.author"
-                type="text"
-                placeholder="输入作者名称"
-              />
-            </div>
-            <div class="field">
-              <label>描述</label>
-              <textarea
-                v-model="worldMeta.description"
-                rows="3"
-                placeholder="输入世界书描述"
-              />
-            </div>
-            <div class="section-actions">
-              <button class="btn-primary" @click="handleCreateWorld" :disabled="!worldMeta.name.trim()">
-                <Plus :size="16" /> 创建新世界书
-              </button>
-            </div>
-          </div>
-        </div>
-    </div>
-
-    
   </div>
 
   <!-- Custom Category Modal -->
@@ -831,21 +883,33 @@ const expandedSections = ref<Record<string, boolean>>({
       </div>
     </div>
   </div>
-</div>
+
+  <WorldExporter
+    v-if="showExportDialog"
+    @close="showExportDialog = false"
+  />
+  </div>
 </template>
 
 <style scoped>
+.manager-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
 .manager-view {
   display: flex;
-  height: 100vh;
-  background-color: #121212;
-  color: #eee;
+  height: 100%;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
 }
 
 .sidebar {
   width: 200px;
-  background-color: #1a1a1a;
-  border-right: 1px solid #333;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
   display: flex;
   flex-direction: column;
 }
@@ -853,7 +917,7 @@ const expandedSections = ref<Record<string, boolean>>({
 .sidebar-header {
   padding: 20px;
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
   display: flex;
@@ -864,7 +928,7 @@ const expandedSections = ref<Record<string, boolean>>({
 .btn-icon-small {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -874,14 +938,14 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .btn-icon-small:hover {
-  color: #d4af37;
-  background-color: #252525;
+  color: var(--accent-gold);
+  background-color: var(--bg-hover);
 }
 
 .btn-delete-cat {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   opacity: 0;
@@ -896,7 +960,7 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .btn-delete-cat:hover {
-  color: #f44336;
+  color: var(--state-danger);
 }
 
 .cat-name {
@@ -917,18 +981,18 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .nav-item:hover {
-  background-color: #252525;
+  background-color: var(--bg-hover);
 }
 
 .nav-item.active {
-  background-color: #2a2a2a;
-  color: #d4af37;
-  border-left: 3px solid #d4af37;
+  background-color: var(--accent-gold-weak);
+  color: var(--accent-gold);
+  border-left: 3px solid var(--accent-gold);
 }
 
 .sidebar-footer {
   margin-top: auto;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border-default);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -936,9 +1000,9 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .btn-action {
-  background-color: #1a1a1a;
-  color: #888;
-  border: 1px solid #333;
+  background-color: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
@@ -950,21 +1014,22 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .btn-action:hover {
-  background-color: #252525;
-  color: #d4af37;
-  border-color: #d4af37;
+  background-color: var(--bg-hover);
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
 }
 
 .btn-action.active {
-  background-color: #3d3115;
-  color: #d4af37;
-  border-color: #d4af37;
+  background-color: var(--accent-gold-weak);
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
 }
 
 .main-content {
   flex: 1;
   padding: 30px;
   overflow-y: auto;
+  background: var(--bg-app);
 }
 
 .toolbar {
@@ -976,8 +1041,8 @@ const expandedSections = ref<Record<string, boolean>>({
 
 .search-box {
   flex: 1;
-  background-color: #1a1a1a;
-  border: 1px solid #333;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -988,16 +1053,16 @@ const expandedSections = ref<Record<string, boolean>>({
 .search-box input {
   background: none;
   border: none;
-  color: #fff;
+  color: var(--text-primary);
   padding: 10px 0;
   width: 100%;
   outline: none;
 }
 
 .btn-primary {
-  background-color: #3d3115;
-  color: #d4af37;
-  border: 1px solid #d4af37;
+  background-color: var(--accent-gold-weak);
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
   padding: 0 20px;
   border-radius: 4px;
   cursor: pointer;
@@ -1007,13 +1072,14 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .btn-primary:hover {
-  background-color: #4d3d1a;
+  background-color: var(--accent-gold);
+  color: #111;
 }
 
 .btn-secondary {
-  background-color: #2a2a2a;
-  color: #888;
-  border: 1px solid #444;
+  background-color: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
   padding: 0 20px;
   border-radius: 4px;
   cursor: pointer;
@@ -1024,15 +1090,15 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .btn-secondary:hover {
-  background-color: #333;
-  color: #eee;
-  border-color: #d4af37;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-gold);
 }
 
 .btn-sync {
-  background-color: #1a1a1a;
-  color: #888;
-  border: 1px solid #333;
+  background-color: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
   padding: 0 15px;
   border-radius: 4px;
   cursor: pointer;
@@ -1043,9 +1109,9 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .btn-sync:hover:not(:disabled) {
-  background-color: #252525;
-  color: #eee;
-  border-color: #d4af37;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-gold);
 }
 
 .btn-sync:disabled {
@@ -1061,7 +1127,7 @@ const expandedSections = ref<Record<string, boolean>>({
 
 .current-world {
   font-size: 13px;
-  color: #888;
+  color: var(--text-secondary);
   max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1086,20 +1152,20 @@ const expandedSections = ref<Record<string, boolean>>({
   border-radius: 4px;
   font-size: 14px;
   z-index: 9999;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-soft);
   pointer-events: none;
 }
 
 .status-toast.success {
-  background-color: #1b4332;
-  color: #74c69d;
-  border: 1px solid #2d6a4f;
+  background-color: color-mix(in srgb, var(--state-success) 16%, var(--bg-surface));
+  color: var(--state-success);
+  border: 1px solid color-mix(in srgb, var(--state-success) 36%, var(--border-default));
 }
 
 .status-toast.error {
-  background-color: #431b1b;
-  color: #c67474;
-  border: 1px solid #6a2d2d;
+  background-color: color-mix(in srgb, var(--state-danger) 16%, var(--bg-surface));
+  color: var(--state-danger);
+  border: 1px solid color-mix(in srgb, var(--state-danger) 36%, var(--border-default));
 }
 
 .status-fade-enter-active, .status-fade-leave-active {
@@ -1115,27 +1181,27 @@ const expandedSections = ref<Record<string, boolean>>({
   display: flex;
   gap: 15px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-default);
   padding-bottom: 10px;
 }
 
 .secondary-tabs .tab-item {
   padding: 6px 12px;
   font-size: 13px;
-  color: #888;
+  color: var(--text-secondary);
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s;
 }
 
 .secondary-tabs .tab-item:hover {
-  background-color: #252525;
-  color: #eee;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .secondary-tabs .tab-item.active {
-  background-color: #d4af37;
-  color: #000;
+  background-color: var(--accent-gold);
+  color: #111;
   font-weight: bold;
 }
 
@@ -1146,8 +1212,8 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .manager-card {
-  background-color: #1a1a1a;
-  border: 1px solid #333;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
   padding: 15px;
   border-radius: 8px;
   cursor: pointer;
@@ -1158,7 +1224,7 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .manager-card:hover {
-  border-color: #d4af37;
+  border-color: var(--accent-gold);
 }
 
 .card-name {
@@ -1168,18 +1234,18 @@ const expandedSections = ref<Record<string, boolean>>({
 
 .card-id {
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .btn-delete {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-muted);
   cursor: pointer;
 }
 
 .btn-delete:hover {
-  color: #f44336;
+  color: var(--state-danger);
 }
 
 .breadcrumb {
@@ -1188,21 +1254,21 @@ const expandedSections = ref<Record<string, boolean>>({
   justify-content: space-between;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-default);
   margin-bottom: 16px;
 }
 .crumb {
   font-size: 13px;
-  color: #888;
+  color: var(--text-secondary);
 }
 .crumb.clickable {
   cursor: pointer;
 }
 .crumb.clickable:hover {
-  color: #eee;
+  color: var(--text-primary);
 }
 .crumb.current {
-  color: #d4af37;
+  color: var(--accent-gold);
 }
 .breadcrumb-actions {
   margin-left: auto;
@@ -1229,7 +1295,7 @@ const expandedSections = ref<Record<string, boolean>>({
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #666;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -1238,7 +1304,7 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .settings-full h2 {
-  color: #d4af37;
+  color: var(--accent-gold);
   margin-bottom: 30px;
 }
 
@@ -1251,21 +1317,21 @@ const expandedSections = ref<Record<string, boolean>>({
 .field label {
   display: block;
   margin-bottom: 8px;
-  color: #888;
+  color: var(--text-secondary);
 }
 
 .field input {
   width: 100%;
-  background-color: #1a1a1a;
-  border: 1px solid #333;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-default);
   padding: 12px;
   border-radius: 4px;
-  color: #fff;
+  color: var(--text-primary);
   outline: none;
 }
 
 .field input:focus {
-  border-color: #d4af37;
+  border-color: var(--accent-gold);
 }
 
 .modal-overlay {
@@ -1274,7 +1340,7 @@ const expandedSections = ref<Record<string, boolean>>({
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--bg-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1283,24 +1349,24 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .modal-content {
-  background: #1a1a1a;
-  border: 1px solid #333;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   padding: 20px;
   border-radius: 8px;
   width: 300px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-strong);
 }
 
 .modal-content h3 {
   margin: 0 0 10px 0;
-  color: #d4af37;
+  color: var(--accent-gold);
   font-size: 1.2rem;
   text-align: center;
 }
 
 .modal-desc {
   font-size: 12px;
-  color: #888;
+  color: var(--text-secondary);
   margin-bottom: 15px;
   text-align: center;
 }
@@ -1308,7 +1374,7 @@ const expandedSections = ref<Record<string, boolean>>({
 .template-list {
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid #333;
+  border: 1px solid var(--border-default);
   border-radius: 4px;
   margin-bottom: 15px;
 }
@@ -1317,7 +1383,7 @@ const expandedSections = ref<Record<string, boolean>>({
   padding: 10px 12px;
   cursor: pointer;
   font-size: 13px;
-  border-bottom: 1px solid #252525;
+  border-bottom: 1px solid var(--border-default);
   transition: all 0.2s;
 }
 
@@ -1326,20 +1392,20 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .template-item:hover {
-  background-color: #252525;
+  background-color: var(--bg-hover);
 }
 
 .template-item.selected {
-  background-color: #3d3115;
-  color: #d4af37;
+  background-color: var(--accent-gold-weak);
+  color: var(--accent-gold);
 }
 
 .no-templates {
   padding: 20px;
   text-align: center;
-  color: #666;
+  color: var(--text-muted);
   font-size: 13px;
-  border: 1px dashed #333;
+  border: 1px dashed var(--border-default);
   border-radius: 4px;
   margin-bottom: 15px;
 }
@@ -1348,15 +1414,15 @@ const expandedSections = ref<Record<string, boolean>>({
   width: 100%;
   padding: 8px 12px;
   margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 4px;
-  color: #eee;
+  color: var(--text-primary);
   box-sizing: border-box;
 }
 
 .modal-content input:focus {
-  border-color: #d4af37;
+  border-color: var(--accent-gold);
   outline: none;
 }
 
@@ -1368,27 +1434,27 @@ const expandedSections = ref<Record<string, boolean>>({
 
 .modal-actions button {
   padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-elevated);
   border: none;
   border-radius: 4px;
-  color: #eee;
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .modal-actions button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-hover);
 }
 
 .modal-actions button.primary {
-  background: #d4af37;
-  color: #000;
+  background: var(--accent-gold);
+  color: #111;
   font-weight: bold;
 }
 
 .modal-actions button.primary:hover {
-  background: #f0c040;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+  background: var(--accent-gold-strong);
+  box-shadow: var(--glow-gold);
 }
 
 .modal-large {
@@ -1427,7 +1493,7 @@ const expandedSections = ref<Record<string, boolean>>({
   padding: 12px 15px;
   cursor: pointer;
   font-size: 13px;
-  border-bottom: 1px solid #252525;
+  border-bottom: 1px solid var(--border-default);
   transition: all 0.2s;
   display: flex;
   align-items: center;
@@ -1439,20 +1505,20 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .world-item:hover {
-  background-color: #252525;
+  background-color: var(--bg-hover);
 }
 
 .world-item.selected {
-  background-color: #3d3115;
-  color: #d4af37;
+  background-color: var(--accent-gold-weak);
+  color: var(--accent-gold);
 }
 
 .no-worlds {
   padding: 20px;
   text-align: center;
-  color: #666;
+  color: var(--text-muted);
   font-size: 13px;
-  border: 1px dashed #333;
+  border: 1px dashed var(--border-default);
   border-radius: 4px;
   margin-bottom: 15px;
 }
@@ -1465,7 +1531,7 @@ const expandedSections = ref<Record<string, boolean>>({
   display: flex;
   align-items: center;
   margin-bottom: 15px;
-  color: #666;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -1474,7 +1540,7 @@ const expandedSections = ref<Record<string, boolean>>({
   content: '';
   flex: 1;
   height: 1px;
-  background: #333;
+  background: var(--border-default);
 }
 
 .divider span {
@@ -1493,29 +1559,29 @@ const expandedSections = ref<Record<string, boolean>>({
 
 .field label {
   font-size: 12px;
-  color: #888;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .field input {
-  background-color: #252525;
-  border: 1px solid #333;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 4px;
   padding: 12px;
-  color: #eee;
+  color: var(--text-primary);
   font-size: 14px;
   transition: all 0.2s;
 }
 
 .field input:focus {
-  border-color: #d4af37;
+  border-color: var(--accent-gold);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 0 2px var(--accent-gold-weak);
 }
 
 .field input::placeholder {
-  color: #555;
+  color: var(--text-muted);
 }
 
 .worldbook-view {
@@ -1527,19 +1593,19 @@ const expandedSections = ref<Record<string, boolean>>({
 
 .worldbook-header {
   padding: 20px 30px;
-  border-bottom: 1px solid #333;
-  background-color: #161616;
+  border-bottom: 1px solid var(--border-default);
+  background-color: var(--bg-surface);
 }
 
 .worldbook-header h2 {
   margin: 0 0 10px 0;
   font-size: 20px;
   font-weight: normal;
-  color: #eee;
+  color: var(--text-primary);
 }
 
 .worldbook-hint {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 13px;
   margin: 0;
 }
@@ -1552,8 +1618,8 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .config-section {
-  background-color: #1a1a1a;
-  border: 1px solid #333;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   margin-bottom: 15px;
   overflow: hidden;
@@ -1569,7 +1635,7 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .section-header:hover {
-  background-color: #252525;
+  background-color: var(--bg-hover);
 }
 
 .section-title {
@@ -1577,31 +1643,31 @@ const expandedSections = ref<Record<string, boolean>>({
   align-items: center;
   gap: 10px;
   font-size: 15px;
-  color: #eee;
+  color: var(--text-primary);
 }
 
 .section-title svg {
-  color: #d4af37;
+  color: var(--accent-gold);
 }
 
 .chevron {
-  color: #666;
+  color: var(--text-secondary);
   transition: transform 0.2s;
 }
 
 .section-content {
   padding: 20px;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border-default);
 }
 
 .config-hint {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 13px;
   margin-bottom: 20px;
   padding: 15px;
-  background-color: rgba(212, 175, 55, 0.05);
+  background-color: var(--accent-gold-weak);
   border-radius: 6px;
-  border-left: 3px solid #d4af37;
+  border-left: 3px solid var(--accent-gold);
   line-height: 1.6;
 }
 
@@ -1613,8 +1679,8 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .template-item {
-  background-color: #252525;
-  border: 1px solid #333;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
   padding: 15px;
   cursor: pointer;
@@ -1626,32 +1692,32 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .template-item:hover {
-  border-color: #d4af37;
-  background-color: #2a2a2a;
+  border-color: var(--accent-gold);
+  background-color: var(--bg-hover);
 }
 
 .template-item.selected {
-  border-color: #d4af37;
-  background-color: #3d3115;
+  border-color: var(--accent-gold);
+  background-color: var(--accent-gold-weak);
 }
 
 .template-name {
   font-size: 13px;
-  color: #eee;
+  color: var(--text-primary);
   text-align: center;
 }
 
 .template-item.selected .template-name {
-  color: #d4af37;
+  color: var(--accent-gold);
 }
 
 .no-templates {
   grid-column: 1 / -1;
   padding: 30px;
   text-align: center;
-  color: #666;
+  color: var(--text-muted);
   font-size: 13px;
-  border: 1px dashed #333;
+  border: 1px dashed var(--border-default);
   border-radius: 6px;
 }
 
@@ -1677,11 +1743,11 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .field textarea {
-  background-color: #252525;
-  border: 1px solid #333;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 4px;
   padding: 10px 12px;
-  color: #eee;
+  color: var(--text-primary);
   font-size: 14px;
   transition: all 0.2s;
   font-family: inherit;
@@ -1689,12 +1755,12 @@ const expandedSections = ref<Record<string, boolean>>({
 }
 
 .field textarea:focus {
-  border-color: #d4af37;
+  border-color: var(--accent-gold);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 0 2px var(--accent-gold-weak);
 }
 
 .field textarea::placeholder {
-  color: #555;
+  color: var(--text-muted);
 }
 </style>

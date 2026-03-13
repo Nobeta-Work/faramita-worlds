@@ -4,7 +4,10 @@
     "name": "Warhammer40k_Callisys",
     "version": "1.0.0",
     "author": "Nobeta",
-    "description": "战锤40k宇宙，哥特式黑暗科幻世界，人类帝国的边缘星区，帝皇的光辉日渐黯淡，混沌势力暗中渗透，异形种族虎视眈眈，废弃星舰与被遗忘的遗迹遍布星系，唯有信仰与钢火能在黑暗中苟存。"
+    "description": "战锤40k宇宙，哥特式黑暗科幻世界，人类帝国的边缘星区，帝皇的光辉日渐黯淡，混沌势力暗中渗透，异形种族虎视眈眈，废弃星舰与被遗忘的遗迹遍布星系，唯有信仰与钢火能在黑暗中苟存。",
+    "schema_version": 2,
+    "default_language": "zh-CN",
+    "tags": []
   },
   "entries": {
     "setting_cards": [
@@ -19,10 +22,14 @@
         "category": "background",
         "title": "卡利西斯星区背景",
         "content": "卡利西斯星区位于人类帝国 Segmentum Obscurus（朦胧星域）边缘，是帝国疆域的蛮荒前线。大远征时期，荷鲁斯之乱爆发前，帝皇麾下的极限战士战团曾在此建立前哨站，将人类文明的火种播撒至数个宜居星球。荷鲁斯之乱后，星区与帝国核心的联系逐渐薄弱，仅靠偶尔抵达的帝国舰队维持统治，地方总督手握重兵，部分星球甚至陷入割据状态。星区深处隐藏着古老的混沌遗迹，据传是荷鲁斯之乱时期混沌星际战士遗留的据点，同时，钛族探险队、兽人 waaagh! 以及虫巢舰队的先遣部队，也在不断侵蚀这片脆弱的帝国疆域。",
-        "tags": ["calixis sector", "imperium of man", "background"],
-        "scaling_modes": {},
+        "tags": [
+          "calixis sector",
+          "imperium of man",
+          "background"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-002",
@@ -35,10 +42,14 @@
         "category": "background",
         "title": "帝皇信仰与国教",
         "content": "人类帝国以帝皇为唯一真神，国教（圣徒教派）是帝国的统治基石。卡利西斯星区的国教势力庞大，每个星球都设有教堂与神甫，负责传播帝皇信仰、净化异端与异形，并监视平民与贵族的思想。国教的审判官拥有至高权力，可随意指控他人为混沌信徒或异端，直接执行火刑或处决。对于玩家角色而言，公开违背帝皇信仰将被视为异端，遭到国教与审判庭的追杀；而坚定的信仰可获得帝皇庇佑，在关键时刻获得检定加成。",
-        "tags": ["emperor's faith", "ecclesiarchy", "inquisition"],
-        "scaling_modes": {},
+        "tags": [
+          "emperor's faith",
+          "ecclesiarchy",
+          "inquisition"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-003",
@@ -51,10 +62,13 @@
         "category": "background",
         "title": "巴尔之陨星系详情",
         "content": "巴尔之陨星系是卡利西斯星区边缘的次级星系，包含5颗宜居星球与12颗废弃星球/小行星带，核心是一颗濒临熄灭的红巨星巴尔。宜居星球分别为：1. 巴尔主星（帝国农业星球，盛产粮食，由地方总督统治，平民生活贫瘠）；2. 铁砧星（帝国锻造星球，隶属机械神教，负责生产轻武器与动力甲零件）；3. 守望星（帝国防御前哨，驻扎帝国卫队第78铁盾团，监视异形动向）；4. 圣徒星（国教圣地，设有圣徒陵墓，神甫与朝圣者云集）；5. 阴影星（废弃殖民星球，据传被混沌腐蚀，信号完全失联）。星系内常年有小行星流穿梭，星舰航行需依靠机械神教的导航员或星语者。",
-        "tags": ["bal system", "planets"],
-        "scaling_modes": {},
+        "tags": [
+          "bal system",
+          "planets"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-004",
@@ -67,10 +81,13 @@
         "category": "background",
         "title": "混沌势力渗透",
         "content": "巴尔之陨星系的混沌势力主要来自黑暗掠夺者混沌战帮，这是一支由堕落星际战士、混沌信徒与混沌 daemon 组成的残暴势力，首领是堕落的阿斯塔特星际战士卡隆。他们以阴影星为据点，不断袭击帝国星舰与边境星球，掠夺资源与人口，传播混沌腐蚀。混沌腐蚀会扭曲生物的心智与肉体，被腐蚀者会逐渐丧失自我意识，沦为混沌的傀儡，其力量会随着腐蚀程度增强，但最终会被混沌彻底吞噬。跑团中，玩家角色若接触混沌物品或被混沌攻击，将进行混沌腐蚀检定，检定失败则腐蚀值增加。",
-        "tags": ["chaos", "corruption"],
-        "scaling_modes": {},
+        "tags": [
+          "chaos",
+          "corruption"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-005",
@@ -83,10 +100,13 @@
         "category": "background",
         "title": "机械神教与技术崇拜",
         "content": "机械神教是帝国的技术统治机构，信奉万机之神（帝皇的技术化身），掌控着帝国所有的先进技术、星舰导航与锻造产业。巴尔之陨星系的铁砧星是机械神教的重要据点，驻扎着技术神甫与赛博格军队赛格玛。机械神教的成员会不断用机械部件替换自身肉体，以追求更接近万机之神，其技术等级决定了可使用的装备与技能。机械神教禁止研究异端技术（如混沌技术、异形技术），违者将被视为技术异端，遭到机械神教的追杀。",
-        "tags": ["adeptus mechanicus", "technology"],
-        "scaling_modes": {},
+        "tags": [
+          "adeptus mechanicus",
+          "technology"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-006",
@@ -99,10 +119,13 @@
         "category": "background",
         "title": "阿斯塔特星际战士",
         "content": "阿斯塔特星际战士是帝皇的精英战士，由基因种子改造而成，身高近3米，身披动力甲，战斗力远超普通人类。他们隶属于各个战团，每个战团都有自己的信仰与战斗风格。巴尔之陨星系偶尔会有阿斯塔特小队路过，执行异端净化或异形清剿任务，他们通常不会直接参与玩家角色的行动，但可在关键时刻提供援助（需满足特定条件）。阿斯塔特的基因种子是帝国的重要资源，混沌势力一直试图夺取基因种子，改造出堕落的混沌星际战士。",
-        "tags": ["adeptus astartes", "space marines"],
-        "scaling_modes": {},
+        "tags": [
+          "adeptus astartes",
+          "space marines"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-007",
@@ -115,10 +138,15 @@
         "category": "background",
         "title": "异形威胁",
         "content": "巴尔之陨星系的主要异形威胁有三类：1. 兽人 waaagh!：一群好战的绿色皮肤异形，以战争与掠夺为乐，聚集在星系边缘的小行星带，偶尔会袭击帝国防御薄弱的星球，其战斗力随数量增加而增强；2. 钛族探险队：钛族是一个科技发达、追求Greater Good（至善）的异形种族，他们在星系内建立了秘密前哨，试图收集人类与混沌的技术，与帝国保持着脆弱的和平，但偶尔会因资源争夺发生冲突；3. 虫巢舰队先遣队：来自 Tyranid 虫巢舰队的少量单位，隐藏在阴影星附近，以生物为食，不断繁殖，若不及时清剿，将形成巨大的威胁。",
-        "tags": ["xenos", "orks", "tau", "tyranids"],
-        "scaling_modes": {},
+        "tags": [
+          "xenos",
+          "orks",
+          "tau",
+          "tyranids"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-008",
@@ -131,10 +159,13 @@
         "category": "race",
         "title": "人类",
         "content": "人类是帝国的主体，寿命约60-80年，繁衍速度快，适应能力强，分布在星系的各个宜居星球。帝国公民分为平民、贵族、国教信徒、帝国卫队士兵等，大部分平民生活贫瘠，被繁重的赋税与劳作压迫，一生都无法离开自己的星球。部分人类拥有特殊天赋（如星语者、导航员），会被帝国征召，成为帝国的特殊力量。人类对帝皇信仰的坚定程度，决定了他们在帝国中的地位与生存几率。",
-        "tags": ["human", "imperial citizens"],
-        "scaling_modes": {},
+        "tags": [
+          "human",
+          "imperial citizens"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-009",
@@ -147,10 +178,13 @@
         "category": "race",
         "title": "阿斯塔特",
         "content": "由帝皇基因种子改造而成的精英战士，种族本质仍为人类，但经过19道基因改造程序，拥有远超普通人类的力量、速度与耐力，寿命可达数百年。阿斯塔特身披动力甲，配备爆弹枪、动力剑等先进武器，每个战团都有自己的基因缺陷与战斗风格（如极限战士的严谨、太空野狼的狂暴）。他们一生都在为帝皇而战，是帝国对抗混沌与异形的核心力量，不参与帝国的政治斗争，只忠诚于帝皇与自己的战团。",
-        "tags": ["astartes", "gene-enhanced"],
-        "scaling_modes": {},
+        "tags": [
+          "astartes",
+          "gene-enhanced"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-010",
@@ -163,10 +197,13 @@
         "category": "race",
         "title": "赛博格",
         "content": "人类与机械的结合体，本质是信奉万机之神的人类，通过替换自身肉体为机械部件，获得更强的力量、耐力与技术能力。机械神教的成员会不断改造自己，从学徒神甫的简单机械手臂，到技术大贤者的全身机械化，改造程度越高，对万机之神的虔诚度越高。他们失去了部分人类的情感，痴迷于技术研究与修复，掌握着帝国所有的先进技术，是帝国不可或缺的力量。",
-        "tags": ["cyborg", "tech-priest"],
-        "scaling_modes": {},
+        "tags": [
+          "cyborg",
+          "tech-priest"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-011",
@@ -179,10 +216,13 @@
         "category": "race",
         "title": "混沌信徒",
         "content": "被混沌腐蚀的人类（或其他种族），种族本质随腐蚀程度变化，轻度腐蚀者仍保留人类外形，重度腐蚀者会出现肉体扭曲（如犄角、翅膀、鳞片），彻底堕落者会沦为混沌 daemon 的宿主。他们抛弃了帝皇信仰，信奉混沌四神（恐虐、奸奇、纳垢、色孽），以传播混沌腐蚀、摧毁帝国为目标，战斗力随腐蚀程度增强，但心智会逐渐被混沌吞噬，最终丧失自我。",
-        "tags": ["chaos cultist", "corrupted"],
-        "scaling_modes": {},
+        "tags": [
+          "chaos cultist",
+          "corrupted"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-012",
@@ -195,10 +235,13 @@
         "category": "race",
         "title": "兽人",
         "content": "绿色皮肤的人形异形，身高1.8-2.5米，拥有强大的肉体力量与恢复能力，好战、残暴、贪婪，以战争与掠夺为乐。兽人没有复杂的文明，依靠本能聚集形成 waaagh! 部落，部落规模越大，兽人的战斗力越强。他们擅长制造简陋但威力巨大的武器（如兽人喷火器、巨型斧头），不畏惧死亡，越是战斗越是狂暴，是巴尔之陨星系边缘的主要威胁之一。",
-        "tags": ["ork", "greenskin"],
-        "scaling_modes": {},
+        "tags": [
+          "ork",
+          "greenskin"
+        ],
+        "step": 20,
         "suffix_names": [],
-        "step": 20
+        "scaling_modes": {}
       },
       {
         "id": "setting-013",
@@ -211,10 +254,18 @@
         "category": "class",
         "title": "阿斯塔特",
         "content": "阿斯塔特职业专精战斗与战术，具备超人的力量与耐力，擅长使用爆弹枪、动力剑等重型武器。",
-        "tags": ["astartes class"],
-        "scaling_modes": {},
-        "suffix_names": ["新兵", "战术兵", "资深战兵", "队长", "连长"],
-        "step": 20
+        "tags": [
+          "astartes class"
+        ],
+        "step": 20,
+        "suffix_names": [
+          "新兵",
+          "战术兵",
+          "资深战兵",
+          "队长",
+          "连长"
+        ],
+        "scaling_modes": {}
       },
       {
         "id": "setting-014",
@@ -227,10 +278,18 @@
         "category": "class",
         "title": "技术神甫",
         "content": "技术神甫专精机械修复与技术研究，可以操作复杂的帝国科技设备，拥有机械改造能力。",
-        "tags": ["tech-priest class"],
-        "scaling_modes": {},
-        "suffix_names": ["学徒", "神甫", "高级神甫", "技术神甫", "贤者"],
-        "step": 20
+        "tags": [
+          "tech-priest class"
+        ],
+        "step": 20,
+        "suffix_names": [
+          "学徒",
+          "神甫",
+          "高级神甫",
+          "技术神甫",
+          "贤者"
+        ],
+        "scaling_modes": {}
       },
       {
         "id": "setting-015",
@@ -243,10 +302,18 @@
         "category": "class",
         "title": "帝国卫队",
         "content": "帝国卫队是帝国的常规军队，使用激光枪等标准武器，依靠数量与战术取胜。",
-        "tags": ["imperial guard class"],
-        "scaling_modes": {},
-        "suffix_names": ["新兵", "列兵", "班长", "军官", "将军"],
-        "step": 20
+        "tags": [
+          "imperial guard class"
+        ],
+        "step": 20,
+        "suffix_names": [
+          "新兵",
+          "列兵",
+          "班长",
+          "军官",
+          "将军"
+        ],
+        "scaling_modes": {}
       },
       {
         "id": "setting-016",
@@ -259,32 +326,208 @@
         "category": "level",
         "title": "等级体系",
         "content": "战锤40k的等级体系根据角色的所属阵营有不同的称号前缀。",
-        "tags": ["level system"],
+        "tags": [
+          "level system"
+        ],
+        "step": 20,
+        "suffix_names": [],
         "scaling_modes": {
           "阿斯塔特": {
             "step": 20,
-            "prefix_names": ["新兵", "战术小队成员", "小队队长", "连长", "战团长"]
+            "prefix_names": [
+              "新兵",
+              "战术小队成员",
+              "小队队长",
+              "连长",
+              "战团长"
+            ]
           },
           "机械神教": {
             "step": 20,
-            "prefix_names": ["学徒神甫", "技术神甫", "高级技术神甫", "技术贤者", "技术大贤者"]
+            "prefix_names": [
+              "学徒神甫",
+              "技术神甫",
+              "高级技术神甫",
+              "技术贤者",
+              "技术大贤者"
+            ]
           },
           "帝国卫队": {
             "step": 20,
-            "prefix_names": ["新兵", "士兵", "班长", "军官", "将军"]
+            "prefix_names": [
+              "新兵",
+              "士兵",
+              "班长",
+              "军官",
+              "将军"
+            ]
           },
           "国教": {
             "step": 20,
-            "prefix_names": ["见习神甫", "神甫", "高级神甫", "主教", "大主教"]
+            "prefix_names": [
+              "见习神甫",
+              "神甫",
+              "高级神甫",
+              "主教",
+              "大主教"
+            ]
           },
           "混沌战帮": {
             "step": 20,
-            "prefix_names": ["混沌信徒", "混沌战士", "混沌百夫长", "混沌领主", "混沌战争领主"]
+            "prefix_names": [
+              "混沌信徒",
+              "混沌战士",
+              "混沌百夫长",
+              "混沌领主",
+              "混沌战争领主"
+            ]
           }
         },
-        "suffix_names": [],
-        "step": 20,
         "default_mode": "帝国卫队"
+      },
+      {
+        "id": "setting-1rtv8",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "种族",
+        "content": "有巨龙，精灵，矮人，兽人，天使，人类等种族。精灵由秩序创造，魔力适用性极强，魔法天赋高，特别善于使用自然类魔法和弓箭，但安逸在世界树上，文明发展缓慢。兽人由混沌创造，肉体强大，征伐大地开疆拓土。矮人由秩序创造，善于工艺，文明开始快速发展。龙族由秩序创造，是带有混沌面较多的种族，强大的肉身，内部铭刻复杂飞翔魔法纹路而能飞行的翅膀，他们有独特的语言文字——龙语（一种地骨魔法）。天使由混沌创造，初始数量1万，最弱也有高阶战力，其中有十二位超位(神级)战力，称十二审判天使，寿命无穷长，所有魔法天赋最高，无限飞行的翅膀，但是代价不可生育。人类由混沌与秩序合力创造，初始水平低，但是潜力无穷，对权柄适应性极强，能生，人类文明迅速繁荣。",
+        "tags": [
+          "精灵",
+          "兽人",
+          "矮人",
+          "龙族",
+          "天使"
+        ]
+      },
+      {
+        "id": "setting-502vpe",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "background",
+        "title": "世界基础设定",
+        "content": "这是一个类似于西方幻想的世界，世界是平的。世界很大，有许许多多的国家，有大有小。这个世界有神。在世界的最开始是两位至高神性——混沌与秩序。随后诞生了世界（没有人知道世界是否是至高神创造的），世界的中央是世界树，世界树很大，运用起来相当于一个国家。世界的大地上铭刻着魔法纹路，魔力在里面流淌，或者逸散空气中。有的纹路非常特殊，蕴含着强大的神级魔法。至高神性没有实体，而是概念的总和，混沌与秩序各自拥有世界一半的概念，而他们都希望扩展世界的概念。世界的概念是主观的，因此他们首先合力创造了名为智慧的概念，并用世界树所拥有的生命概念创造了精灵。生命创造文明，世界的发展关乎至高神性的意识。",
+        "tags": [
+          "世界观",
+          "至高神性",
+          "世界树",
+          "魔法纹路"
+        ]
+      },
+      {
+        "id": "setting-87lyol",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "职业与等阶体系",
+        "content": "人类可以有战士，魔法使，骑士等职业。魔法使的等阶分为见习，初阶，中阶，高阶，超位。其他职业也有低中高超这种统一的等阶，但在见习这个阶称谓可能有所不同。以毁灭系来说，标准超位魔法可以一击毁灭城市，是灭国级魔法，标准高阶魔法可以一击击破大军的军阵，是破城级魔法，标准见习魔法就可以杀人了。为了表示对实力的体现，等阶以100级记的话，1-20是见习，20-40是初阶，40-60是中阶，60-80是高阶，80-99是超位，(90-99神级)。故事中没有人会用这套来表示等阶，只是编排故事的需要。",
+        "tags": [
+          "职业",
+          "等阶",
+          "魔法破坏力",
+          "等级制度"
+        ]
+      },
+      {
+        "id": "setting-kehgp7",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "平衡准则",
+        "content": "这个世界存在着普遍意义上的平衡准则，即某一方面的扩张会无形中受到相反方向的抵抗，类似于勒夏特列原理。",
+        "tags": [
+          "世界法则",
+          "平衡"
+        ]
+      },
+      {
+        "id": "setting-kqhlqf",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "龙族与七龙王",
+        "content": "龙族是带有混沌面较多的种族，强大的肉身，内部铭刻复杂飞翔魔法纹路而能飞行的翅膀，他们有独特的语言文字——龙语（取材至上古卷轴），例如只需要怒吼“伏斯洛达”，就有无形的巨大力量撕碎眼前的物体。由于秩序创造了混沌面多的龙族，在平衡准则下，龙族反而受到秩序面压制小，变得极为强大。出生龙便是低阶强度，成年龙有中阶强度，强大的成年龙便是高阶战力，其中还有七位龙拥有强大的超位(神级)战力，被称为七龙王，为首的名为龙渊。七龙王被赋予了概念的权柄，有神权但没有神位。龙渊的权柄是霸道，他的统治越强盛，能为龙渊带来越强大的力量。龙族和龙渊的强大使得世界进入巨龙时代，巨龙统治了几乎整个世界。",
+        "tags": [
+          "龙族",
+          "七龙王",
+          "龙渊",
+          "权柄",
+          "巨龙时代"
+        ]
+      },
+      {
+        "id": "setting-o38fas",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "成神途径：长阶登神",
+        "content": "人类种因为能生，人类文明迅速繁荣，人才辈出。其中个别天才理解了世界的概念，发现了成为神的第一个途径——长阶登神：在等级达到90级后，运用某种方式，将某个概念与自身存在绑定，升格为神。这些概念大多是新创造的，例如有人为白天绑定了太阳，升格为了太阳神（世界一开始就有白天黑夜，但没有太阳月亮），有人绑定了农业，升格为了丰饶女神。这些神都因新的概念而获得了神权和神位，即使肉身死亡，他们的意识（神识）也不会消散，而是融于自己概念之中。而他们对世界的观察越仔细、全知，对世界能创造的影响越弱。当他们通过某种方式又一次降临世界时，将收缩回个体行走世间，跟正常的观察无异。",
+        "tags": [
+          "成神",
+          "长阶登神",
+          "概念绑定",
+          "神权",
+          "神位"
+        ]
+      },
+      {
+        "id": "setting-ryvflf",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "魔法体系",
+        "content": "魔法分为毁灭系的战斗魔法，治愈系的治疗魔法，幻术系的精神魔法，召唤系的召唤魔法，变换系的操控魔法。魔法就分为沟通游荡魔力的自由魔法和沟通大地的地骨魔法。龙语是一种地骨魔法。",
+        "tags": [
+          "魔法分类",
+          "自由魔法",
+          "地骨魔法"
+        ]
+      },
+      {
+        "id": "setting-yoabn8",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "race",
+        "title": "天使与使命",
+        "content": "天使种，初始数量1万，最弱也有高阶战力，其中有十二位超位(神级)战力，称十二审判天使，寿命无穷长，所有魔法天赋最高，无限飞行的翅膀（取材游戏人生天使种外观和部分设定），但是代价不可生育。天使被告知使命是推翻巨龙统治。权柄赋予是极度困难的，秩序憋了很久才赋予了巨龙七龙王个体权柄，其他种族对权柄的适应性较差，因此为了快速反击，天使没有被混沌赋予权柄。",
+        "tags": [
+          "天使",
+          "十二审判天使",
+          "使命",
+          "权柄适应性"
+        ]
       }
     ],
     "chapter_cards": [
@@ -310,7 +553,10 @@
           }
         ],
         "rewards": [],
-        "tags": ["prologue", "space travel"]
+        "tags": [
+          "prologue",
+          "space travel"
+        ]
       }
     ],
     "character_cards": [
@@ -324,13 +570,19 @@
         },
         "name": "马库斯·索恩",
         "prefix_name": "",
-        "race": ["人类"],
+        "race": [
+          "人类"
+        ],
         "age": 18,
         "gender": "男",
         "class": "帝国卫队",
         "level": 1,
-        "affiliation": ["帝国卫队"],
-        "status": ["健康"],
+        "affiliation": [
+          "帝国卫队"
+        ],
+        "status": [
+          "健康"
+        ],
         "attributes": {
           "str": 8,
           "dex": 7,
@@ -339,7 +591,11 @@
           "wis": 9,
           "cha": 7
         },
-        "personality": ["忠诚", "勇敢", "鲁莽"],
+        "personality": [
+          "忠诚",
+          "勇敢",
+          "鲁莽"
+        ],
         "inventory": [
           {
             "item": "激光步枪",
@@ -347,9 +603,14 @@
             "effect": null
           }
         ],
-        "background": ["出身于巴尔主星的平民家庭，父亲是帝国卫队士兵，在对抗兽人时牺牲，马库斯从小立志成为像父亲一样的战士，保卫帝国与帝皇。16岁时加入帝国卫队，经过两年训练，被征召参与此次支援任务，渴望通过战斗证明自己，获得阿斯塔特战团的认可，成为一名星际战士。"],
-        "tags": ["player", "imperial guard"],
-        "location": "巴尔主星"
+        "background": [
+          "出身于巴尔主星的平民家庭，父亲是帝国卫队士兵，在对抗兽人时牺牲，马库斯从小立志成为像父亲一样的战士，保卫帝国与帝皇。16岁时加入帝国卫队，经过两年训练，被征召参与此次支援任务，渴望通过战斗证明自己，获得阿斯塔特战团的认可，成为一名星际战士。"
+        ],
+        "tags": [
+          "player",
+          "imperial guard"
+        ],
+        "voice_profile": null
       },
       {
         "id": "char-002",
@@ -361,13 +622,19 @@
         },
         "name": "卡瑞娜·铁手",
         "prefix_name": "",
-        "race": ["赛博格"],
+        "race": [
+          "赛博格"
+        ],
         "age": 45,
         "gender": "女",
         "class": "技术神甫",
         "level": 15,
-        "affiliation": ["机械神教"],
-        "status": ["健康"],
+        "affiliation": [
+          "机械神教"
+        ],
+        "status": [
+          "健康"
+        ],
         "attributes": {
           "str": 10,
           "dex": 10,
@@ -376,7 +643,11 @@
           "wis": 12,
           "cha": 8
         },
-        "personality": ["理性", "痴迷技术", "冷漠"],
+        "personality": [
+          "理性",
+          "痴迷技术",
+          "冷漠"
+        ],
         "inventory": [
           {
             "item": "机械手臂",
@@ -384,42 +655,100 @@
             "effect": null
           }
         ],
-        "background": ["出身于铁砧星的机械神教学徒，因在技术修复方面展现出极高的天赋，被晋升为技术神甫。此次被指派前往守望星，负责修复被兽人损坏的防御工事与武器装备，同时秘密寻找一枚失落的机械神教技术芯片，该芯片存储着先进的动力甲修复技术。卡瑞娜的左手与右眼已被替换为机械部件，对万机之神极度虔诚，漠视人类的情感。"],
-        "tags": ["tech-priest", "mechanicus"],
-        "location": "铁砧星"
+        "background": [
+          "出身于铁砧星的机械神教学徒，因在技术修复方面展现出极高的天赋，被晋升为技术神甫。此次被指派前往守望星，负责修复被兽人损坏的防御工事与武器装备，同时秘密寻找一枚失落的机械神教技术芯片，该芯片存储着先进的动力甲修复技术。卡瑞娜的左手与右眼已被替换为机械部件，对万机之神极度虔诚，漠视人类的情感。"
+        ],
+        "tags": [
+          "tech-priest",
+          "mechanicus"
+        ],
+        "voice_profile": null
+      },
+      {
+        "id": "char-nuhx8e",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "龙渊",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "未知",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [],
+        "status": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "七龙王之首。权柄是霸道，他的统治越强盛，能为龙渊带来越强大的力量。"
+        ],
+        "tags": [
+          "龙王",
+          "权柄",
+          "霸道"
+        ],
+        "voice_profile": null
       }
     ],
     "interaction_cards": [
       {
         "id": "interaction-001",
         "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
         "name": "激光射击",
         "min_level": 1,
         "element": "能量",
         "cost": "1 弹药",
         "d20_logic": "d20 12",
-        "effect": "使用激光武器进行远程攻击，造成中等伤害",
-        "visible": {
-          "public_visible": true,
-          "player_visible": true,
-          "unlock_condition": null
-        }
+        "effect": "使用激光武器进行远程攻击，造成中等伤害"
       },
       {
         "id": "interaction-002",
         "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": "机械神教角色"
+        },
         "name": "机械修复",
         "min_level": 5,
         "element": "技术",
         "cost": "10 分钟",
         "d20_logic": "d20 15",
-        "effect": "修复损坏的机械设备或武器，需要技术检定",
+        "effect": "修复损坏的机械设备或武器，需要技术检定"
+      },
+      {
+        "id": "interaction-quf4tc",
+        "type": "interaction",
         "visible": {
           "public_visible": true,
           "player_visible": true,
-          "unlock_condition": "机械神教角色"
-        }
+          "unlock_condition": null
+        },
+        "name": "龙语魔法：伏斯洛达",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "无形的巨大力量撕碎眼前的物体。"
       }
-    ]
+    ],
+    "custom_cards": []
   }
 }

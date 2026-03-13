@@ -3,6 +3,8 @@ import { toRaw } from 'vue'
 import { db } from '../db/db'
 import { WorldCard, WorldMeta } from '@shared/Interface'
 import { useChronicleStore } from './chronicle'
+import { migrateWorldData } from '../db/migrator'
+import { validateAndNormalizeWorldCards } from '../core/WorldValidator'
 
 export const useWorldStore = defineStore('world', {
   state: () => ({
@@ -19,21 +21,74 @@ export const useWorldStore = defineStore('world', {
     }
   },
   actions: {
+    resolveDefaultPlayerId() {
+      const configuredPlayerId = this.meta?.player_character_id
+      if (configuredPlayerId) {
+        const exists = this.cards.some(card => card.type === 'character' && card.id === configuredPlayerId)
+        if (exists) return configuredPlayerId
+      }
+
+      const taggedPlayer = this.cards.find(card =>
+        card.type === 'character' && Array.isArray((card as any).tags) && (card as any).tags.includes('player')
+      )
+      if (taggedPlayer) return taggedPlayer.id
+
+      const firstCharacter = this.cards.find(card => card.type === 'character')
+      return firstCharacter?.id || null
+    },
     async loadWorld() {
       this.loading = true
       try {
         const metaRecord = await db.settings.get('world_meta')
         this.meta = metaRecord ? metaRecord.value : null
         this.cards = await db.world_cards.toArray()
+
+        if (this.meta && ((this.meta as any).schema_version ?? 1) < 4) {
+          const worldData = {
+            world_meta: this.meta,
+            entries: {
+              setting_cards: this.cards.filter(c => c.type === 'setting'),
+              chapter_cards: this.cards.filter(c => c.type === 'chapter'),
+              character_cards: this.cards.filter(c => c.type === 'character'),
+              interaction_cards: this.cards.filter(c => c.type === 'interaction'),
+              custom_cards: this.cards.filter(c => c.type === 'custom')
+            }
+          }
+
+          const migrated = migrateWorldData(worldData as any)
+          if (migrated.report.changed) {
+            const migratedCards = [
+              ...(migrated.data.entries.setting_cards || []),
+              ...(migrated.data.entries.chapter_cards || []),
+              ...(migrated.data.entries.character_cards || []),
+              ...(migrated.data.entries.interaction_cards || []),
+              ...(migrated.data.entries.custom_cards || [])
+            ] as WorldCard[]
+
+            await db.world_cards.clear()
+            if (migratedCards.length > 0) {
+              await db.world_cards.bulkAdd(migratedCards)
+            }
+            await db.settings.put({ key: 'world_meta', value: migrated.data.world_meta })
+
+            this.meta = migrated.data.world_meta as any
+            this.cards = migratedCards
+          }
+        }
         
-        // Load active characters from settings or default to only Player (char-001)
+          // Load active characters from settings or default to player character
         const activeRecord = await db.settings.get('active_characters')
         if (activeRecord) {
            this.activeCharacterIds = activeRecord.value
         } else {
-           // Default: Only player is active initially
-           this.activeCharacterIds = ['char-001']
-           await this.updateActiveCharacters(['char-001'], [])
+            const defaultPlayerId = this.resolveDefaultPlayerId()
+            if (defaultPlayerId) {
+             this.activeCharacterIds = [defaultPlayerId]
+             await this.updateActiveCharacters([defaultPlayerId], [])
+            } else {
+             this.activeCharacterIds = []
+             await db.settings.put({ key: 'active_characters', value: [] })
+            }
         }
       } finally {
         this.loading = false
@@ -89,7 +144,9 @@ export const useWorldStore = defineStore('world', {
           return { success: false, error: `未找到模板文件: ${templateFileName}` }
         }
 
-        const templateData = JSON.parse(result.content)
+        const templateDataRaw = JSON.parse(result.content)
+        const migratedTemplate = migrateWorldData(templateDataRaw)
+        const templateData = migratedTemplate.data
         console.log('Template data loaded, world_meta:', templateData.world_meta)
         console.log('Template entries:', Object.keys(templateData.entries || {}))
         
@@ -104,7 +161,8 @@ export const useWorldStore = defineStore('world', {
           ...(templateData.entries?.setting_cards || []),
           ...(templateData.entries?.chapter_cards || []),
           ...(templateData.entries?.character_cards || []),
-          ...(templateData.entries?.interaction_cards || [])
+          ...(templateData.entries?.interaction_cards || []),
+          ...(templateData.entries?.custom_cards || [])
         ]
         
         console.log('Total template cards:', allTemplateCards.length)
@@ -141,9 +199,15 @@ export const useWorldStore = defineStore('world', {
         }
 
         if (cardsToUpdate.length > 0) {
+          const validated = validateAndNormalizeWorldCards(cardsToUpdate)
+          if (!validated.report.valid) {
+            const firstError = validated.report.issues.find(issue => issue.level === 'error')
+            return { success: false, error: firstError?.message || '模板数据校验失败' }
+          }
+
           // Use put to handle both new and existing items
           console.log('Updating database with', cardsToUpdate.length, 'cards')
-          await db.world_cards.bulkPut(JSON.parse(JSON.stringify(cardsToUpdate)))
+          await db.world_cards.bulkPut(JSON.parse(JSON.stringify(validated.cards)))
           console.log('Database updated, reloading world')
           await this.loadWorld()
           console.log('World reloaded, new cards count:', this.cards.length)
@@ -171,7 +235,13 @@ export const useWorldStore = defineStore('world', {
         rawCard.status = []
       }
       
-      const plainCard = JSON.parse(JSON.stringify(rawCard))
+      const validated = validateAndNormalizeWorldCards([rawCard])
+      if (!validated.report.valid) {
+        const firstError = validated.report.issues.find(issue => issue.level === 'error')
+        throw new Error(firstError?.message || '卡片校验失败')
+      }
+
+      const plainCard = JSON.parse(JSON.stringify(validated.cards[0]))
       
       await db.world_cards.put(plainCard)
       const index = this.cards.findIndex(c => c.id === card.id)
@@ -193,9 +263,43 @@ export const useWorldStore = defineStore('world', {
         rawCard.status = []
       }
       
-      const plainCard = JSON.parse(JSON.stringify(rawCard))
+      const validated = validateAndNormalizeWorldCards([rawCard])
+      if (!validated.report.valid) {
+        const firstError = validated.report.issues.find(issue => issue.level === 'error')
+        throw new Error(firstError?.message || '卡片校验失败')
+      }
+
+      const plainCard = JSON.parse(JSON.stringify(validated.cards[0]))
       await db.world_cards.add(plainCard)
       this.cards.push(plainCard)
+    },
+    async setChapterActive(chapterId: string) {
+      const updatedCards: WorldCard[] = []
+      for (const card of this.cards) {
+        if (card.type !== 'chapter') continue
+        const chapter = card as any
+        if (chapter.id === chapterId) {
+          if (chapter.status !== 'active' || !chapter.is_current) {
+            chapter.status = 'active'
+            chapter.is_current = true
+            updatedCards.push(card)
+          }
+        } else if (chapter.status === 'active' || chapter.is_current) {
+          chapter.status = 'completed'
+          chapter.is_current = false
+          updatedCards.push(card)
+        }
+      }
+      for (const card of updatedCards) {
+        const plain = JSON.parse(JSON.stringify(toRaw(card)))
+        await db.world_cards.put(plain)
+      }
+    },
+    async setPlayerCharacterId(characterId: string | null) {
+      if (!this.meta) return
+      this.meta.player_character_id = characterId || undefined
+      const plainMeta = JSON.parse(JSON.stringify(toRaw(this.meta)))
+      await db.settings.put({ key: 'world_meta', value: plainMeta })
     },
     async saveToFile() {
       this.loading = true
@@ -210,15 +314,71 @@ export const useWorldStore = defineStore('world', {
             setting_cards: allCards.filter(c => c.type === 'setting'),
             chapter_cards: allCards.filter(c => c.type === 'chapter'),
             character_cards: allCards.filter(c => c.type === 'character'),
-            interaction_cards: allCards.filter(c => c.type === 'interaction')
+            interaction_cards: allCards.filter(c => c.type === 'interaction'),
+            custom_cards: allCards.filter(c => c.type === 'custom')
           }
         }
 
-        const result = await (window as any).api.saveWorldFile(JSON.stringify(data, null, 2))
+        const result = await (window as any).api.saveWorldFile(
+          JSON.stringify(data, null, 2),
+          meta?.name,
+          meta?.uuid
+        )
         return result
       } finally {
         this.loading = false
       }
+    },
+    async exportWorld(mode: 'share' | 'runtime' = 'share') {
+      const allCards = await db.world_cards.toArray()
+      const meta = this.meta
+
+      if (mode === 'share') {
+        // Share mode: strip runtime_lore internal fields, keep human-editable data
+        const cleanedCards = allCards.map(card => {
+          const { runtime_lore, ...rest } = card as any
+          return rest as WorldCard
+        })
+        return {
+          world_meta: meta,
+          entries: {
+            setting_cards: cleanedCards.filter(c => c.type === 'setting'),
+            chapter_cards: cleanedCards.filter(c => c.type === 'chapter'),
+            character_cards: cleanedCards.filter(c => c.type === 'character'),
+            interaction_cards: cleanedCards.filter(c => c.type === 'interaction'),
+            custom_cards: cleanedCards.filter(c => c.type === 'custom')
+          }
+        }
+      }
+
+      // Runtime mode: include all data including runtime_lore
+      return {
+        world_meta: meta,
+        entries: {
+          setting_cards: allCards.filter(c => c.type === 'setting'),
+          chapter_cards: allCards.filter(c => c.type === 'chapter'),
+          character_cards: allCards.filter(c => c.type === 'character'),
+          interaction_cards: allCards.filter(c => c.type === 'interaction'),
+          custom_cards: allCards.filter(c => c.type === 'custom')
+        }
+      }
+    },
+    getRelatedCards(cardId: string): WorldCard[] {
+      const card = this.cards.find(c => c.id === cardId)
+      if (!card?.runtime_lore?.relation_refs?.length) return []
+      const relatedIds = card.runtime_lore.relation_refs.map(r => r.target_id)
+      return this.cards.filter(c => relatedIds.includes(c.id))
+    },
+    getRelationGraph(): Array<{ from: string; to: string; type: string; label?: string }> {
+      const edges: Array<{ from: string; to: string; type: string; label?: string }> = []
+      for (const card of this.cards) {
+        const refs = card.runtime_lore?.relation_refs
+        if (!refs?.length) continue
+        for (const ref of refs) {
+          edges.push({ from: card.id, to: ref.target_id, type: ref.type, label: ref.label })
+        }
+      }
+      return edges
     }
   }
 })

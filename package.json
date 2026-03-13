@@ -1,6 +1,6 @@
 {
   "name": "faramita-worlds",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "An Electron-based TRPG sandbox system powered by AI.",
   "main": "out/main/index.js",
@@ -15,7 +15,7 @@
     "dist:win": "npm run build && electron-builder --win"
   },
   "build": {
-    "appId": "com.faramita.worlds",
+    "appId": "online.faramita.worlds",
     "productName": "Faramita Worlds",
     "directories": {
       "output": "dist"
@@ -48,8 +48,6 @@
   },
   "dependencies": {
     "@vueuse/core": "^11.0.0",
-    "axios": "^1.7.2",
-    "cannon-es": "^0.20.0",
     "dexie": "^4.0.8",
     "lucide-vue-next": "^0.563.0",
     "markdown-it": "^14.1.0",

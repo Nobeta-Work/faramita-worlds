@@ -1,6 +1,3 @@
-import { AIProtocol } from './AIProtocol'
-import { DiceLogic } from './DiceLogic'
-
 export type APIType = 'chat' | 'image' | 'video'
 
 export interface AIConfig {
@@ -34,6 +31,43 @@ export interface GenerationResponse {
 export class AIService {
   private chatConfig: AIConfig
 
+  private splitPromptRoles(fullPrompt: string): { systemPrompt: string; userPrompt: string } {
+    const markerRegex = /\[USER INPUT\]\s*[：:]\s*([\s\S]*)$/i
+    const marker = markerRegex.exec(fullPrompt)
+    if (marker) {
+      const userPrompt = marker[1].trim()
+      const systemPrompt = fullPrompt.slice(0, marker.index).trim()
+      return {
+        systemPrompt: systemPrompt || 'You are a TRPG game master assistant.',
+        userPrompt: userPrompt || '请根据系统指令继续。'
+      }
+    }
+
+    const sectionRegex = /(^|\r?\n)##\s*(?:User Input|用户输入)\s*\r?\n/i
+    const sectionMatch = sectionRegex.exec(fullPrompt)
+    if (sectionMatch) {
+      const sectionStart = sectionMatch.index + sectionMatch[0].length
+      const remaining = fullPrompt.slice(sectionStart)
+      const nextHeadingRel = remaining.search(/\r?\n##\s+/)
+      const sectionEnd = nextHeadingRel >= 0 ? sectionStart + nextHeadingRel : fullPrompt.length
+
+      const userPrompt = fullPrompt.slice(sectionStart, sectionEnd).trim()
+      const before = fullPrompt.slice(0, sectionMatch.index).trim()
+      const after = fullPrompt.slice(sectionEnd).trim()
+      const systemPrompt = [before, after].filter(Boolean).join('\n\n').trim()
+
+      return {
+        systemPrompt: systemPrompt || 'You are a TRPG game master assistant.',
+        userPrompt: userPrompt || '请根据系统指令继续。'
+      }
+    }
+
+    return {
+      systemPrompt: 'You are a TRPG game master assistant.',
+      userPrompt: fullPrompt
+    }
+  }
+
   constructor(config: AIConfig) {
     // 优先从环境变量读取API KEY
     const envKey = typeof process !== 'undefined' && process.env && process.env.MS_KEY ? process.env.MS_KEY : '';
@@ -47,16 +81,18 @@ export class AIService {
     userPrompt: string, 
     onToken: (token: string) => void,
     onRoll: (roll: any) => void,
-    skipContextInjection: boolean = false
+    skipContextInjection: boolean = false,
+    timeout: number = 60000
   ): Promise<string> {
     if (!this.chatConfig.apiKey || !this.chatConfig.baseUrl) {
       throw new Error('配置错误: 缺少 API Key 或 Base URL。请检查设置。')
     }
 
     const fullPrompt = userPrompt
+    const rolePrompts = this.splitPromptRoles(fullPrompt)
     
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 60000)
+    const timeoutId = setTimeout(() => controller.abort(), timeout)
 
     try {
       const fetchResponse = await fetch(`${this.chatConfig.baseUrl}/chat/completions`, {
@@ -67,7 +103,10 @@ export class AIService {
         },
         body: JSON.stringify({
           model: this.chatConfig.model,
-          messages: [{ role: 'user', content: fullPrompt }],
+          messages: [
+            { role: 'system', content: rolePrompts.systemPrompt },
+            { role: 'user', content: rolePrompts.userPrompt }
+          ],
           stream: true
         }),
         signal: controller.signal
@@ -100,12 +139,6 @@ export class AIService {
                 if (token) {
                   fullText += token
                   onToken(token)
-
-                  const intercepted = AIProtocol.interceptRolls(fullText)
-                  if (intercepted) {
-                    const result = DiceLogic.parseAndRoll(intercepted.roll)
-                    onRoll(result)
-                  }
                 }
               } catch (e) {
                 console.error('Error parsing stream chunk', e)
@@ -119,7 +152,7 @@ export class AIService {
     } catch (error: any) {
       if (error.name === 'AbortError') {
         console.error('AI Service Timeout')
-        throw new Error('连接超时: AI 服务响应时间过长 (60s)，请检查网络或模型服务状态。')
+        throw new Error(`连接超时: AI 服务响应时间过长 (${Math.round(timeout / 1000)}s)，请检查网络或模型服务状态。`)
       }
       console.error('AI Service Error:', error)
       throw error

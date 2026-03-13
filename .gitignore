@@ -36,3 +36,13 @@ out/
 
 # Sub projects
 faramita-explore-worlds/
+
+# doc
+.doc/
+docs/
+
+# design
+design/
+
+# local tool artifacts
+.trae/

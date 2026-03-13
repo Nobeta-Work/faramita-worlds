@@ -1,10 +1,8 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 import { db } from '../db/db'
-import { ChronicleEntry, AIResponseInteraction } from '@shared/Interface'
-import { AIProtocol } from '../core/AIProtocol'
-import { NarrativeEngine } from '../core/NarrativeEngine'
-import { AIService } from '../core/AIService'
+import { ChronicleEntry, AIResponseInteraction, WorldStateDelta, ConflictReport, RollResult, TurnTrace, ContextPackage, AIResponseWorldUpdate } from '@shared/Interface'
+import { SkillPipeline } from '../core/SkillPipeline'
 import { useConfigStore } from './config'
 import { useWorldStore } from './world'
 
@@ -15,11 +13,21 @@ export const useChronicleStore = defineStore('chronicle', {
     currentStreamText: '',
     parsedStreamSequence: [] as any[], // For incremental typing
     pendingInteraction: null as AIResponseInteraction | null,
-    isWaitingForRoll: false
+    isWaitingForRoll: false,
+    recentWorldStateDeltas: [] as WorldStateDelta[],
+    latestConflictReport: null as ConflictReport | null,
+    jumpTargetCardId: null as string | null,
+    jumpRequestTick: 0,
+    latestSuggestions: [] as string[],
+    latestTurnTrace: null as TurnTrace | null,
+    currentContextPackage: null as ContextPackage | null,
+    pendingWorldUpdateProposal: null as AIResponseWorldUpdate[] | null,
+    currentReviewDecision: null as 'commit' | 'defer-commit' | null
   }),
   actions: {
     async loadHistory() {
       this.history = await db.chronicle.orderBy('turn').toArray()
+      await this.refreshWorldStatePanelData()
     },
     async addEntry(entry: Omit<ChronicleEntry, 'id'>) {
       // Ensure plain object for Dexie
@@ -43,18 +51,41 @@ export const useChronicleStore = defineStore('chronicle', {
       await this.saveArchive()
     },
     setInteraction(interaction: AIResponseInteraction) {
-      // [临时方案] 当 needs_roll = false 时，不显示投掷面板，不设置 pendingInteraction
       if (!interaction.needs_roll) {
         this.isWaitingForRoll = false
-        this.pendingInteraction = null  // 清除pendingInteraction
+        this.pendingInteraction = null
+        return
+      }
+
+      const VALID_DIFFICULTIES = ['easy', 'normal', 'hard', 'extreme']
+      const hasValidDifficulty = typeof interaction.difficulty === 'string' && VALID_DIFFICULTIES.includes(interaction.difficulty)
+      const hasDescription = typeof interaction.description === 'string' && interaction.description.trim().length > 0
+
+      if (!hasValidDifficulty || !hasDescription) {
+        void this.addEntry({
+          turn: this.history.length + 1,
+          role: 'system',
+          content: '[System] 判定请求格式不完整（缺少 difficulty 或 description），已阻断本次投掷。',
+          timestamp: Date.now()
+        })
+        this.isWaitingForRoll = false
+        this.pendingInteraction = null
         return
       }
       
       this.pendingInteraction = interaction
       this.isWaitingForRoll = true
       
-      const attrText = interaction.attribute ? ` with ${interaction.attribute}` : ''
-      const systemMsg = `[SYSTEM] [DICE] ${interaction.description || 'Action'}${attrText}`
+      const DIFF_LABELS: Record<string, string> = { easy: '简单', normal: '普通', hard: '困难', extreme: '极难' }
+      const DIFF_MODS: Record<string, number> = { easy: 2, normal: 0, hard: -2, extreme: -4 }
+      const diff = interaction.difficulty || 'normal'
+      const tagMod = (interaction.relevant_tags || []).reduce((s, t) => s + (t.positive ? t.weight : -t.weight), 0)
+      const diffMod = DIFF_MODS[diff] ?? 0
+      const totalMod = tagMod + diffMod
+      const needPartial = 6 - totalMod
+      const needFull = 9 - totalMod
+      const diffLabel = DIFF_LABELS[diff] || diff
+      const systemMsg = `[DICE] ${interaction.description || 'Action'} | ${diffLabel} | 🎯 ≥${needPartial}部成 ≥${needFull}全成 | 12=大成功`
       
       this.addEntry({
         turn: this.history.length + 1,
@@ -70,6 +101,9 @@ export const useChronicleStore = defineStore('chronicle', {
     
     // Core AI Logic
     async processUserMessage(content: string) {
+      // Clear suggestions when user sends a message
+      this.latestSuggestions = []
+
       // 1. Add User Entry
       await this.addEntry({
         turn: this.history.length + 1,
@@ -81,22 +115,33 @@ export const useChronicleStore = defineStore('chronicle', {
       await this._generateAIResponse()
     },
 
-    async resolveInteraction(rollResult: number) {
+    async resolveInteraction(rollResult: RollResult) {
       if (!this.pendingInteraction) return
 
-      const interaction = this.pendingInteraction
-      const checkResult = (interaction.dc && rollResult >= interaction.dc) ? 'SUCCESS' : 'FAILURE'
-      
-      const rollResultMsg = ` | Roll: ${rollResult} (DC ${interaction.dc || '?'}) => ${checkResult}`
+      const OUTCOME_CN: Record<string, string> = {
+        full_success: '✅完全成功', partial_success: '⚠️部分成功', failure: '❌失败'
+      }
+      const outcomeText = rollResult.isCriticalSuccess ? '🌟大成功' : (OUTCOME_CN[rollResult.outcome] || rollResult.outcome)
+      const totalMod = rollResult.tagModifier + rollResult.difficultyModifier
+      const modLabel = totalMod >= 0 ? `+${totalMod}` : `${totalMod}`
+      const rollResultMsg = `[ROLL_RESULT] 2d6=${rollResult.diceTotal}(${modLabel})=${rollResult.finalResult} ${outcomeText}`
 
       if (this.history.length > 0) {
         const lastEntry = this.history[this.history.length - 1]
-        if (lastEntry.role === 'system' && lastEntry.content.startsWith('[SYSTEM] [DICE]')) {
-          const updatedContent = lastEntry.content + rollResultMsg
-          await db.chronicle.update(lastEntry.id, { content: updatedContent })
-          lastEntry.content = updatedContent
+        if (lastEntry.role === 'system' && lastEntry.content.startsWith('[DICE]')) {
+          if (lastEntry.id) {
+            await db.chronicle.delete(lastEntry.id)
+          }
+          this.history.pop()
         }
       }
+
+      await this.addEntry({
+        turn: this.history.length + 1,
+        role: 'system',
+        content: rollResultMsg,
+        timestamp: Date.now()
+      })
 
       this.clearInteraction()
       await this._generateAIResponse()
@@ -118,153 +163,136 @@ export const useChronicleStore = defineStore('chronicle', {
       this.currentStreamText = 'Thinking...'
 
       try {
-        const aiService = new AIService({
-          apiKey: configStore.apiKey,
-          baseUrl: configStore.baseUrl,
-          model: configStore.model
-        })
-
-        // Construct Prompt
+        // Prepare history — exclude the last entry if it's the user message we just added
         const lastEntry = this.history[this.history.length - 1]
         let userPrompt = ''
         let historyToPass = this.history
-        
-        if (lastEntry.role === 'user') {
-           userPrompt = lastEntry.content
-           historyToPass = this.history.slice(0, -1)
+
+        if (lastEntry?.role === 'user') {
+          userPrompt = lastEntry.content
+          historyToPass = this.history.slice(0, -1)
         }
-        // If lastEntry is system or assistant, we leave userPrompt empty 
-        // and include the entry in historyToPass.
-        
-        // Fix: If userPrompt is empty (e.g. following a system msg), we must try to find the last user action
-        // or just proceed with an empty prompt (AI will react to latest history).
-        // BUT if it's empty, we should check if we really need to respond?
-        // Actually, if called, we assume a response is needed.
-        // Let's ensure userPrompt is not undefined.
-        
+
         const activeIds = worldStore.activeCharacterIds
 
-        // Step 1: Discovery Phase
-        this.currentStreamText = 'Consulting Archives...'
-        const discoveryPrompt = await AIProtocol.constructDiscoveryPrompt(
-          userPrompt,
-          activeIds,
-          historyToPass
-        )
-        
-        let neededCardIds: string[] = []
-        try {
-          // Use non-streaming request for discovery to be fast and atomic
-          const discoveryResponse = await aiService.sendMessage(
-            discoveryPrompt,
-            () => {}, // No token callback needed
-            () => {},
-            true
-          )
-          
-          // Parse JSON from response
-          const discoveryJson = NarrativeEngine.parseResponse(discoveryResponse)
-          if (discoveryJson) {
-            if (discoveryJson.needed_card_ids) {
-              neededCardIds = discoveryJson.needed_card_ids
-            }
-            // Auto-activate suggested roles if any
-            if (discoveryJson.active_role_suggestions && discoveryJson.active_role_suggestions.length > 0) {
-              await worldStore.updateActiveCharacters(discoveryJson.active_role_suggestions, [])
-              // Add a system note about activation
-              // We'll fetch names for nicer log
-              // But for speed, just rely on the upcoming narrative to explain or the UI to update
-            }
-          }
-        } catch (e) {
-          console.warn('Discovery phase failed, proceeding without supplementary cards', e)
+        // Inject conflict warnings from previous turn into the next prompt
+        const initialPromptFragments: Record<string, string> = {}
+        if (this.latestConflictReport?.issues?.length) {
+          initialPromptFragments['conflict_warnings'] = this.latestConflictReport.issues
+            .map(i => `[${i.severity}] ${i.message}`)
+            .join('\n')
         }
 
-        // Step 2: Narrative Phase
-        this.currentStreamText = 'Thinking...'
-        this.parsedStreamSequence = []
-        
-        const prompt = await AIProtocol.constructNarrativePrompt(
-          userPrompt, 
-          activeIds, 
+        // Execute the Skill Pipeline
+        const result = await SkillPipeline.executePipeline(
+          userPrompt,
           historyToPass,
-          neededCardIds
+          activeIds,
+          {
+            onStreamToken: () => {},
+            onStatusUpdate: (status) => {
+              this.currentStreamText = status
+            },
+            initialPromptFragments
+          }
         )
 
-        // Send to AI (Accumulate full JSON)
-        let fullResponseText = ''
-        await aiService.sendMessage(
-          prompt, 
-          (token) => {
-             fullResponseText += token
-             // Optional: You could parse incrementally here if complex, 
-             // but for now we wait for full JSON to ensure validity
-          },
-          () => {},
-          true // skipContextInjection
-        )
+        // Cache turnTrace and review decision
+        if (result.turnTrace) {
+          this.latestTurnTrace = result.turnTrace
+          // Determine review decision from turnTrace
+          const deferCommit = (result.turnTrace.review && !result.turnTrace.review.commitSafe) ||
+            (result.turnTrace.planner?.riskLevel === 'high') ||
+            (result.aiResponse?.world_updates && result.aiResponse.world_updates.length > 5)
+          this.currentReviewDecision = deferCommit ? 'defer-commit' : 'commit'
+          // Persist turnTrace to db
+          db.turn_trace.add({
+            turn: result.turnTrace.turn,
+            timestamp: Date.now(),
+            trace: JSON.parse(JSON.stringify(result.turnTrace))
+          }).catch(e => console.warn('Failed to persist turnTrace:', e))
+        }
 
-        this.currentStreamText = '' // Clear thinking text
-        this.isStreaming = false // Stop "Thinking..." UI
+        this.currentStreamText = ''
+        this.isStreaming = false
 
-        // Parse Response
-        const response = NarrativeEngine.parseResponse(fullResponseText)
-        
+        const response = result.aiResponse
+
+        // Cache pending world update proposal for defer-commit review
+        if (this.currentReviewDecision === 'defer-commit' && response?.world_updates?.length) {
+          this.pendingWorldUpdateProposal = response.world_updates
+        } else {
+          this.pendingWorldUpdateProposal = null
+        }
+
         if (response) {
-          // 1. Updates
-          if (response.world_updates) {
-            const notifications = await NarrativeEngine.processUpdates(response.world_updates)
-            // User req 5: Simple system notification for updates
-            for (const note of notifications) {
-              await this.addEntry({
-                turn: this.history.length + 1,
-                role: 'system',
-                content: `[System] ${note}`,
-                timestamp: Date.now()
-              })
+          // Process notifications from all skills
+          const allNotifications: string[] = []
+          Object.values(result.skillOutputs).forEach((payload: any) => {
+            if (payload?.notifications && Array.isArray(payload.notifications)) {
+              allNotifications.push(...payload.notifications)
             }
-          }
-          if (response.active_role) {
-            await NarrativeEngine.processActiveRoles(response.active_role)
+          })
+
+          for (const note of allNotifications) {
+            await this.addEntry({
+              turn: this.history.length + 1,
+              role: 'system',
+              content: `[System] ${note}`,
+              timestamp: Date.now()
+            })
           }
 
-          // 2. Add Assistant Entry (Stored as JSON string)
-          // We add it immediately. The UI Bubble will handle the "Typing" effect 
-          // if we pass a flag or if we just let the user read it instantly.
-          // The user asked to "extract sequence ... then type out".
-          // So we should add the entry, and let the UI handle the typing animation 
-          // based on the structured content.
-          
+          const trackerPayload = result.skillOutputs['world-state-tracker']
+          if (trackerPayload?.deltas && Array.isArray(trackerPayload.deltas)) {
+            this.recentWorldStateDeltas = trackerPayload.deltas
+          } else {
+            await this.refreshWorldStatePanelData()
+          }
+
+          const conflictPayload = result.skillOutputs['conflict-detection']
+          if (conflictPayload?.report) {
+            this.latestConflictReport = conflictPayload.report
+          }
+
+          // Add assistant entry (stored as JSON string)
           await this.addEntry({
             turn: this.history.length + 1,
             role: 'assistant',
-            content: JSON.stringify(response), // Store full JSON
+            content: JSON.stringify(response),
             timestamp: Date.now()
           })
 
-          // 3. Handle Interaction
+          // Handle interaction — InteractionCalibrationSkill already calibrated needs_roll
           if (response.interaction && response.interaction.needs_roll) {
-            // [临时方案] 50%概率忽略投掷请求，直接当作无投掷处理
-            // 效果：AI叙述正常显示，玩家可继续输入行为
-            // TODO: 后续需要优化AI提示词来减少投掷频率
-            const shouldRoll = Math.random() < 0.5
-            if (!shouldRoll) {
-              response.interaction.needs_roll = false
-              console.log('[临时] 50%概率忽略投掷请求，正常显示叙述')
-            }
             this.setInteraction(response.interaction)
           }
+
+          // Store suggestions for UI display
+          if (response.suggestions && Array.isArray(response.suggestions) && response.suggestions.length > 0) {
+            this.latestSuggestions = response.suggestions.slice(0, 3)
+          } else {
+            this.latestSuggestions = []
+          }
         } else {
-          // Fallback if parsing failed
-          console.error('Failed to parse AI response')
+          // Pipeline produced no response
+          console.error('Pipeline produced no AI response')
           await this.addEntry({
             turn: this.history.length + 1,
             role: 'assistant',
-            content: JSON.stringify({ 
-              sequence: [{ type: 'environment', content: fullResponseText }] 
+            content: JSON.stringify({
+              sequence: [{ type: 'environment', content: result.rawResponseText || '[No response]' }]
             }),
             timestamp: Date.now()
           })
+        }
+
+        // Log pipeline warnings/errors for debugging
+        if (result.warnings.length > 0) {
+          console.warn('[Pipeline Warnings]', result.warnings)
+        }
+        if (result.errors.length > 0) {
+          console.error('[Pipeline Errors]', result.errors)
         }
 
       } catch (error) {
@@ -272,6 +300,17 @@ export const useChronicleStore = defineStore('chronicle', {
         this.isStreaming = false
         this.currentStreamText = ''
       }
+    },
+    async refreshWorldStatePanelData() {
+      const deltas = await db.world_state_log.orderBy('turn').reverse().limit(5).toArray()
+      this.recentWorldStateDeltas = deltas
+    },
+    requestOpenCard(cardId: string) {
+      this.jumpTargetCardId = cardId
+      this.jumpRequestTick = Date.now()
+    },
+    clearOpenCardRequest() {
+      this.jumpTargetCardId = null
     },
     async saveArchive() {
       const worldStore = useWorldStore()

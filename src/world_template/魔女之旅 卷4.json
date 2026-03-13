@@ -1,0 +1,1736 @@
+{
+  "world_meta": {
+    "uuid": "609208ad-d2af-4102-b1b2-09118c511154",
+    "name": "魔女之旅 卷4",
+    "version": "1.0.0",
+    "author": "白石定规",
+    "description": "",
+    "schema_version": 2,
+    "default_language": "zh-CN",
+    "tags": [
+      "奇幻"
+    ],
+    "player_character_id": "char-1"
+  },
+  "entries": {
+    "setting_cards": [
+      {
+        "id": "setting-1",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "skill",
+        "title": "魔女之旅世界观",
+        "content": "一个存在魔女、魔法师、飞龙等奇幻元素的旅行冒险世界。故事围绕魔女伊蕾娜的旅程展开，她不断旅行以寻求前所未见的景色与偶然的邂逅。",
+        "tags": [
+          "奇幻",
+          "旅行",
+          "魔女",
+          "冒险"
+        ]
+      },
+      {
+        "id": "setting-2",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "旅程中的遭遇",
+        "content": "笨手笨脚的女间谍、与黑发少女的回忆、吃下毒苹果的女人、名侦探、美食家与读书家、自称美少女考古学家、水乡泽国的魔法师、飞龙、冰封城镇的怪物、「蔷薇魔女」。",
+        "tags": [
+          "遭遇",
+          "多样性",
+          "奇幻生物",
+          "特殊职业"
+        ]
+      },
+      {
+        "id": "setting-3",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "冰封之城",
+        "content": "一个城市。",
+        "tags": [
+          "城市",
+          "地名"
+        ]
+      },
+      {
+        "id": "setting-4",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "魔法师称号体系",
+        "content": "魔法师的称号分为魔导士、魔女见习生、魔女。其中魔女是具有稀世才华的人才能获得的最高阶称号，非常稀少而崇高。魔导士是底层。",
+        "tags": [
+          "等级制度",
+          "魔法社会",
+          "魔女",
+          "魔导士"
+        ]
+      },
+      {
+        "id": "setting-5",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "faction",
+        "title": "伪装成咖啡店的特务组织",
+        "content": "一个表面上是咖啡店，实则为进行秘密活动的特务组织。成员多为男性，且很多人不会魔法。组织纪律严酷，失败或失去利用价值的成员会被处理掉。",
+        "tags": [
+          "秘密组织",
+          "伪装",
+          "咖啡店",
+          "冷酷纪律"
+        ]
+      },
+      {
+        "id": "setting-6",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "水没的废墟城镇",
+        "content": "一个被水部分淹没的废墟城镇。曾经的建筑已崩毁，被树木、苔藓覆盖，回归自然。除了伊蕾娜和艾姆妮西亚，已无人烟。环境凉爽，水声潺潺，有萤火虫飞舞。",
+        "tags": [
+          "废墟",
+          "水没",
+          "自然侵蚀",
+          "无人居住",
+          "秘境"
+        ]
+      },
+      {
+        "id": "setting-7",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "lore",
+        "title": "毒苹果与睡美人",
+        "content": "三百年前，魔女因嫉妒用毒苹果让森林中美丽少女陷入永眠。后来，有恋尸癖的王子亲吻少女遗体使其复活，但王子对活着的女人没兴趣而离开。此后森林定期长出毒苹果，注定被美丽少女吃下，并通过王子亲吻醒来。",
+        "tags": [
+          "传说",
+          "毒苹果",
+          "睡美人",
+          "森林诅咒"
+        ]
+      },
+      {
+        "id": "setting-8",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "沉没水中的国家",
+        "content": "一个位于森林深处、沉没在水中的独特国家。由漂浮在水面的尖塔和建筑组成，居民在水上生活。由族长领导，居民（如雅特丽）会使用魔法。主要食物来源是鱼类，但经过长期演化，当地鱼类含有毒素，只有适应了的原住民可以食用，外人食用会腹痛。该国过去因古都罗利亚的魔法而沉没。",
+        "tags": [
+          "水下城市",
+          "魔法沉没",
+          "独特生态",
+          "与世隔绝"
+        ]
+      },
+      {
+        "id": "setting-9",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "邻近的王国",
+        "content": "一个面临粮食危机的国家。国王因人口增长导致粮食不足，企图开垦邻近的森林区域，发现了水没街区（误以为是湖）并想捕捞渔获。曾与水没街区居民发生冲突。其国家过去可能曾使用魔法淹没水没街区的前身。",
+        "tags": [
+          "粮食危机",
+          "扩张企图",
+          "历史关联"
+        ]
+      },
+      {
+        "id": "setting-10",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "边境之阿尔贝德",
+        "content": "拒绝魔法师入境的古老国家，建立于数百年前。由被邻国驱逐的非魔法师群体（过去称为“亚尼玛”）定居于一座旧堡垒遗迹而发展起来。国民普遍怨恨魔法师，采取禁止魔法师入境的政策。国土内建筑多为红砖砌成，景观普通。",
+        "tags": [
+          "排斥魔法师",
+          "堡垒遗迹",
+          "历史怨恨"
+        ]
+      },
+      {
+        "id": "setting-11",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "魔法师暂时收容所",
+        "content": "位于边境之阿尔贝德的堡垒遗迹建筑，用于拘留非法入境的魔法师。外观有如城墙，爬满藤蔓。魔法师被关押在此，通过联系其国外亲友支付罚金后才会被驱逐出境，是阿尔贝德的重要收入来源。",
+        "tags": [
+          "拘留设施",
+          "罚金勒索",
+          "历史遗迹"
+        ]
+      },
+      {
+        "id": "setting-12",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "传说之剑",
+        "content": "插在村庄底座上的双刃剑。传说只有“纯洁善良、不说谎话、以他人为优先、连虫也不舍得杀的杰出人士”才能拔出。曾被用作选拔勇者以对抗飞龙的仪式道具。实际上伊蕾娜和艾姆妮西亚都能拔出，传说可靠性存疑。",
+        "tags": [
+          "仪式道具",
+          "勇者资格",
+          "传说"
+        ]
+      },
+      {
+        "id": "setting-13",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "location",
+        "title": "信仰之都伊斯特",
+        "content": "艾姆妮西亚的故乡，一个封闭的国家。几乎断绝外交，采取“非国民同行不得入境”的政策，以防先进魔法技术外泄。离开该国者大多会丧失在伊斯特期间的记忆，极少数保留记忆者则会成为其国民并守口如瓶。艾姆妮西亚的失忆症可能与此地有关。",
+        "tags": [
+          "封闭国家",
+          "记忆丧失",
+          "魔法技术",
+          "目的地"
+        ]
+      },
+      {
+        "id": "setting-14",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "item",
+        "title": "镜水晶",
+        "content": "信仰之都伊斯特特有的魔法技术产物。外观如水晶，能像镜子一样实时映照并传播远方的景象和声音。在这个国家被用作大众传媒工具，例如蔷薇魔女爱蜜莉雅通过镜水晶向全国发布公告和新闻。国民通过每月贡献魔力（类似纳税）来支持包括镜水晶在内的魔法技术运行。",
+        "tags": [
+          "通讯魔法",
+          "国家技术",
+          "魔力税系统"
+        ]
+      },
+      {
+        "id": "setting-15",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "忘却归乡之刑",
+        "content": "信仰之都伊斯特用于惩罚“大罪人”的特殊刑罚。对罪犯施加每天消除记忆的诅咒，然后将其流放国外。罪犯会本能地寻找故乡，最终回归伊斯特。刑罚持续到其归国并站上断头台的那一刻才解除。其目的在于让罪犯在不断的相遇与离别中积累幸福或希望的回忆，最终在意识到所有旅程都只是通往死刑的过程时，在极度的后悔与绝望中被处决。",
+        "tags": [
+          "残酷刑罚",
+          "记忆诅咒",
+          "心理折磨",
+          "死刑前置"
+        ]
+      },
+      {
+        "id": "setting-16",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "rule",
+        "title": "信仰之都伊斯特的魔法社会",
+        "content": "一个所有国民都是魔法师的国家。魔法技术高度发达，如镜水晶和魔力吸收利用系统。国家运行依赖于一种“魔力税”制度，即国民每月贡献自身魔力，由国家集中用于魔法技术开发和公共福祉。这里魔女地位特殊，曾是国家的“财产”。",
+        "tags": [
+          "全员魔法师",
+          "魔力税",
+          "技术导向",
+          "魔女地位"
+        ]
+      },
+      {
+        "id": "setting-17",
+        "type": "setting",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "category": "faction",
+        "title": "正统骑士团",
+        "content": "信仰之都伊斯特的治安与行政组织，负责宫殿杂务、镜水晶操作、事件调查、要人保护等。成员多为魔法师，但像艾姆妮西亚这样魔法能力不足者也可担任杂务。",
+        "tags": [
+          "治安组织",
+          "魔法师",
+          "杂务",
+          "内部维护"
+        ]
+      }
+    ],
+    "chapter_cards": [
+      {
+        "id": "chapter-1",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "忘却之都",
+        "summary": "故事的第一章节",
+        "objective": "开启伊蕾娜与艾姆妮西亚的旅行[inferred]",
+        "status": "active",
+        "is_current": true,
+        "plot_points": [],
+        "tags": [
+          "章节开始",
+          "旅程起点"
+        ]
+      },
+      {
+        "id": "chapter-2",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "虚构的魔女",
+        "summary": "故事的第二章节",
+        "objective": "探索与魔女相关的故事[inferred]",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "魔女主题",
+          "章节延续"
+        ]
+      },
+      {
+        "id": "chapter-3",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "挑食",
+        "summary": "故事的第三章节",
+        "objective": "可能涉及饮食或选择相关的故事[inferred]",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "日常主题",
+          "章节发展"
+        ]
+      },
+      {
+        "id": "chapter-4",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "待补充",
+        "summary": "故事的第四章节",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "章节延续"
+        ]
+      },
+      {
+        "id": "chapter-5",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "苹果杀人事件",
+        "summary": "标题为“苹果杀人事件”的章节。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "悬疑",
+          "事件"
+        ]
+      },
+      {
+        "id": "chapter-6",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第五章",
+        "summary": "本卷的第五章。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "旅途"
+        ]
+      },
+      {
+        "id": "chapter-7",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "微不足道的故事",
+        "summary": "标题为“微不足道的故事”的章节。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "日常"
+        ]
+      },
+      {
+        "id": "chapter-8",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第六章",
+        "summary": "本卷的第六章。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "旅途"
+        ]
+      },
+      {
+        "id": "chapter-9",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "水没街区",
+        "summary": "标题为“水没街区”的章节，暗示一个可能被水淹没或与水体相关的区域。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "地点",
+          "灾难"
+        ]
+      },
+      {
+        "id": "chapter-10",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第七章",
+        "summary": "本卷的第七章。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "旅途"
+        ]
+      },
+      {
+        "id": "chapter-11",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "忘却纪行的艾姆妮西亚",
+        "summary": "标题为“忘却纪行的艾姆妮西亚”的章节，可能围绕人物艾姆妮西亚与“忘却”或“旅行记录”相关的故事展开。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "人物",
+          "记忆"
+        ]
+      },
+      {
+        "id": "chapter-12",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第八章",
+        "summary": "本卷的第八章。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "旅途"
+        ]
+      },
+      {
+        "id": "chapter-13",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "勇者、飞龙、活人祭品",
+        "summary": "标题为“勇者、飞龙、活人祭品”的章节，暗示了涉及勇者、龙类生物以及某种祭祀仪式的冒险或冲突。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "冒险",
+          "冲突",
+          "传说"
+        ]
+      },
+      {
+        "id": "chapter-14",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第九章",
+        "summary": "本卷的第九章。",
+        "objective": "待补充",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "旅途"
+        ]
+      },
+      {
+        "id": "chapter-15",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第十章 忘却归乡的艾姆妮西亚",
+        "summary": "艾姆妮西亚与伊蕾娜在遍布废墟的忘却之都中旅行，艾姆妮西亚因诅咒而每天失忆，两人展开了对话。随后视角切换至另一个故事线，描述名为尤莉的特务接到暗杀“虚构魔女”伊蕾娜的任务并最终失败的过程。",
+        "objective": "两条故事线交织：一条是伊蕾娜与艾姆妮西亚在遗迹中的旅途与对话；另一条是尤莉作为特务执行暗杀伊蕾娜任务并最终失败、被组织抛弃的过程。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "双线叙事",
+          "旅途",
+          "暗杀",
+          "失败"
+        ]
+      },
+      {
+        "id": "chapter-16",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第一章 忘却之都",
+        "summary": "伊蕾娜与艾姆妮西亚在一个被自然侵蚀、化为水浸废墟的城镇中休息。艾姆妮西亚因每日失忆的诅咒而感到哀伤，伊蕾娜尝试安慰她。",
+        "objective": "展现艾姆妮西亚因诅咒而产生的失落感，以及两人在废墟中的互动与对话。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "废墟",
+          "对话",
+          "诅咒",
+          "安慰"
+        ]
+      },
+      {
+        "id": "chapter-17",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第二章 虚构的魔女",
+        "summary": "以特务组织成员尤莉的视角展开。她接到暗杀旅人魔女“伊蕾娜”的任务。尤莉性格笨拙且自认为“冷硬派”，第一次下毒计划失败，后续连续多日监视伊蕾娜（实为伊蕾娜放置的人偶）并在咖啡厅频繁呕吐，成为笑柄。最后试图逮捕伊蕾娜时被轻易击败。任务失败后，她被组织老大开除并面临生命威胁。",
+        "objective": "描述尤莉执行暗杀伊蕾娜任务的全过程，展现其失败与最终的结局。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "特务任务",
+          "暗杀计划",
+          "监视",
+          "滑稽失败",
+          "组织背叛"
+        ]
+      },
+      {
+        "id": "chapter-18",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "蘑菇与修行",
+        "summary": "通过蘑菇挑食事件，展现伊蕾娜与沙耶的互动及性格细节。",
+        "objective": "刻画角色关系与幽默日常",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "日常",
+          "幽默",
+          "角色互动"
+        ]
+      },
+      {
+        "id": "chapter-19",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "旅馆假死事件",
+        "summary": "旅馆中发生毒苹果“杀人事件”，实为玛莉自导自演的假死闹剧。",
+        "objective": "解决假死事件，揭露真相",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "谋杀谜案",
+          "闹剧",
+          "传说引用"
+        ]
+      },
+      {
+        "id": "chapter-20",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第八章 勇者、飞龙、活人祭品",
+        "summary": "两人卷入村庄的“飞龙威胁”事件，发现实为一场恋爱闹剧并促成和解。",
+        "objective": "化解村庄与飞龙（实为恋人）之间的误会，避免不必要的冲突。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "勇者传说",
+          "飞龙",
+          "误会",
+          "恋情",
+          "和解"
+        ]
+      },
+      {
+        "id": "chapter-21",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第九章　冰封之城",
+        "summary": "伊蕾娜和艾姆妮西亚在前往信仰之都伊斯特的途中，意外闯入了一个被魔法冰封的城市。在城市中她们遭遇了由大魔女路德拉因试图拯救国民免于瘟疫而自我异化成的冰结怪物。在与怪物战斗并了解到事情真相后，艾姆妮西亚被迫做出艰难抉择。",
+        "objective": "穿越森林前往信仰之都伊斯特，却误入冰封之城。调查城市异常现象，并面对和解决由大魔女路德拉造成的冰冻危机。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-22",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "第十章　忘却归乡的艾姆妮西亚",
+        "summary": "伊蕾娜和艾姆妮西亚抵达信仰之都伊斯特。艾姆妮西亚立即作为“大罪人”被逮捕，并被宣布将于次日处决。伊蕾娜在调查中了解到官方指控艾姆妮西亚的罪行（杀害四名魔女、制造污染），以及其被施加的“忘却归乡之刑”。随后，她遇到了艾姆妮西亚的妹妹艾维莉亚，得知艾姆妮西亚很可能是被蔷薇魔女爱蜜莉雅陷害的。",
+        "objective": "抵达艾姆妮西亚的故乡信仰之都伊斯特；面对艾姆妮西亚被作为“大罪人”逮捕并即将处决的现实；调查事件真相，并决定下一步行动。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": []
+      },
+      {
+        "id": "chapter-23",
+        "type": "chapter",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "title": "忘却归乡的艾姆妮西亚",
+        "summary": "伊蕾娜协助艾维莉亚拯救被陷害的艾姆妮西亚，通过计谋使爱蜜莉雅自白，最终艾姆妮西亚获得自由并与妹妹离开国家。",
+        "objective": "洗刷艾姆妮西亚的冤屈，揭露爱蜜莉雅的罪行，并帮助艾姆妮西亚和艾维莉亚离开信仰之都。",
+        "status": "pending",
+        "is_current": false,
+        "plot_points": [],
+        "tags": [
+          "拯救",
+          "阴谋",
+          "审判",
+          "离别"
+        ]
+      }
+    ],
+    "character_cards": [
+      {
+        "id": "char-1",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "伊蕾娜",
+        "prefix_name": "",
+        "race": "魔女",
+        "age": 20,
+        "gender": "女",
+        "class": "魔女",
+        "level": 1,
+        "affiliation": [
+          "独立旅行者"
+        ],
+        "status": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "追求前所未见景色与邂逅的旅行魔女",
+          "某个地方有个正在旅行魔女，她的名字是伊蕾娜。她为了寻求前所未见的景色、偶然间的邂逅而不断旅行。",
+          "正在旅行的魔女"
+        ],
+        "tags": [
+          "旅行者",
+          "魔女",
+          "好奇心强",
+          "独立"
+        ]
+      },
+      {
+        "id": "char-2",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "艾姆妮西亚",
+        "prefix_name": "",
+        "race": "未知",
+        "age": 20,
+        "gender": "女",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [],
+        "status": [
+          "记忆丧失"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "每次沉睡就会失去所有记忆的神秘少女",
+          "每当陷入沉睡便会失去所有记忆的神秘少女「艾姆妮西亚」。伊蕾娜将与这位少女同行前往「某个国家」。唯一的线索是艾姆妮西亚的日记。",
+          "沉睡后会失忆的神秘少女"
+        ],
+        "tags": [
+          "失忆",
+          "神秘",
+          "日记持有者",
+          "旅伴"
+        ]
+      },
+      {
+        "id": "char-3",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "尤莉",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 16,
+        "gender": "女",
+        "class": "魔导士",
+        "level": 1,
+        "affiliation": [
+          "特务组织（已被开除）"
+        ],
+        "status": [
+          "被组织追杀"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "被组织老大收养长大，在伪装成咖啡店的特务组织工作。",
+          "一个自称“冷硬派”的特务组织成员，褐色双马尾。她是魔导士（魔法师中的底层）。性格笨拙、天真、行动鲁莽，喜欢喝加“药水”的咖啡（实际上会导致呕吐）。她接到暗杀“虚构魔女”伊蕾娜的任务，但所有计划（如下毒、监视、直接攻击）都滑稽地失败了，最后被组织开除并面临追杀。",
+          "一个笨拙的特务组织魔导士，负责暗杀伊蕾娜但彻底失败，最终被组织抛弃。"
+        ],
+        "tags": [
+          "笨拙",
+          "特务",
+          "魔导士",
+          "双马尾",
+          "喜欢奇怪咖啡"
+        ]
+      },
+      {
+        "id": "char-4",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "老大",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男",
+        "class": "组织首领",
+        "level": 1,
+        "affiliation": [
+          "特务组织"
+        ],
+        "status": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "特务组织的首领，一位严肃的熟男大叔。他收养了尤莉并将其抚养长大。在尤莉任务失败后，他冷酷地开除了她，并用枪指着她，让她自生自灭，体现了特务组织的无情。",
+          "冷酷无情的特务组织首领，尤莉的养父，在尤莉失败后将其抛弃。"
+        ],
+        "tags": [
+          "严肃",
+          "冷酷",
+          "养父",
+          "组织首领"
+        ]
+      },
+      {
+        "id": "char-5",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "玛莉",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "旅人",
+        "level": 1,
+        "affiliation": [
+          "旅人"
+        ],
+        "status": [
+          "恋爱烦恼",
+          "假死中"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "以漂亮外表、沉着气质和姣好身材闻名的旅人，自称“太可爱的旅人”。为试探男友而策划毒苹果假死事件。"
+        ],
+        "tags": [
+          "美女",
+          "旅人",
+          "恋爱脑",
+          "策划者"
+        ]
+      },
+      {
+        "id": "char-6",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "沙耶",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "魔女",
+        "level": 1,
+        "affiliation": [
+          "魔女"
+        ],
+        "status": [
+          "监考官",
+          "修行中"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "黑发魔女，曾多次落榜魔女见习生考试，后在旅行中担任监考官打工。与伊蕾娜相识，性格活泼，讨厌蘑菇。"
+        ],
+        "tags": [
+          "魔女",
+          "监考官",
+          "落榜生",
+          "活泼",
+          "挑食"
+        ]
+      },
+      {
+        "id": "char-7",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "高傲美食家",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男性",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [],
+        "status": [
+          "不再举办派对"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "某国的美食家，自称吃过世界上所有料理，无人能比他更懂料理。每晚邀请一流大厨在家中举办奢华派对，并免费招待年轻女孩。性格傲慢，对料理摆盘和吃法有极端挑剔，经常指责厨师和客人。因伊蕾娜提供的难吃到令其“啧啧称奇”的料理，而不再举办派对。",
+          "傲慢挑剔的美食家，被伊蕾娜的极端料理挫败。"
+        ],
+        "tags": [
+          "傲慢",
+          "挑剔",
+          "美食家",
+          "被挫败"
+        ]
+      },
+      {
+        "id": "char-8",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "高傲读书家",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "男性",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [],
+        "status": [
+          "家里蹲",
+          "对现代文学失望"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "微胖的老人，足不出户的家里蹲，自认为看过世上一切书本，以撰写评论为生。认为现代小说无聊，无法引起兴趣。因女仆的传闻而对伊蕾娜如何满足美食家感到好奇。伊蕾娜给他一本极其无聊的自述体小说，他读了三天后愤怒不已，急于向伊蕾娜抱怨分享（实为发泄）。",
+          "傲慢且无聊的读书家，被伊蕾娜用极其无聊的小说激怒。"
+        ],
+        "tags": [
+          "傲慢",
+          "家里蹲",
+          "评论家",
+          "被激怒"
+        ]
+      },
+      {
+        "id": "char-9",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "雅特丽",
+        "prefix_name": "",
+        "race": "水没街区居民",
+        "age": 20,
+        "gender": "女性",
+        "class": "魔法师",
+        "level": 1,
+        "affiliation": [
+          "水没街区"
+        ],
+        "status": [
+          "守护者"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "水没街区的居民，族长的女儿。拥有魔法能力，能用魔法操纵渔网、辅助水下调查等。肤色浅褐，蓝眼，黑长发，戴三角帽，身穿奇特暴露的长袍。性格直率、认真、有教养但语调奇特，对侵入领地的外来者抱有敌意。负责巡逻和捕鱼。在与薇奥拉的互动中显得傲娇（表面嫌弃实则关心）。使用手语进行部分沟通。深爱自己的家园。",
+          "水没街区的守护者，族长的女儿，会使用魔法的少女。"
+        ],
+        "tags": [
+          "魔法师",
+          "族长之女",
+          "傲娇",
+          "守护者",
+          "使用手语"
+        ]
+      },
+      {
+        "id": "char-10",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "薇奥拉",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 25,
+        "gender": "女性",
+        "class": "考古学家",
+        "level": 1,
+        "affiliation": [],
+        "status": [
+          "旅行中"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "自称“美少女考古学家”的成年女性（20-25岁）。金发马尾，戴银色细框眼镜，紫蓝色眼睛，穿着优雅的洋装和披肩。性格悠哉、话多、思维跳跃，没有个人空间感，喜欢靠近可爱的女孩子（有骚扰倾向）。受古都罗利亚国王委托调查水没街区，但因发现“此城因古都罗利亚的魔女而沉没”的古代文字而怀疑国王动机。利用有毒鱼类的真相，巧妙地设计让古都罗利亚放弃侵占计划，保护了水没街区。对雅特丽有特别的好感。",
+          "旅行考古学家，性格古怪但机智，发现了水没街区的历史真相并策划了和平解决方案。"
+        ],
+        "tags": [
+          "考古学家",
+          "机智",
+          "话多",
+          "喜欢美少女",
+          "保护者"
+        ]
+      },
+      {
+        "id": "char-11",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "族长",
+        "prefix_name": "",
+        "race": "水没街区居民",
+        "age": 20,
+        "gender": "男性",
+        "class": "未知",
+        "level": 1,
+        "affiliation": [
+          "水没街区"
+        ],
+        "status": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "水没街区的族长，雅特丽的父亲。外貌如褐色肌肤的花花公子老爷爷，几乎全裸，仅围兜裆布。性格讲道理、冷静，是族中最理性的人。负责管理族群并处理与古都罗利亚的争端。委托薇奥拉和伊蕾娜去与古都罗利亚和解。",
+          "水没街区的理性族长，雅特丽的父亲。"
+        ],
+        "tags": [
+          "族长",
+          "理性",
+          "父亲"
+        ]
+      },
+      {
+        "id": "char-12",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "拉娜",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "旅馆员工",
+        "level": 1,
+        "affiliation": [
+          "村庄旅馆"
+        ],
+        "status": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "在村外救下受伤的飞龙小姐并与之相恋，谋划了“活人祭品”计画以图光明正大结合。",
+          "村庄旅馆的店员，自称全村最美。实为飞龙小姐的恋人。为了能与飞龙公开在一起，参与了假装被飞龙掳走的计画。性格开朗，有些脱线。"
+        ],
+        "tags": [
+          "旅馆员工",
+          "飞龙恋人",
+          "计画者",
+          "开朗"
+        ]
+      },
+      {
+        "id": "char-13",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "飞龙小姐",
+        "prefix_name": "",
+        "race": "飞龙",
+        "age": 20,
+        "gender": "女",
+        "class": "龙族",
+        "level": 1,
+        "affiliation": [
+          "神庙"
+        ],
+        "status": [],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "受伤被拉娜所救，与之相恋。因种族隔阞无法公开，遂设计“威胁村庄”事件以求结合。",
+          "外观与人类少女无异，背有翅膀，头上有角。性格单纯，爱上了救她的拉娜。为了能常伴拉娜身边并公开关系，威胁村庄索要“最美姑娘”作为活人祭品，实为结婚计画的一部分。"
+        ],
+        "tags": [
+          "龙族",
+          "人形态",
+          "恋爱中",
+          "单纯"
+        ]
+      },
+      {
+        "id": "char-14",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "大魔女路德拉",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "大魔女",
+        "level": 1,
+        "affiliation": [
+          "冰封之城（故乡）"
+        ],
+        "status": [
+          "已故",
+          "被冰魔法侵蚀"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "冰封之城的大魔女。当故乡爆发来源不明的致命瘟疫（源于邻国伊斯特的魔力污染），且她被国民误解为元凶时，她选择用强大的冰魔法冻结整个国家以暂停时间，为自己研制解药争取时间。最终虽研制出解药（即城外的飘雪），但她本人也因魔力消耗和瘟疫侵蚀而失去人性，异化为全身长满冰块、失去理智的怪物。"
+        ],
+        "tags": [
+          "爱国者",
+          "牺牲者",
+          "悲剧魔女",
+          "冰魔法使",
+          "被侵蚀"
+        ]
+      },
+      {
+        "id": "char-15",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "扫帚（人形化）",
+        "prefix_name": "",
+        "race": "魔法物品",
+        "age": 20,
+        "gender": "女（人形时）",
+        "class": "魔法扫帚",
+        "level": 1,
+        "affiliation": [
+          "伊蕾娜"
+        ],
+        "status": [
+          "临时人形",
+          "任务完成"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "伊蕾娜的魔法扫帚。在伊蕾娜即将被冰封前，它被伊蕾娜使用将物品变成人的魔法暂时变成了拥有桃红色头发、与伊蕾娜容貌相似的人形。它能与物品“对话”并获取信息，引导艾姆妮西亚找到了大魔女路德拉的宅邸和信件，并在任务完成后变回扫帚。"
+        ],
+        "tags": [
+          "忠诚",
+          "引导者",
+          "物品之声",
+          "临时化身"
+        ]
+      },
+      {
+        "id": "char-16",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "蔷薇魔女爱蜜莉雅",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "魔女",
+        "level": 1,
+        "affiliation": [
+          "信仰之都伊斯特"
+        ],
+        "status": [
+          "活跃",
+          "掌权者之一"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "信仰之都伊斯特现存唯一的魔女，也是该国魔法技术的核心开发者（如镜水晶、吸收利用魔力的系统）。她言辞慵懒，行事神秘。在四名魔女连续失踪/被杀事件后，她指控正统骑士团成员艾姆妮西亚为凶手，并将其定罪处以“忘却归乡之刑”。艾维莉亚指称她才是陷害艾姆妮西亚的真凶。"
+        ],
+        "tags": [
+          "技术开发者",
+          "可疑的指控者",
+          "慵懒的演讲者",
+          "镜水晶使用者"
+        ]
+      },
+      {
+        "id": "char-17",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "艾维莉亚",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 16,
+        "gender": "女",
+        "class": "正统骑士团成员",
+        "level": 1,
+        "affiliation": [
+          "信仰之都伊斯特",
+          "正统骑士团"
+        ],
+        "status": [
+          "活跃",
+          "秘密调查中"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "艾姆妮西亚的妹妹，隶属正统骑士团，能力出色（超越了姐姐）。她坚信姐姐艾姆妮西亚是无辜的，一切都是蔷薇魔女爱蜜莉雅的阴谋。为了拯救姐姐，她表面上履行职责，背地里一直在秘密调查真相。她以有点古怪的方式（如戴纸箱）接近并测试了伊蕾娜的立场。"
+        ],
+        "tags": [
+          "妹妹",
+          "调查者",
+          "忠诚的家人",
+          "有点古怪"
+        ]
+      },
+      {
+        "id": "char-18",
+        "type": "character",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "爱蜜莉雅",
+        "prefix_name": "",
+        "race": "人类",
+        "age": 20,
+        "gender": "女",
+        "class": "魔女",
+        "level": 1,
+        "affiliation": [
+          "信仰之都伊斯特"
+        ],
+        "status": [
+          "被逮捕",
+          "罪行揭穿"
+        ],
+        "attributes": {
+          "str": 10,
+          "dex": 10,
+          "con": 10,
+          "int": 10,
+          "wis": 10,
+          "cha": 10
+        },
+        "personality": [],
+        "inventory": [],
+        "background": [
+          "进行禁忌研究，杀害魔女以获取魔力维持青春。",
+          "信仰之都伊斯特的魔女，为追求青春永驻而杀害四名魔女，并嫁祸给艾姆妮西亚。性格慵懒而冷酷，利用魔法和权威掩盖罪行。最终被伊蕾娜和艾维莉亚设计揭穿并逮捕。",
+          "为永葆青春杀害魔女并陷害他人的魔女。"
+        ],
+        "tags": [
+          "蔷薇魔女",
+          "野心家",
+          "冷酷",
+          "魔法师",
+          "罪犯"
+        ]
+      }
+    ],
+    "interaction_cards": [
+      {
+        "id": "interaction-1",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "毒咖啡暗杀",
+        "description": "尤莉伪装成服务生，以索取签名为借口接近伊蕾娜，并在送给伊蕾娜的“爱心咖啡”中下毒（一种会引发剧烈呕吐的药水）。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "伊蕾娜通过气味察觉咖啡中有毒药，并未饮用，并将咖啡转送给了一个搭讪的轻浮男子，导致该男子（可能是组织同伴）在咖啡厅呕吐。计划失败。"
+      },
+      {
+        "id": "interaction-2",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "人偶替身",
+        "description": "伊蕾娜察觉被监视后，制作了一个与自己样貌完全相同的人偶，并将其放置在咖啡厅的露天座位，本人则隐藏起来观察。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "成功欺骗了连续监视数日的尤莉，导致尤莉最终攻击了人偶，被伊蕾娜轻松制服并多次击飞。"
+      },
+      {
+        "id": "interaction-3",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "尤莉被开除",
+        "description": "由于暗杀伊蕾娜的任务彻底失败，并在咖啡厅造成混乱，尤莉被组织老大传唤。老大用枪指着她，宣布将她开除，并暗示她必须逃离这个国家，否则会被灭口。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "尤莉失去了组织庇护，被勒令离开，并面临来自组织或委托方的生命威胁。"
+      },
+      {
+        "id": "interaction-4",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "赶出组织",
+        "description": "尤莉因暗杀“虚构魔女”任务失败，被特务组织开除。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "尤莉离开特务组织，开始旅行修行。"
+      },
+      {
+        "id": "interaction-5",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "毒苹果计划",
+        "description": "玛莉请求伊蕾娜制作毒苹果，意图重现苹果传说，通过假死让男友亲吻自己来唤醒。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "玛莉假装死亡，引发旅馆骚动和侦探调查。"
+      },
+      {
+        "id": "interaction-6",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "有毒鱼类真相揭示",
+        "description": "薇奥拉发现了水没街区鱼类含有毒素的秘密（只有当地居民能食用），并利用此信息作为与古都罗利亚国王交涉的底牌。她表面上以“和解礼物”名义赠送鱼类，实则让国王在试吃（由雅特丽进行）后，通过密信得知真相，从而使其因无法利用渔获而放弃侵扰水没街区的计划。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "成功阻止了古都罗利亚对水没街区的侵扰，保障了水没街区的和平与独立。"
+      },
+      {
+        "id": "interaction-7",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "日记调换",
+        "description": "两人相撞导致日记调换，引发后续一连串误会与事件。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "艾姆妮西亚与伊蕾娜相撞时，两人的日记意外互换。导致失忆的艾姆妮西亚误以为自己是灰之魔女伊蕾娜，从而在阿尔贝德被捕；伊蕾娜则获得了艾姆妮西亚的日记，得知其失忆症和目的地伊斯特。"
+      },
+      {
+        "id": "interaction-8",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "拯救艾姆妮西亚",
+        "description": "伊蕾娜赎救艾姆妮西亚，两人结伴同行。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "伊蕾娜支付20枚金币罚金（实际用魔法伪装成金币的铜币），并通过回答关于“灰之魔女”（自己）日记内容的拷问，成功从阿尔贝德的魔法师暂时收容所救出被误捕的艾姆妮西亚。"
+      },
+      {
+        "id": "interaction-9",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "说服村民",
+        "description": "艾姆妮西亚以“勇者”身份向村民揭示真相，和平解决事件。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "艾姆妮西亚利用拔出“传说之剑”的权威身份，向村民说明飞龙小姐并无恶意且想与人类和平共处，成功化解村民对飞龙的敌意，使飞龙与拉娜的恋情得以被接受。"
+      },
+      {
+        "id": "interaction-10",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "路德拉的讨伐与解放",
+        "description": "",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "艾姆妮西亚穿上路德拉预先留下的、能使其魔法无效化的斗篷，使用军刀刺杀了路德拉。随着路德拉的死亡，维持冰封的魔力源头消失，覆盖城市的冰开始融化，所有被冰冻的居民（包括伊蕾娜）重获自由，瘟疫也被解药之雪治愈。"
+      },
+      {
+        "id": "interaction-11",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "艾姆妮西亚被捕",
+        "description": "",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "抵达伊斯特城门时，守卫魔法师感谢伊蕾娜带回“罪犯”，并立即使用拘束魔法逮捕了艾姆妮西亚。她被宣布为“大罪人”，并关押起来等待次日处决。"
+      },
+      {
+        "id": "interaction-12",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "拯救艾姆妮西亚计划",
+        "description": "艾维莉亚负责用纸箱吸引注意并骑扫帚救走艾姆妮西亚；伊蕾娜负责拖延爱蜜莉雅并引导其自白；利用镜水晶记录爱蜜莉雅的供词。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "艾维莉亚和伊蕾娜合作，在行刑时救出艾姆妮西亚，并设计使爱蜜莉雅在镜水晶前自曝罪行。"
+      },
+      {
+        "id": "interaction-13",
+        "type": "interaction",
+        "visible": {
+          "public_visible": true,
+          "player_visible": true,
+          "unlock_condition": null
+        },
+        "name": "爱蜜莉雅的自白与逮捕",
+        "description": "伊蕾娜冰冻会议场并保持镜水晶运作，爱蜜莉雅在不知情下自白罪行，正统骑士团据此行动。",
+        "difficulty": "normal",
+        "min_level": 1,
+        "element": "none",
+        "cost": "none",
+        "d20_logic": null,
+        "effect": "爱蜜莉雅在镜水晶前承认杀害魔女以追求青春永驻，被正统骑士团当场逮捕。"
+      }
+    ],
+    "custom_cards": []
+  }
+}

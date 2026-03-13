@@ -1,8 +1,48 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
-import { join } from 'path'
+import { join, basename } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { writeFile, readFile, readdir, mkdir, stat, unlink } from 'fs/promises'
 import { existsSync } from 'fs'
+import iconv from 'iconv-lite'
+
+/**
+ * 自动检测文本文件编码并解码为字符串
+ * 优先级：BOM → UTF-8 验证 → GBK 兜底
+ */
+function decodeTextBuffer(buf: Buffer): { text: string; encoding: string } {
+  // UTF-8 BOM
+  if (buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) {
+    return { text: buf.toString('utf8').slice(1), encoding: 'utf8-bom' }
+  }
+  // UTF-16 LE BOM
+  if (buf[0] === 0xff && buf[1] === 0xfe) {
+    return { text: iconv.decode(buf, 'utf16-le'), encoding: 'utf16-le' }
+  }
+  // UTF-16 BE BOM
+  if (buf[0] === 0xfe && buf[1] === 0xff) {
+    return { text: iconv.decode(buf, 'utf16-be'), encoding: 'utf16-be' }
+  }
+
+  // 尝试 UTF-8：检查是否存在典型 GBK 乱码特征
+  const utf8Text = buf.toString('utf8')
+  if (!hasInvalidUtf8(buf)) {
+    return { text: utf8Text, encoding: 'utf8' }
+  }
+
+  // UTF-8 无效 → 按 GBK 解码
+  return { text: iconv.decode(buf, 'gbk'), encoding: 'gbk' }
+}
+
+/**
+ * 检测 Buffer 中是否包含无效 UTF-8 序列（即替换字符 U+FFFD）
+ */
+function hasInvalidUtf8(buf: Buffer): boolean {
+  const text = buf.toString('utf8')
+  // 如果 UTF-8 解码产生了替换字符，说明不是合法 UTF-8
+  if (text.includes('\uFFFD')) return true
+  // 无替换字符 → 合法 UTF-8，直接接受
+  return false
+}
 
 function createWindow(): void {
   // Create the browser window.
@@ -35,6 +75,25 @@ function createWindow(): void {
   }
 }
 
+function sanitizeFileName(value: string): string {
+  return value.replace(/[\\/:*?"<>|]/g, '_').trim()
+}
+
+function resolveTemplateFilePath(projectRoot: string, worldName?: string, worldUuid?: string): string {
+  const safeName = sanitizeFileName(worldName || '').replace(/\.json$/i, '')
+  const safeUuid = sanitizeFileName(worldUuid || '')
+
+  let fileBase = safeName
+  if (!fileBase && safeUuid) {
+    fileBase = safeUuid
+  }
+  if (!fileBase) {
+    fileBase = 'Oort'
+  }
+
+  return join(projectRoot, 'src/world_template', `${fileBase}.json`)
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -51,25 +110,25 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  ipcMain.handle('save-world-file', async (_event, content: string) => {
+  ipcMain.handle('save-world-file', async (_event, content: string, worldName?: string, worldUuid?: string) => {
     try {
-      // Use app.getAppPath() to find the project root
-      // In development, app.getAppPath() usually points to the project root or the build output directory
-      // We want to target src/world_template/Oort.json specifically for the user's template
       const projectRoot = app.getAppPath()
-      let filePath = ''
-      
-      if (is.dev) {
-        // In dev mode with electron-vite, index.js is in out/main/
-        filePath = join(projectRoot, 'src/world_template/Oort.json')
-      } else {
-        // In production, this file might be in a different location
-        // For now, we still try to find it relative to the app path
-        filePath = join(projectRoot, 'src/world_template/Oort.json')
+      let finalWorldName = worldName
+      let finalWorldUuid = worldUuid
+
+      if (!finalWorldName || !finalWorldUuid) {
+        try {
+          const parsed = JSON.parse(content)
+          finalWorldName = finalWorldName || parsed?.world_meta?.name
+          finalWorldUuid = finalWorldUuid || parsed?.world_meta?.uuid
+        } catch {
+          // keep fallback defaults
+        }
       }
-      
+
+      const filePath = resolveTemplateFilePath(projectRoot, finalWorldName, finalWorldUuid)
       await writeFile(filePath, content, 'utf8')
-      return { success: true }
+      return { success: true, filePath }
     } catch (error: any) {
       console.error('Failed to save world file:', error)
       return { success: false, error: error.message }
@@ -181,6 +240,26 @@ app.whenReady().then(() => {
     }
   })
 
+  ipcMain.handle('delete-world-template', async (_event, fileName: string) => {
+    try {
+      const safeFileName = sanitizeFileName(fileName || '')
+      if (!safeFileName) {
+        return { success: false, error: 'Invalid template filename' }
+      }
+
+      const normalized = safeFileName.endsWith('.json') ? safeFileName : `${safeFileName}.json`
+      const projectRoot = app.getAppPath()
+      const templateDir = join(projectRoot, 'src/world_template')
+      const filePath = join(templateDir, normalized)
+
+      await unlink(filePath)
+      return { success: true }
+    } catch (error: any) {
+      console.error('Failed to delete world template:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
   ipcMain.handle('load-world-file-external', async () => {
     try {
       const { filePaths, canceled } = await dialog.showOpenDialog({
@@ -197,6 +276,33 @@ app.whenReady().then(() => {
       return { success: true, content }
     } catch (error: any) {
       console.error('Failed to load world file:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('import-text-file', async () => {
+    try {
+      const { filePaths, canceled } = await dialog.showOpenDialog({
+        title: '导入文本素材',
+        filters: [{ name: 'Text/Markdown', extensions: ['txt', 'md', 'markdown'] }],
+        properties: ['openFile']
+      })
+
+      if (canceled || filePaths.length === 0) {
+        return { success: false, cancelled: true }
+      }
+
+      const filePath = filePaths[0]
+      const buf = await readFile(filePath)
+      const { text: content, encoding } = decodeTextBuffer(buf)
+      return {
+        success: true,
+        filename: basename(filePath),
+        content,
+        encoding
+      }
+    } catch (error: any) {
+      console.error('Failed to import text file:', error)
       return { success: false, error: error.message }
     }
   })

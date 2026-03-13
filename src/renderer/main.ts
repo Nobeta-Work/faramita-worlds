@@ -1,11 +1,16 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
+import './assets/theme.css'
 import './assets/main.css'
 import { importInitialData } from './db/importer'
+import { initializeSkills } from './core/skills'
 
 const app = createApp(App)
 app.use(createPinia())
+
+// Register all AI Skills with the pipeline
+initializeSkills()
 
 importInitialData().then(() => {
   app.mount('#app')

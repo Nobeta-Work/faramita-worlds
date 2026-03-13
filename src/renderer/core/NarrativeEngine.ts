@@ -1,5 +1,5 @@
 import { db } from '../db/db'
-import { AIResponse, AIResponseWorldUpdate, AIResponseActiveRole } from '@shared/Interface'
+import { AIResponse, AIResponseWorldUpdate } from '@shared/Interface'
 import { useWorldStore } from '../store/world'
 
 export class NarrativeEngine {
@@ -46,10 +46,16 @@ export class NarrativeEngine {
 
     const worldStore = useWorldStore()
     const notifications: string[] = []
+    const warnings: string[] = []
 
     for (const update of updates) {
       try {
         if (update.action === 'CREATE') {
+          if (!update.data || typeof update.data !== 'object') {
+            warnings.push(`[WORLD_UPDATE_WARN] CREATE ${update.type} ignored: invalid data payload`)
+            continue
+          }
+
           // Handle Create
           // Check if ID exists to avoid conflict (User req 9: ID injection robustness)
           let newCard = { ...update.data, type: update.type }
@@ -78,13 +84,14 @@ export class NarrativeEngine {
 
         } else if (update.action === 'UPDATE') {
           // Handle Update (Deep Merge)
-          if (!update.target_id) continue
+          if (!update.target_id) {
+            warnings.push(`[WORLD_UPDATE_WARN] UPDATE ${update.type} ignored: missing target_id`)
+            continue
+          }
           
           const existing = await db.world_cards.get(update.target_id)
           if (existing) {
-             // Deep merge data
              // Ensure data fields that should be arrays ARE arrays in the update
-             // This fixes the "Magic" -> ["M", "a", "g", "i", "c"] issue if AI returns string for status
              if (update.data && (update.data as any).status && typeof (update.data as any).status === 'string') {
                 (update.data as any).status = [(update.data as any).status]
              }
@@ -92,16 +99,36 @@ export class NarrativeEngine {
                 (update.data as any).background = [(update.data as any).background]
              }
 
+             // Traits: replace-by-text merge instead of deepMerge
+             if ((update.data as any)?.traits && Array.isArray((update.data as any).traits)) {
+               const existingTraits: any[] = (existing as any).traits || []
+               const incomingTraits: any[] = (update.data as any).traits
+               const mergedTraits = [...existingTraits]
+               for (const incoming of incomingTraits) {
+                 const idx = mergedTraits.findIndex(t => t.text === incoming.text)
+                 if (idx >= 0) {
+                   mergedTraits[idx] = { ...mergedTraits[idx], ...incoming }
+                 } else {
+                   mergedTraits.push(incoming)
+                 }
+               }
+               (update.data as any).traits = mergedTraits
+             }
+
              const merged = this.deepMerge(existing, update.data)
              await worldStore.updateCard(merged)
              notifications.push(`Updated ${update.type}: ${merged.name || merged.title || 'Unknown'}`)
+          } else {
+             warnings.push(`[WORLD_UPDATE_WARN] UPDATE ${update.type} ignored: target ${update.target_id} not found`)
           }
         }
       } catch (err) {
         console.error(`Failed to process update for ${update.type}`, err)
+        const reason = err instanceof Error ? err.message : String(err)
+        warnings.push(`[WORLD_UPDATE_WARN] ${update.action} ${update.type} failed: ${reason}`)
       }
     }
-    return notifications
+    return [...notifications, ...warnings]
   }
 
   /**
@@ -142,14 +169,11 @@ export class NarrativeEngine {
     })
     return output
   }
-  static async processActiveRoles(activeRole: AIResponseActiveRole) {
-    if (!activeRole) return
+  static async processActiveRoles(activeRole: string[]) {
+    if (!activeRole || !Array.isArray(activeRole) || activeRole.length === 0) return
     
     const worldStore = useWorldStore()
-    const toAdd = activeRole.add || []
-    const toDelete = activeRole.delete || []
-    
-    await worldStore.updateActiveCharacters(toAdd, toDelete)
+    await worldStore.setActiveCharacters(activeRole)
   }
 
 

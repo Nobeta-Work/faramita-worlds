@@ -1,5 +1,5 @@
 import { db } from '../db/db'
-import { WorldCard, CharacterCard, ChapterCard, SettingCard, ChronicleEntry } from '@shared/Interface'
+import { CharacterCard, ChapterCard, SettingCard, ChronicleEntry } from '@shared/Interface'
 
 export interface WorldSnapshot {
   activeChapter: ChapterCard | null
@@ -8,18 +8,34 @@ export interface WorldSnapshot {
   settings: SettingCard[]
 }
 
+/** Per-skill AI call configuration override */
+export interface SkillAIConfig {
+  model?: string
+  temperature?: number
+  max_tokens?: number
+  response_format?: 'json' | 'text'
+}
+
+/** Default lightweight configs for planning/review skills */
+const SKILL_AI_DEFAULTS: Record<string, SkillAIConfig> = {
+  'turn-planning': { max_tokens: 512, temperature: 0.3, response_format: 'json' },
+  'response-review': { max_tokens: 512, temperature: 0.2, response_format: 'json' },
+  'retrieval-review': { max_tokens: 256, temperature: 0.2, response_format: 'text' },
+  'directive-compiler': { max_tokens: 256, temperature: 0.1, response_format: 'text' },
+}
+
 export class AIProtocol {
-  /**
-   * Intercepts dice roll commands from AI response.
-   * Pattern: [[XdY+Z]] or similar.
-   */
-  static interceptRolls(text: string): { roll: string } | null {
-    // Regex to match [[1d20+5]] or [[2d6]] etc.
-    const match = text.match(/\[\[(\d+d\d+[\+\-\d]*)\]\]/)
-    if (match) {
-      return { roll: match[1] }
-    }
-    return null
+  static estimateTokens(text: string): number {
+    return Math.ceil((text || '').length / 2)
+  }
+
+  static formatCharacterTraits(char: CharacterCard): string {
+    if (!char.traits?.length) return '无特质标签'
+    const typeSymbol: Record<string, string> = { strength: '✦', flaw: '✧', bond: '♦', mark: '★' }
+    return char.traits
+      .filter(t => t.active)
+      .map(t => `${typeSymbol[t.type] || '●'} ${t.text} (weight:${t.weight}, ${t.source})`)
+      .join('\n  ')
   }
 
   /**
@@ -56,316 +72,75 @@ export class AIProtocol {
   /**
    * Formats the history into a token-efficient string.
    */
-  static formatHistory(history: ChronicleEntry[]): string {
-    return history.map(entry => {
-      // If content is JSON (from AI), parse it and extract narrative sequence
-      let content = entry.content
-      if (entry.role === 'assistant') {
-        try {
-          const json = JSON.parse(content)
-          if (json.sequence && Array.isArray(json.sequence)) {
-            content = json.sequence
-              .map((s: any) => {
-                if (s.type === 'dialogue') return `${s.speaker_name}: ${s.content}`
-                return `(Environment: ${s.content})`
-              })
-              .join('\n')
-          }
-        } catch (e) {
-          // If not JSON, use as is
+  /**
+   * 格式化历史，支持分层记忆输出与 token 估算
+   * @param history 原始历史
+   * @param options 可选：{ layer: 'short-term' | 'long-term' | 'world-snapshot', tokenBudget?: number, windowSize?: number, summaries?: string[] }
+   */
+  static formatHistory(
+    history: ChronicleEntry[],
+    options?: {
+      layer?: 'short-term' | 'long-term' | 'world-snapshot',
+      tokenBudget?: number,
+      windowSize?: number,
+      summaries?: string[]
+    }
+  ): string {
+    const layer = options?.layer || 'short-term'
+    const tokenBudget = options?.tokenBudget || 6000
+    if (layer === 'short-term') {
+      // 保留完整 sequence 结构，窗口大小可配置
+      const window = options?.windowSize || 8
+      const entries = history.slice(-window)
+      let text = entries.map(entry => {
+        let content = entry.content
+        if (entry.role === 'assistant') {
+          try {
+            const json = JSON.parse(content)
+            if (json.sequence && Array.isArray(json.sequence)) {
+              content = json.sequence
+                .map((s: any) => {
+                  if (s.type === 'dialogue') return `${s.speaker_name}: ${s.content}`
+                  return `(Environment: ${s.content})`
+                })
+                .join('\n')
+            }
+          } catch (e) {}
         }
+        return `[${entry.role.toUpperCase()}]: ${content}`
+      }).join('\n')
+      // 超过 tokenBudget 时缩减窗口
+      while (this.estimateTokens(text) > tokenBudget && entries.length > 2) {
+        entries.shift()
+        text = entries.map(entry => `[${entry.role.toUpperCase()}]: ${entry.content}`).join('\n')
       }
-      return `[${entry.role.toUpperCase()}]: ${content}`
-    }).join('\n')
+      return text
+    }
+    if (layer === 'long-term') {
+      // 只输出摘要文本
+      const summaries = options?.summaries || []
+      let text = summaries.join('\n')
+      // 超过 tokenBudget 时压缩摘要
+      while (this.estimateTokens(text) > tokenBudget && summaries.length > 1) {
+        summaries.shift()
+        text = summaries.join('\n')
+      }
+      return text
+    }
+    if (layer === 'world-snapshot') {
+      // 输出关键字段摘要
+      return options?.summaries?.join('\n') || ''
+    }
+    // 默认：原始历史
+    return history.map(entry => `[${entry.role.toUpperCase()}]: ${entry.content}`).join('\n')
   }
 
   /**
-   * Step 1: Constructs the Discovery Prompt.
-   * Asks AI to identify which cards it needs to read based on context and user input.
+   * Get per-skill AI config: merges built-in defaults with user overrides.
    */
-  static async constructDiscoveryPrompt(
-    userPrompt: string, 
-    activeCharIds: string[],
-    history: ChronicleEntry[]
-  ): Promise<string> {
-    const allCards = await db.world_cards.toArray()
-    const index = allCards.map(c => `- [${c.type}] ${(c as any).title || (c as any).name || 'Unknown'} (ID: ${c.id})`).join('\n')
-    
-    const snapshot = await this.getSnapshot(activeCharIds)
-    const historyText = this.formatHistory(history.slice(-5)) // Only recent history for discovery
-
-    return `
-# Role
-You are the "Librarian" of the Oort world database. Your job is to identify which World Cards are relevant to the user's latest input and the current context.
-
-# Task
-1. Analyze the User Input and Recent History.
-2. Review the "World Index" below.
-3. Return a JSON object listing the IDs of the cards you need to read in detail to generate a narrative response.
-4. IMPORTANT: If the user is starting a new game or scene, and only the "Player" is active, you MUST identify which other characters or settings should be active in this scene (e.g., NPCs present in the chapter).
-5. Return "active_role_suggestions" if you believe new characters should be permanently added to the Active Information panel.
-
-# Context
-## Active Chapter
-${snapshot.activeChapter ? `${snapshot.activeChapter.title} (ID: ${snapshot.activeChapter.id})` : 'None'}
-
-## Active Characters
-${snapshot.activeCharacters.map(c => `${c.name} (ID: ${c.id})`).join(', ')}
-
-## Recent History
-${historyText}
-
-## User Input
-${userPrompt}
-
-# World Index
-${index}
-
-# Response Format (JSON Only)
-{
-  "needed_card_ids": ["id_1", "id_2"],
-  "active_role_suggestions": ["id_3", "id_4"]
-}
-`
+  static getSkillAIConfig(skillId: string, userOverrides?: Partial<SkillAIConfig>): SkillAIConfig {
+    const defaults = SKILL_AI_DEFAULTS[skillId] || {}
+    return { ...defaults, ...userOverrides }
   }
 
-  /**
-   * Step 2: Constructs the Narrative Prompt.
-   * Includes the full content of requested cards.
-   */
-  static async constructNarrativePrompt(
-    userPrompt: string, 
-    activeCharIds: string[],
-    history: ChronicleEntry[],
-    supplementaryCardIds: string[]
-  ): Promise<string> {
-    const snapshot = await this.getSnapshot(activeCharIds)
-    const historyText = this.formatHistory(history)
-
-    // Fetch supplementary cards
-    const supplementaryCards = await db.world_cards.bulkGet(supplementaryCardIds)
-    const validSupplements = supplementaryCards.filter(c => c !== undefined)
-
-    // Build World Context String
-    let worldContext = ''
-    
-    // Settings
-    worldContext += '## Settings (Global Rules)\n'
-    snapshot.settings.forEach(s => {
-      worldContext += `- ${s.title} (${s.category}): ${s.content}\n`
-    })
-
-    // Active Chapter
-    if (snapshot.activeChapter) {
-      worldContext += `\n## Current Chapter: ${snapshot.activeChapter.title}\n`
-      worldContext += `Objective: ${snapshot.activeChapter.objective}\n`
-      worldContext += `Summary: ${snapshot.activeChapter.summary}\n`
-      worldContext += `Plot Points:\n`
-      snapshot.activeChapter.plot_points.forEach(p => {
-        worldContext += `- ${p.title}: ${p.content} (Secret: ${p.secret_notes})\n`
-      })
-    }
-
-    // Active Characters
-    let charContext = '## Active Characters\n'
-    snapshot.activeCharacters.forEach(c => {
-      charContext += `### ${c.name} (ID: ${c.id})\n`
-      charContext += `Race: ${c.race}, Class: ${c.class}, Level: ${c.level}\n`
-      charContext += `Attributes: ${JSON.stringify(c.attributes)}\n`
-      // Defensive check for status array
-      const statusText = Array.isArray(c.status) ? c.status.join(', ') : (c.status || 'None')
-      charContext += `Status: ${statusText}\n`
-      // Include personality/background if relevant? 
-      // Maybe keep it brief unless requested in supplementary?
-      // For now, keep it somewhat detailed as they are "Active"
-      const personalityText = Array.isArray(c.personality) ? c.personality.join(', ') : (c.personality || 'Unknown')
-      charContext += `Personality: ${personalityText}\n`
-    })
-
-    // Supplementary Cards (The AI requested these)
-    let suppContext = '## Referenced Knowledge (Dynamically Retrieved)\n'
-    validSupplements.forEach(c => {
-      if (!c) return
-      suppContext += `### [${c.type}] ${(c as any).title || (c as any).name || 'Unknown'} (ID: ${c.id})\n`
-      suppContext += JSON.stringify(c, null, 2) + '\n'
-    })
-
-    const systemMessage = `
-# Role
-You are the Game Master (GM) for the dark fantasy world .
-Your goal is to weave a compelling narrative involving gods, magic, and destiny.
-
-# World Context
-${worldContext}
-
-${charContext}
-
-${suppContext}
-
-# History
-${historyText}
-
-# Instruction
-1. Respond to the User Input as the GM.
-2. Use the provided "Referenced Knowledge" to ensure accuracy.
-3. Advance the plot based on the Current Chapter's objectives.
-5. If the user meets a new character or enters a new location, use 'world_updates' or 'active_role' to update the state.
-6. PROACTIVE STORYTELLING: If the user input is vague, passive, or if the plot has stalled, introduce a new event, threat, or discovery to drive the narrative forward.
-7. If you think the user needs to throw a dice, set "needs_roll" to true and provide the roll details.
-8. FORCED ACTIONS HANDLING:
-   - When player attempts FORCED PERSUASION (强行说服): Set "needs_roll" to true with attribute "cha" and appropriate DC
-   - When player attempts THEFT/ROBBERY (抢夺): Set "needs_roll" to true with attribute "dex" and appropriate DC
-   - When player attempts ESCAPE/FLEE (逃跑): Set "needs_roll" to true with attribute "dex" and appropriate DC
-   - When player faces FORCED EVENTS (如陷阱、自然灾害): Set "needs_roll" to true with appropriate attribute and DC based on the situation
-   - For COMBAT actions: Set "needs_roll" to true with attribute "str" or "dex" as appropriate
-   - For MAGIC/SPELL actions: Set "needs_roll" to true with attribute "int" or "wis" as appropriate
-
-# Language
-You MUST output the narrative in **Chinese (Simplified)**.
-
-# Response Format
-You MUST respond with a valid JSON object.
-{
-  "sequence": [
-    { "type": "environment", "content": "Description of scene..." },
-    { "type": "dialogue", "speaker_name": "Name", "content": "Speech..." }
-  ],
-  "interaction": { 
-    "needs_roll": false
-  },
-  "world_updates": [],
-  "active_role": { "add": [], "delete": [] }
-}
-`
-
-    return `${systemMessage}\n\n[USER INPUT]: ${userPrompt}`
-  }
-
-  /**
-   * Deprecated: Use constructNarrativePrompt instead.
-   * Keeping for backward compatibility if needed, or remove.
-   */
-  static async constructPrompt(
-    userPrompt: string, 
-    activeCharIds: string[],
-    history: ChronicleEntry[],
-    interactionResult?: string
-  ): Promise<string> {
-    const snapshot = await this.getSnapshot(activeCharIds)
-    const historyText = this.formatHistory(history)
-
-    // Build World Context String
-    let worldContext = ''
-    
-    // Settings
-    worldContext += '## Settings\n'
-    snapshot.settings.forEach(s => {
-      worldContext += `- ${s.title} (${s.category}): ${s.content}\n`
-    })
-
-    // Active Chapter
-    if (snapshot.activeChapter) {
-      worldContext += `\n## Current Chapter: ${snapshot.activeChapter.title}\n`
-      worldContext += `Objective: ${snapshot.activeChapter.objective}\n`
-      worldContext += `Plot Points: ${snapshot.activeChapter.plot_points.map(p => p.title).join(', ')}\n`
-    }
-
-    // Active Characters
-    let charContext = '## Active Characters\n'
-    snapshot.activeCharacters.forEach(c => {
-      charContext += `### ${c.name} (ID: ${c.id})\n`
-      charContext += `Race: ${c.race}, Class: ${c.class}, Level: ${c.level}\n`
-      charContext += `Attributes: STR:${c.attributes.str} DEX:${c.attributes.dex} CON:${c.attributes.con} INT:${c.attributes.int} WIS:${c.attributes.wis} CHA:${c.attributes.cha}\n`
-      charContext += `Status: ${c.status.join(', ')}\n`
-      charContext += `Personality: ${c.personality?.join(', ')}\n`
-      charContext += `Background: ${c.background?.join(' ')}\n`
-    })
-
-    // Inactive Characters Summary
-    charContext += '\n## Other Characters (Summary)\n'
-    snapshot.inactiveCharacters.forEach(c => {
-      charContext += `- ${c.name} (${c.id})\n`
-    })
-
-    const systemMessage = `
-# Role
-You are the Game Master (GM) for the dark fantasy world of "Oort" (奥尔特大陆).
-Your goal is to weave a compelling narrative involving gods, magic, and destiny.
-
-# World Context (Current Snapshot)
-${worldContext}
-
-# Active Character Details
-${charContext}
-
-# Output Constraint (CRITICAL)
-You MUST reply in valid JSON format. Do NOT include any text outside the JSON block.
-1. Narrative Style:
-   - Use vivid, sensory-rich descriptions for the environment (sight, sound, smell).
-   - Maintain a serious, immersive dark fantasy tone.
-   - Separate "Environment" descriptions from "Dialogue".
-   - Environment descriptions should be atmospheric and set the scene.
-   - Dialogue should be in character.
-2. Game Mechanics:
-   - Use 'world_updates' to advance time, modify character status, or unlock settings.
-   - If the player attempts an action requiring a check (e.g., attacking, persuading, climbing), use 'interaction' to request a roll.
-   - If a player tries an impossible feat, describe the failure/backlash in 'sequence'.
-   - FORCED ACTIONS (强制行为) TRIGGER DICE ROLLS:
-     * Player FORCED PERSUASION (强行说服) → cha check
-     * Player THEFT/ROBBERY (抢夺) → dex check
-     * Player ESCAPE/FLEE (逃跑) → dex check
-     * Player COMBAT actions → str/dex check
-     * Player MAGIC/SPELL → int/wis check
-     * Player facing TRAPS/PITFALLS → appropriate attribute check based on trap type
-     * Player遭遇NATURAL DISASTERS (自然灾害) → con/dex check based on disaster type
-   - The GM should analyze user input and set appropriate "dc" values based on difficulty:
-     * Easy: DC 10-12
-     * Medium: DC 13-16
-     * Hard: DC 17-20
-     * Very Hard: DC 21-25
-3. Language:
-   - The content of the 'sequence' MUST be in CHINESE (Simplified).
-   - Internal keys and structure must remain English.
-
-JSON Structure Template:
-{
-  "sequence": [
-    { "type": "environment", "content": "Environmental description..." },
-    { "type": "dialogue", "speaker_name": "Name", "content": "Spoken text..." }
-  ],
-  "interaction": {
-    "needs_roll": boolean,
-    "dc": number,
-    "description": "Reason for roll",
-    "attribute": "str|dex|con|int|wis|cha"
-  },
-  "active_role": {
-    "add": ["char_id"],
-    "delete": ["char_id"]
-  },
-  "world_updates": [
-    {
-      "action": "CREATE | UPDATE",
-      "type": "character | setting | interaction | chapter",
-      "target_id": "id_if_update",
-      "data": { ... }
-    }
-  ]
-}
-`
-
-    let finalPrompt = `${systemMessage}\n\n# History\n${historyText}`
-
-    // Inject Interaction Result if present
-    if (interactionResult) {
-      finalPrompt += `\n\n${interactionResult}`
-    }
-
-    // Append User Input if present
-    if (userPrompt && userPrompt.trim() !== '') {
-      finalPrompt += `\n\n[PLAYER]: ${userPrompt}`
-    }
-
-    return finalPrompt
-  }
 }

@@ -4,13 +4,38 @@ import { useWorldStore } from '../store/world'
 import { useChronicleStore } from '../store/chronicle'
 import { LevelCalculator } from '../core/LevelCalculator'
 import { CharacterCard } from '@shared/Interface'
-import { User, Book, ChevronRight, ChevronDown, ArrowLeft, Plus, X, Edit, Check } from 'lucide-vue-next'
+import { User, Book, ChevronRight, ChevronDown, ArrowLeft, Plus, X, Edit, Check, Crown } from 'lucide-vue-next'
+import TraitTagCloud from './TraitTagCloud.vue'
+import type { CharacterCard as CharCardType } from '@shared/Interface'
 
 const worldStore = useWorldStore()
 const chronicleStore = useChronicleStore()
 const selectedCharId = ref<string | null>(null)
+
+const allCharacterCards = computed(() =>
+  worldStore.cards.filter(c => c.type === 'character') as CharCardType[]
+)
+
+const currentPlayerCharId = computed(() =>
+  worldStore.meta?.player_character_id || ''
+)
+
+const handlePlayerCharChange = async (e: Event) => {
+  const value = (e.target as HTMLSelectElement).value
+  await worldStore.setPlayerCharacterId(value || null)
+  await worldStore.saveToFile()
+}
 const isEditing = ref(false)
 const editForm = ref<any>(null)
+
+const isPlayerCharacter = (card: any) => {
+  const configuredPlayerId = (worldStore.meta as any)?.player_character_id
+  if (configuredPlayerId && card.id === configuredPlayerId) {
+    return true
+  }
+
+  return Array.isArray(card.tags) && card.tags.includes('player')
+}
 
 const selectedChar = computed(() => {
   if (!selectedCharId.value) return null
@@ -41,10 +66,13 @@ const canEdit = computed(() => {
 
 const activeCards = computed(() => {
   return worldStore.cards.filter(c => {
-    if (c.type === 'chapter') return true
+    if (c.type === 'chapter') {
+      const chapter = c as any
+      return chapter.is_current === true || chapter.status === 'active'
+    }
     
     if (c.type === 'character') {
-      const isPlayer = c.id === 'char-001' || (c as any).tags?.includes('player')
+      const isPlayer = isPlayerCharacter(c)
       // Show if in activeCharacterIds OR if player
       // AI controls visibility via activeCharacterIds
       if (worldStore.activeCharacterIds.includes(c.id)) return true
@@ -60,8 +88,7 @@ const inactiveCharacters = computed(() => {
   return worldStore.cards.filter(c => 
     c.type === 'character' && 
     !worldStore.activeCharacterIds.includes(c.id) &&
-    c.id !== 'char-001' && 
-    !(c as any).tags?.includes('player')
+    !isPlayerCharacter(c)
   )
 })
 
@@ -111,9 +138,11 @@ const getDisplayName = (card: any) => {
   return card.title || card.name || card.id
 }
 
-const attributeLabels: Record<string, string> = {
-  str: '力量', dex: '敏捷', con: '体质',
-  int: '智力', wis: '感知', cha: '魅力'
+const traitTypeLabels: Record<string, string> = {
+  strength: '✦ 优势',
+  flaw: '✧ 弱点',
+  bond: '♦ 羁绊',
+  mark: '★ 印记'
 }
 </script>
 
@@ -182,14 +211,9 @@ const attributeLabels: Record<string, string> = {
                 </div>
              </div>
 
-             <div class="details-section">
-                <div class="section-label">六维属性</div>
-                <div class="attributes-grid">
-                  <div v-for="(label, key) in attributeLabels" :key="key" class="attr-item">
-                    <span class="attr-label">{{ label }}</span>
-                    <span class="attr-value">{{ (selectedChar as any).attributes[key] }}</span>
-                  </div>
-                </div>
+             <div v-if="(selectedChar as any).traits && (selectedChar as any).traits.length" class="details-section">
+                <div class="section-label">特质 (Traits)</div>
+                <TraitTagCloud :traits="(selectedChar as any).traits" />
              </div>
           </template>
 
@@ -217,13 +241,24 @@ const attributeLabels: Record<string, string> = {
              </div>
 
              <div class="details-section">
-                <div class="section-label">属性</div>
-                <div class="attributes-grid">
-                  <div v-for="(label, key) in attributeLabels" :key="key" class="attr-item">
-                    <span class="attr-label">{{ label }}</span>
-                    <input v-model.number="editForm.attributes[key]" type="number" class="edit-input attr-edit" />
+                <div class="section-label">特质 (Traits) - 仅查看模式可编辑</div>
+                <div v-if="editForm.traits && editForm.traits.length" class="traits-list">
+                  <div v-for="(trait, idx) in editForm.traits" :key="idx" class="trait-item" :class="trait.type">
+                    <span class="trait-type">{{ traitTypeLabels[trait.type] || trait.type }}</span>
+                    <input v-model="editForm.traits[idx].text" class="edit-input" style="flex:1" />
+                    <select v-model="editForm.traits[idx].type" class="edit-input" style="width:80px">
+                      <option value="strength">优势</option>
+                      <option value="flaw">弱点</option>
+                      <option value="bond">羁绊</option>
+                      <option value="mark">印记</option>
+                    </select>
+                    <input v-model.number="editForm.traits[idx].weight" type="number" min="1" max="3" class="edit-input" style="width:50px" />
+                    <button class="btn-icon cancel" @click="editForm.traits.splice(idx, 1)" title="删除"><X :size="12" /></button>
                   </div>
                 </div>
+                <button class="btn-add-char" @click="editForm.traits = [...(editForm.traits || []), { type: 'strength', text: '', weight: 1 }]" style="margin-top:5px">
+                  <Plus :size="12" /> 添加特质
+                </button>
              </div>
           </template>
 
@@ -238,6 +273,14 @@ const attributeLabels: Record<string, string> = {
         <button class="btn-add-char" @click="showAddModal = true" title="添加活跃角色">
           <Plus :size="14" />
         </button>
+      </div>
+
+      <div v-if="allCharacterCards.length" class="player-selector">
+        <Crown :size="12" class="player-icon" />
+        <select :value="currentPlayerCharId" @change="handlePlayerCharChange" class="player-select">
+          <option value="">自动</option>
+          <option v-for="c in allCharacterCards" :key="c.id" :value="c.id">{{ c.name }}</option>
+        </select>
       </div>
 
       <div v-if="activeCards.length === 0" class="empty-state">
@@ -256,7 +299,8 @@ const attributeLabels: Record<string, string> = {
             <User v-if="card.type === 'character'" :size="16" />
             <Book v-else :size="16" />
             <span class="card-title">{{ getDisplayName(card) }}</span>
-            <span v-if="card.type === 'chapter'" class="current-tag">当前章节</span>
+            <span v-if="card.type === 'chapter' && (card as any).is_current" class="current-tag">当前章节</span>
+            <span v-else-if="card.type === 'chapter'" class="current-tag active-tag">活跃章节</span>
             <ChevronRight 
               v-if="card.type === 'character'" 
               :size="14" 
@@ -264,22 +308,15 @@ const attributeLabels: Record<string, string> = {
             />
           </div>
           
-          <div class="card-body">
-            <template v-if="card.type === 'character'">
-              <!-- Simplified display: Name/Title only (in header). Body empty for compact view -->
-            </template>
-            
-            <template v-else-if="card.type === 'chapter'">
-              <div class="chapter-objective">
-                <strong>当前目标:</strong> {{ (card as any).objective }}
-              </div>
-            </template>
+          <div v-if="card.type === 'chapter' && (card as any).objective" class="card-body">
+            <span class="chapter-objective">{{ (card as any).objective }}</span>
           </div>
         </div>
       </div>
     </template>
 
     <!-- Add Character Modal -->
+    <transition name="modal">
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal-content">
         <div class="modal-header">
@@ -303,12 +340,13 @@ const attributeLabels: Record<string, string> = {
         </div>
       </div>
     </div>
+    </transition>
   </div>
 </template>
 
 <style scoped>
 .active-codex {
-  padding: 10px;
+  padding: 8px;
   width: 100%;
   box-sizing: border-box;
   height: 100%;
@@ -319,21 +357,21 @@ const attributeLabels: Record<string, string> = {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  padding: 0 5px;
+  margin-bottom: 8px;
+  padding: 0 4px;
 }
 
 .list-title {
-  font-size: 12px;
-  color: var(--text-secondary);
+  font-size: 11px;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
 }
 
 .btn-add-char {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   color: var(--text-secondary);
   border-radius: 4px;
   cursor: pointer;
@@ -342,34 +380,73 @@ const attributeLabels: Record<string, string> = {
 }
 
 .btn-add-char:hover {
-  background: rgba(212, 175, 55, 0.1);
+  background: var(--bg-elevated);
   border-color: var(--accent-gold);
   color: var(--accent-gold);
+}
+
+.player-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 4px 6px;
+  background: color-mix(in srgb, var(--accent-gold) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-gold) 25%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+.player-icon {
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
+.player-select {
+  flex: 1;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 3px 24px 3px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237f8897' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  outline: none;
+  transition: all 0.15s;
+}
+
+.player-select:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px var(--accent-gold-weak);
+}
+
+.player-select option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .card-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 4px;
   width: 100%;
 }
 
 .active-card {
-  background-color: var(--bg-panel);
-  backdrop-filter: var(--glass-backdrop);
-  border: var(--glass-border);
-  border-left: 3px solid #444;
-  padding: 15px;
-  border-radius: 8px;
+  background-color: transparent;
+  border-left: 2px solid var(--border-default);
+  padding: 6px 10px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   width: 100%;
   box-sizing: border-box;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color var(--motion-base) ease;
 }
 
 .active-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-hover);
 }
 
 .active-card.character {
@@ -377,7 +454,7 @@ const attributeLabels: Record<string, string> = {
 }
 
 .active-card.chapter {
-  border-left-color: #4ecdc4;
+  border-left-color: var(--state-success);
 }
 
 .clickable {
@@ -387,35 +464,50 @@ const attributeLabels: Record<string, string> = {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   color: var(--text-primary);
-  font-weight: 600;
+}
+
+.card-header svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
 }
 
 .card-title {
   flex: 1;
-  font-size: 15px;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .current-tag {
-  font-size: 10px;
-  background-color: rgba(78, 205, 196, 0.2);
-  color: #4ecdc4;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 9px;
+  background-color: color-mix(in srgb, var(--state-success) 20%, transparent);
+  color: var(--state-success);
+  padding: 1px 5px;
+  border-radius: 3px;
   text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.current-tag.active-tag {
+  background-color: color-mix(in srgb, var(--text-muted) 15%, transparent);
+  color: var(--text-muted);
 }
 
 .expand-icon {
-  color: var(--text-secondary);
-  opacity: 0.5;
+  color: var(--text-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
 }
 
 .card-body {
-  margin-top: 8px;
-  font-size: 13px;
+  margin-top: 4px;
+  font-size: 12px;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.4;
+  padding-left: 22px;
 }
 
 /* Detail View Styles */
@@ -456,8 +548,8 @@ const attributeLabels: Record<string, string> = {
 }
 
 .btn-icon {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   color: var(--text-secondary);
   width: 30px;
   height: 30px;
@@ -470,25 +562,25 @@ const attributeLabels: Record<string, string> = {
 }
 
 .btn-icon:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-elevated);
   color: var(--text-primary);
 }
 
 .btn-icon.save:hover {
-  background: rgba(78, 205, 196, 0.2);
-  color: #4ecdc4;
-  border-color: #4ecdc4;
+  background: color-mix(in srgb, var(--state-success) 20%, transparent);
+  color: var(--state-success);
+  border-color: var(--state-success);
 }
 
 .btn-icon.cancel:hover {
-  background: rgba(255, 107, 107, 0.2);
-  color: #ff6b6b;
-  border-color: #ff6b6b;
+  background: color-mix(in srgb, var(--state-danger) 20%, transparent);
+  color: var(--state-danger);
+  border-color: var(--state-danger);
 }
 
 .header-title-row {
   margin-bottom: 25px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-default);
   padding-bottom: 15px;
 }
 
@@ -523,7 +615,7 @@ const attributeLabels: Record<string, string> = {
 }
 
 .separator {
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-muted);
 }
 
 .background-list {
@@ -537,7 +629,7 @@ const attributeLabels: Record<string, string> = {
   color: var(--text-secondary);
   line-height: 1.5;
   padding: 8px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-surface);
   border-radius: 4px;
   border-left: 2px solid var(--accent-gold);
 }
@@ -549,46 +641,58 @@ const attributeLabels: Record<string, string> = {
 }
 
 .tag-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 13px;
   color: var(--text-primary);
 }
 
-.attributes-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+.traits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.attr-item {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 10px;
+.trait-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  padding: 8px 10px;
   border-radius: 4px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--border-default);
+  font-size: 13px;
 }
 
-.attr-label {
-  display: block;
+.trait-item.strength { border-left-color: var(--accent-gold); }
+.trait-item.flaw { border-left-color: var(--state-danger); }
+.trait-item.bond { border-left-color: var(--state-info, #5599dd); }
+.trait-item.mark { border-left-color: var(--state-warning, #cc8800); }
+
+.trait-type {
   font-size: 11px;
   color: var(--text-secondary);
-  margin-bottom: 4px;
+  min-width: 50px;
 }
 
-.attr-value {
-  font-size: 16px;
-  font-weight: bold;
+.trait-text {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.trait-weight {
+  font-size: 11px;
   color: var(--accent-gold);
+  font-weight: bold;
 }
 
 /* Edit Inputs */
 .edit-input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   color: var(--text-primary);
   padding: 8px;
   border-radius: 4px;
@@ -599,7 +703,7 @@ const attributeLabels: Record<string, string> = {
 .edit-input:focus {
   outline: none;
   border-color: var(--accent-gold);
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--bg-input-focus);
 }
 
 .title-input {
@@ -628,32 +732,39 @@ const attributeLabels: Record<string, string> = {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(5px);
+  background: var(--bg-overlay);
+  backdrop-filter: blur(6px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.modal-enter-active { transition: all 0.25s ease; }
+.modal-leave-active { transition: all 0.2s ease; }
+.modal-enter-from, .modal-leave-to { opacity: 0; }
+.modal-enter-from .modal-content { transform: scale(0.95); }
+.modal-leave-to .modal-content { transform: scale(0.97); }
+
 .modal-content {
-  background: #1a1a1a;
+  background: var(--bg-panel);
   border: 1px solid var(--accent-gold);
   width: 320px;
   max-height: 450px;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.8);
+  box-shadow: var(--shadow-strong);
+  transition: transform 0.25s ease;
 }
 
 .modal-header {
   padding: 15px 20px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-default);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(0,0,0,0.2);
+  background: var(--bg-header);
 }
 
 .modal-header h3 {
@@ -667,13 +778,15 @@ const attributeLabels: Record<string, string> = {
 .btn-close {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all var(--motion-base) ease;
+  border-radius: var(--radius-sm);
 }
 
 .btn-close:hover {
-  color: #fff;
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .modal-body {
@@ -686,14 +799,14 @@ const attributeLabels: Record<string, string> = {
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--border-default);
   cursor: pointer;
   transition: background 0.2s;
   color: var(--text-primary);
 }
 
 .char-item:hover {
-  background: rgba(255,255,255,0.05);
+  background: var(--bg-hover);
   color: var(--accent-gold);
 }
 

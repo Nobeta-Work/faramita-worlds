@@ -2,11 +2,13 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 const api = {
-  saveWorldFile: (content: string) => ipcRenderer.invoke('save-world-file', content),
+  saveWorldFile: (content: string, worldName?: string, worldUuid?: string) => ipcRenderer.invoke('save-world-file', content, worldName, worldUuid),
   saveWorldCards: (content: string, fileName: string) => ipcRenderer.invoke('save-world-cards', content, fileName),
   loadWorldCards: (fileName: string) => ipcRenderer.invoke('load-world-cards', fileName),
   listWorldTemplates: () => ipcRenderer.invoke('list-world-templates'),
+  deleteWorldTemplate: (fileName: string) => ipcRenderer.invoke('delete-world-template', fileName),
   loadWorldFileExternal: () => ipcRenderer.invoke('load-world-file-external'),
+  importTextFile: () => ipcRenderer.invoke('import-text-file'),
   saveWorldFileExternal: (content: string, suggestedName: string) => ipcRenderer.invoke('save-world-file-external', content, suggestedName),
   // New save system
   listSaveFiles: (worldUuid: string) => ipcRenderer.invoke('list-save-files', worldUuid),

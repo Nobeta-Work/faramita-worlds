@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import Typewriter from './Typewriter.vue'
 
 const props = defineProps<{
@@ -50,12 +50,37 @@ const parsedSequence = computed(() => {
     return null
   }
 })
+
+const isDiceMessage = computed(() => {
+  return props.role === 'system' && props.content.startsWith('[DICE]')
+})
+
+const diceDisplayText = computed(() => {
+  if (!isDiceMessage.value) return ''
+  return props.content.replace(/^\[DICE\]\s*/, '')
+})
+
+// Generate a stable color from speaker name for character color coding
+const speakerColor = (name: string) => {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const hue = ((hash % 360) + 360) % 360
+  return `hsl(${hue}, 55%, 65%)`
+}
 </script>
 
 <template>
-  <div class="log-entry">
+  <div class="log-entry" :class="{ 'dice-entry': isDiceMessage }">
+    <!-- DICE ROLL (COMPACT) -->
+    <div v-if="isDiceMessage" class="dice-line">
+      <span class="dice-icon">🎲</span>
+      <span class="dice-text">{{ diceDisplayText }}</span>
+    </div>
+
     <!-- SYSTEM MESSAGE -->
-    <div v-if="role === 'system'" class="line system">
+    <div v-else-if="role === 'system'" class="line system">
       <span class="prefix">[SYSTEM]</span>
       <span class="content">
         <Typewriter 
@@ -88,7 +113,7 @@ const parsedSequence = computed(() => {
       <div v-for="(item, idx) in parsedSequence" :key="idx" class="seq-item" :class="item.type">
         <!-- Environment Text -->
         <template v-if="item.type === 'environment'">
-          <span class="content">
+          <div class="env-block">
             <template v-if="shouldAnimate">
                <Typewriter 
                  v-if="idx === visibleItemIndex" 
@@ -97,19 +122,17 @@ const parsedSequence = computed(() => {
                  @finish="onTypewriterFinish"
                />
                <span v-else-if="idx < visibleItemIndex">{{ item.content }}</span>
-               <!-- Future items are hidden -->
             </template>
             <template v-else>
               {{ item.content }}
             </template>
-          </span>
+          </div>
         </template>
         
         <!-- Dialogue -->
         <template v-else-if="item.type === 'dialogue'">
           <template v-if="shouldAnimate">
-            <!-- Only show speaker if we reached this item -->
-            <span v-if="idx <= visibleItemIndex" class="speaker">{{ item.speaker_name }}:</span>
+            <span v-if="idx <= visibleItemIndex" class="speaker" :style="{ color: speakerColor(item.speaker_name || '') }">{{ item.speaker_name }}:</span>
             <span v-if="idx <= visibleItemIndex" class="content">"
               <Typewriter 
                  v-if="idx === visibleItemIndex" 
@@ -121,11 +144,12 @@ const parsedSequence = computed(() => {
             "</span>
           </template>
           <template v-else>
-            <span class="speaker">{{ item.speaker_name }}:</span>
+            <span class="speaker" :style="{ color: speakerColor(item.speaker_name || '') }">{{ item.speaker_name }}:</span>
             <span class="content">"{{ item.content }}"</span>
           </template>
         </template>
       </div>
+
     </div>
 
     <!-- AI ASSISTANT (FALLBACK) -->
@@ -138,11 +162,22 @@ const parsedSequence = computed(() => {
 <style scoped>
 .log-entry {
   width: 100%;
-  margin-bottom: 8px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-bottom: 2px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--border-default) 72%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 84%, transparent);
+  backdrop-filter: blur(4px);
+  font-family: var(--font-sans);
   line-height: 1.6;
-  font-size: 14px;
+  font-size: inherit;
   color: var(--text-flow-base);
+  transition: all var(--motion-base) ease;
+}
+
+.log-entry:hover {
+  border-color: color-mix(in srgb, var(--border-strong) 80%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 96%, transparent);
 }
 
 .line {
@@ -156,20 +191,20 @@ const parsedSequence = computed(() => {
 }
 
 .user .prefix {
-  color: #d4af37;
+  color: var(--accent-gold);
   font-weight: bold;
   margin-right: 8px;
 }
 
 /* System Styling */
 .system {
-  font-family: 'Consolas', monospace;
-  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.93em;
   color: var(--text-flow-system);
 }
 
 .system .prefix {
-  color: #ff6b6b;
+  color: var(--state-danger);
   font-weight: bold;
   margin-right: 8px;
 }
@@ -180,7 +215,7 @@ const parsedSequence = computed(() => {
 }
 
 .assistant .prefix {
-  color: #4ecdc4;
+  color: var(--state-success);
   font-weight: bold;
   margin-right: 8px;
 }
@@ -195,8 +230,38 @@ const parsedSequence = computed(() => {
   margin-right: 6px;
 }
 
-.seq-item.environment .content {
+.env-block {
+  border-left: 2px solid var(--accent-gold);
+  padding-left: 1em;
+  text-indent: 2em;
+  line-height: 1.8;
   color: var(--text-flow-env);
+}
+
+/* Dice roll compact styling */
+.log-entry.dice-entry {
+  padding: 3px 10px;
+  border-color: color-mix(in srgb, var(--accent-gold) 25%, transparent);
+  background: color-mix(in srgb, var(--accent-gold) 4%, transparent);
+}
+
+.dice-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.88em;
+  white-space: normal;
+}
+
+.dice-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.dice-text {
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .seq-item.dialogue .content {
@@ -207,12 +272,14 @@ const parsedSequence = computed(() => {
   color: var(--accent-gold);
   font-style: italic;
   opacity: 0.9;
+  border-left: 2px solid color-mix(in srgb, var(--accent-gold) 65%, transparent);
+  padding-left: 8px;
 }
 
 .thinking-dots {
   display: inline-block;
   animation: pulse 1.5s infinite;
-  color: #888;
+  color: var(--text-muted);
   margin-right: 5px;
 }
 

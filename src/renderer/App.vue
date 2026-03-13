@@ -3,18 +3,26 @@ import { ref, watch, onMounted, computed } from 'vue'
 import MainGame from './views/MainGame.vue'
 import ManagerView from './views/ManagerView.vue'
 import SettingsView from './views/SettingsView.vue'
-import { Layout, Database, Archive, Settings, X, Save, FolderOpen, Trash2, Clock } from 'lucide-vue-next'
+import WorldbookImportWizard from './components/WorldbookImportWizard.vue'
+import WelcomeSplash from './components/WelcomeSplash.vue'
+import GuidedTour from './components/GuidedTour.vue'
+import { Layout, Database, Archive, Settings, Save, FolderOpen, Trash2, Clock, FileUp, RotateCcw } from 'lucide-vue-next'
+import { db } from './db/db'
 import { useChronicleStore } from './store/chronicle'
 import { useWorldStore } from './store/world'
+import { useConfigStore } from './store/config'
 
-type ViewType = 'game' | 'manager' | 'settings'
+type ViewType = 'game' | 'manager' | 'archive' | 'import' | 'settings'
 
 const currentView = ref<ViewType>('game')
 const chronicleStore = useChronicleStore()
 const worldStore = useWorldStore()
+const configStore = useConfigStore()
 let isQuitting = false
 
-const showArchiveModal = ref(false)
+const showWelcome = ref(false)
+const showTour = ref(false)
+
 const saveFiles = ref<Array<{ filename: string; timestamp: number }>>([])
 const selectedSaveFile = ref('')
 const statusMsg = ref('')
@@ -40,8 +48,8 @@ const formatDate = (timestamp: number) => {
   })
 }
 
-const openArchiveModal = async () => {
-  showArchiveModal.value = true
+const openArchivePage = async () => {
+  currentView.value = 'archive'
   await loadSaveFiles()
 }
 
@@ -69,6 +77,66 @@ const handleSaveArchive = async () => {
   }
 }
 
+const resolveRestartActiveCharacterIds = () => {
+  if (worldStore.meta?.player_character_id) {
+    return [worldStore.meta.player_character_id]
+  }
+
+  const taggedPlayer = worldStore.cards.find(card =>
+    card.type === 'character' && Array.isArray((card as any).tags) && (card as any).tags.includes('player')
+  )
+  if (taggedPlayer) return [taggedPlayer.id]
+
+  const firstCharacter = worldStore.cards.find(card => card.type === 'character')
+  return firstCharacter ? [firstCharacter.id] : []
+}
+
+const handleRestartArchive = async () => {
+  if (!worldStore.meta?.uuid || !worldStore.meta?.name) {
+    showStatus('请先加载世界书后再重新开始', 'error')
+    return
+  }
+
+  if (!confirm('确定重新开始吗？这会清空当前历史并创建一个空白存档。')) return
+
+  try {
+    await db.chronicle.clear()
+    await chronicleStore.loadHistory()
+    chronicleStore.clearInteraction()
+
+    const activeIds = resolveRestartActiveCharacterIds()
+    await worldStore.setActiveCharacters(activeIds)
+
+    const emptyArchive = {
+      world_meta: worldStore.meta,
+      timestamp: Date.now(),
+      active_information: activeIds,
+      history: []
+    }
+
+    const saveResult = await (window as any).api.saveArchiveFile(
+      JSON.stringify(emptyArchive, null, 2),
+      worldStore.meta.uuid,
+      worldStore.meta.name
+    )
+
+    if (!saveResult.success) {
+      showStatus(`重新开始失败: ${saveResult.error}`, 'error')
+      return
+    }
+
+    await loadSaveFiles()
+    if (saveResult.filename) {
+      selectedSaveFile.value = saveResult.filename
+    }
+
+    showStatus('已重新开始并载入空白存档')
+    currentView.value = 'game'
+  } catch (error: any) {
+    showStatus(`重新开始失败: ${error.message || '未知错误'}`, 'error')
+  }
+}
+
 const handleLoadArchive = async () => {
   if (!selectedSaveFile.value) {
     showStatus('请选择一个存档', 'error')
@@ -78,7 +146,6 @@ const handleLoadArchive = async () => {
   const result = await chronicleStore.loadArchiveFile(selectedSaveFile.value)
   if (result.success) {
     showStatus('存档加载成功')
-    showArchiveModal.value = false
     currentView.value = 'game'
   } else {
     showStatus(`加载失败: ${result.error}`, 'error')
@@ -100,10 +167,19 @@ const handleDeleteArchive = async (filename: string) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const savedTheme = localStorage.getItem('faramita_theme')
+  const initialTheme = savedTheme === 'light' ? 'light' : 'dark'
+  document.documentElement.setAttribute('data-theme', initialTheme)
+
   const savedView = localStorage.getItem('faramita_current_view')
-  if (['game', 'manager', 'settings'].includes(savedView as string)) {
+  if (['game', 'manager', 'archive', 'import', 'settings'].includes(savedView as string)) {
     currentView.value = savedView as ViewType
+  }
+
+  await configStore.loadConfig()
+  if (!configStore.skipWelcome) {
+    showWelcome.value = true
   }
 
   window.addEventListener('beforeunload', async (e) => {
@@ -148,6 +224,60 @@ onMounted(() => {
 watch(currentView, (newView) => {
   localStorage.setItem('faramita_current_view', newView)
 })
+
+watch(
+  () => chronicleStore.jumpRequestTick,
+  () => {
+    if (chronicleStore.jumpTargetCardId) {
+      currentView.value = 'manager'
+    }
+  }
+)
+
+const handleWelcomeDismiss = () => {
+  showWelcome.value = false
+}
+
+const handleQuickStart = () => {
+  showWelcome.value = false
+  currentView.value = 'game'
+  showTour.value = true
+}
+
+const handleCreateWorld = () => {
+  showWelcome.value = false
+  currentView.value = 'manager'
+}
+
+const handleImportText = () => {
+  showWelcome.value = false
+  currentView.value = 'import'
+}
+
+const openImportWizard = () => {
+  currentView.value = 'import'
+}
+
+const handleWizardCompleted = (message: string) => {
+  statusMsg.value = message
+  statusType.value = 'success'
+  setTimeout(() => { statusMsg.value = '' }, 3000)
+  currentView.value = 'manager'
+}
+
+const handleWizardFailed = (message: string) => {
+  statusMsg.value = message
+  statusType.value = 'error'
+  setTimeout(() => { statusMsg.value = '' }, 3000)
+}
+
+const handleWizardClose = () => {
+  currentView.value = 'manager'
+}
+
+const handleTourClose = () => {
+  showTour.value = false
+}
 </script>
 
 <template>
@@ -173,8 +303,18 @@ watch(currentView, (newView) => {
       <div class="divider"></div>
 
       <div 
-        class="nav-icon action" 
-        @click="openArchiveModal"
+        class="nav-icon" 
+        :class="{ active: currentView === 'import' }"
+        @click="openImportWizard"
+        title="文本导入向导"
+      >
+        <FileUp :size="24" />
+      </div>
+
+      <div 
+        class="nav-icon" 
+        :class="{ active: currentView === 'archive' }"
+        @click="openArchivePage"
         title="存档管理"
       >
         <Archive :size="24" />
@@ -193,152 +333,123 @@ watch(currentView, (newView) => {
     </aside>
 
     <main class="content-area">
-      <MainGame v-if="currentView === 'game'" />
-      <ManagerView v-else-if="currentView === 'manager'" />
-      <SettingsView v-else-if="currentView === 'settings'" />
-    </main>
-
-    <!-- Archive Management Modal -->
-    <div v-if="showArchiveModal" class="modal-overlay" @click.self="showArchiveModal = false">
-      <div class="modal-content archive-modal">
-        <div class="modal-header">
-          <h3>存档管理</h3>
-          <button class="btn-close" @click="showArchiveModal = false">
-            <X :size="18" />
-          </button>
-        </div>
-
-        <!-- Status Toast -->
-        <transition name="status-fade">
-          <div v-if="statusMsg" class="status-toast" :class="statusType">
-            {{ statusMsg }}
-          </div>
-        </transition>
-
-        <div class="modal-body">
-          <div class="archive-section">
-            <div class="section-header">
-              <h4>当前世界书: {{ worldStore.meta?.name || '未知' }}</h4>
+      <transition name="view-fade" mode="out-in">
+        <MainGame v-if="currentView === 'game'" key="game" />
+        <ManagerView v-else-if="currentView === 'manager'" key="manager" @open-import-wizard="openImportWizard" />
+        <WorldbookImportWizard
+          v-else-if="currentView === 'import'"
+          key="import"
+          @close="handleWizardClose"
+          @completed="handleWizardCompleted"
+          @failed="handleWizardFailed"
+        />
+        <div v-else-if="currentView === 'archive'" key="archive" class="archive-page">
+          <!-- Status Toast -->
+          <transition name="status-fade">
+            <div v-if="statusMsg" class="status-toast" :class="statusType">
+              {{ statusMsg }}
             </div>
+          </transition>
 
-            <div class="archive-actions">
-              <button class="btn-primary" @click="handleSaveArchive">
-                <Save :size="16" /> 保存新存档
-              </button>
-            </div>
+          <div class="archive-page-header">
+            <h2><Archive :size="20" /> 存档管理</h2>
+            <span class="archive-world-name">当前世界书: {{ worldStore.meta?.name || '未加载' }}</span>
           </div>
 
-          <div class="divider-line"></div>
-
-          <div class="archive-section">
-            <h4>存档列表</h4>
-            <p class="archive-hint">最多保留 5 个存档，超出后将自动删除最旧的存档</p>
-            
-            <div v-if="saveFiles.length === 0" class="empty-state">
-              暂无存档
-            </div>
-            
-            <div v-else class="save-list">
-              <div 
-                v-for="save in saveFiles" 
-                :key="save.filename"
-                class="save-item"
-                :class="{ selected: selectedSaveFile === save.filename }"
-                @click="selectedSaveFile = save.filename"
-              >
-                <div class="save-info">
-                  <Clock :size="14" />
-                  <span class="save-time">{{ formatDate(save.timestamp) }}</span>
-                </div>
-                <button 
-                  class="btn-delete-save" 
-                  @click.stop="handleDeleteArchive(save.filename)"
-                  title="删除存档"
-                >
-                  <Trash2 :size="14" />
+          <div class="archive-page-body">
+            <div class="archive-panel">
+              <div class="archive-panel-header">
+                <h3>操作</h3>
+              </div>
+              <div class="archive-panel-content">
+                <button class="btn-primary" @click="handleSaveArchive">
+                  <Save :size="16" /> 保存新存档
+                </button>
+                <button class="btn-secondary" @click="handleRestartArchive">
+                  <RotateCcw :size="16" /> 重新开始
                 </button>
               </div>
             </div>
 
-            <div class="archive-actions">
-              <button 
-                class="btn-secondary" 
-                @click="handleLoadArchive"
-                :disabled="!selectedSaveFile"
-              >
-                <FolderOpen :size="16" /> 加载选中存档
-              </button>
+            <div class="archive-panel">
+              <div class="archive-panel-header">
+                <h3>存档列表</h3>
+                <span class="archive-count">共 {{ saveFiles.length }} 个存档</span>
+              </div>
+              <p class="archive-hint">最多保留 5 个存档，超出后将自动删除最旧的存档</p>
+
+              <div v-if="saveFiles.length === 0" class="empty-state">
+                暂无存档
+              </div>
+
+              <div v-else class="save-list">
+                <div 
+                  v-for="save in saveFiles" 
+                  :key="save.filename"
+                  class="save-item"
+                  :class="{ selected: selectedSaveFile === save.filename }"
+                  @click="selectedSaveFile = save.filename"
+                >
+                  <div class="save-info">
+                    <Clock :size="14" />
+                    <span class="save-time">{{ formatDate(save.timestamp) }}</span>
+                  </div>
+                  <button 
+                    class="btn-delete-save" 
+                    @click.stop="handleDeleteArchive(save.filename)"
+                    title="删除存档"
+                  >
+                    <Trash2 :size="14" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="archive-actions">
+                <button 
+                  class="btn-secondary" 
+                  @click="handleLoadArchive"
+                  :disabled="!selectedSaveFile"
+                >
+                  <FolderOpen :size="16" /> 加载选中存档
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+        <SettingsView v-else-if="currentView === 'settings'" key="settings" />
+      </transition>
+    </main>
+
+    <!-- Welcome Splash -->
+    <WelcomeSplash
+      v-if="showWelcome"
+      @dismiss="handleWelcomeDismiss"
+      @quick-start="handleQuickStart"
+      @create-world="handleCreateWorld"
+      @import-text="handleImportText"
+    />
+
+    <!-- Guided Tour -->
+    <GuidedTour v-if="showTour" @close="handleTourClose" />
+
   </div>
 </template>
 
 <style>
-/* Global Dark Theme & Scrollbars */
-:root {
-  --bg-dark: #0b0b0b;
-  --bg-panel: rgba(20, 20, 20, 0.7);
-  --bg-header: rgba(30, 30, 30, 0.8);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(0, 0, 0, 0.3);
-  --glass-backdrop: blur(10px);
-  --accent-gold: #d4af37;
-  --text-primary: #e0e0e0;
-  --text-secondary: #9aa0a6;
-  --text-flow-base: #d8d2c4;
-  --text-flow-env: #b6aea0;
-  --text-flow-dialogue: #e4e0d6;
-  --text-flow-speaker: #69c4c0;
-  --text-flow-user: #f0e7cf;
-  --text-flow-system: #ffb3b3;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-dark);
-  background-image: url("https://images.unsplash.com/photo-1519681393798-3828fb4090bb?q=80&w=2070&auto=format&fit=crop"); /* Placeholder dark fantasy bg */
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: var(--text-primary);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* Overlay for darkening background */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* Darken the image */
-  z-index: -1;
-  pointer-events: none;
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark); 
+  background: var(--bg-app);
 }
 ::-webkit-scrollbar-thumb {
-  background: #333; 
+  background: var(--border-strong);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #444; 
+  background: var(--text-muted);
 }
 
 /* Texture Overlay */
@@ -357,56 +468,57 @@ body::after {
 
 .app-layout {
   display: flex;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
   position: relative;
+  background: var(--bg-app);
 }
 
 .main-sidebar {
   width: 60px;
-  background-color: #080808;
+  background-color: var(--bg-surface);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px 0;
   gap: 20px;
-  border-right: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-default);
   z-index: 10;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-soft);
 }
 
 .divider {
   width: 30px;
   height: 1px;
-  background-color: #333;
+  background-color: var(--border-strong);
 }
 
 .nav-icon {
-  color: #555;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--motion-base) ease;
   padding: 10px;
   border-radius: 8px;
 }
 
 .nav-icon:hover {
-  color: #eee;
-  background-color: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  background-color: var(--accent-primary-weak);
 }
 
 .nav-icon.active {
   color: var(--accent-gold);
-  background-color: rgba(212, 175, 55, 0.1);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+  background-color: var(--accent-gold-weak);
+  box-shadow: var(--glow-gold);
 }
 
 .nav-icon.action {
-  color: #4ecdc4;
+  color: var(--state-success);
 }
 .nav-icon.action:hover {
-  color: #fff;
-  background-color: rgba(78, 205, 196, 0.1);
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
 }
 
 .nav-spacer {
@@ -419,94 +531,93 @@ body::after {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-dark);
+  background-color: var(--bg-app);
 }
 
-/* Archive Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(5px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
+/* Page view transition */
+.view-fade-enter-active { transition: opacity 0.25s ease, transform 0.25s ease; }
+.view-fade-leave-active { transition: opacity 0.15s ease, transform 0.15s ease; }
+.view-fade-enter-from { opacity: 0; transform: translateY(8px); }
+.view-fade-leave-to { opacity: 0; transform: translateY(-4px); }
 
-.archive-modal {
-  background: #1a1a1a;
-  border: 1px solid #d4af37;
-  border-radius: 12px;
-  width: 600px;
-  max-height: 80vh;
+/* Archive Page Styles */
+.archive-page {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  overflow: hidden;
+  position: relative;
 }
 
-.modal-header {
-  padding: 20px 25px;
-  border-bottom: 1px solid #333;
+.archive-page-header {
+  padding: 24px 32px 16px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface);
+}
+
+.archive-page-header h2 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.archive-world-name {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.archive-page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 680px;
+}
+
+.archive-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.archive-panel-content {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.archive-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(0, 0, 0, 0.3);
+  margin-bottom: 12px;
 }
 
-.modal-header h3 {
+.archive-panel-header h3 {
   margin: 0;
-  font-size: 18px;
-  color: #d4af37;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.btn-close:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.modal-body {
-  padding: 25px;
-  overflow-y: auto;
-}
-
-.archive-section {
-  margin-bottom: 25px;
-}
-
-.archive-section h4 {
-  margin: 0 0 15px 0;
   font-size: 15px;
-  color: #eee;
-  font-weight: normal;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
-.section-header h4 {
-  margin: 0;
-  font-size: 14px;
-  color: #888;
+.archive-count {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 .archive-hint {
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
   margin: 0 0 15px 0;
   font-style: italic;
 }
@@ -531,25 +642,25 @@ body::after {
 }
 
 .btn-primary {
-  background: #d4af37;
-  color: #000;
+  background: var(--accent-gold);
+  color: #111;
 }
 
 .btn-primary:hover {
-  background: #f0c040;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+  background: var(--accent-gold-strong);
+  box-shadow: var(--glow-gold);
 }
 
 .btn-secondary {
-  background: #2a2a2a;
-  color: #eee;
-  border: 1px solid #444;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #3a3a3a;
-  border-color: #d4af37;
-  color: #d4af37;
+  background: var(--bg-hover);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
 }
 
 .btn-secondary:disabled {
@@ -559,17 +670,17 @@ body::after {
 
 .divider-line {
   height: 1px;
-  background: #333;
+  background: var(--border-default);
   margin: 25px 0;
 }
 
 .empty-state {
   padding: 40px;
   text-align: center;
-  color: #666;
+  color: var(--text-muted);
   font-size: 14px;
   font-style: italic;
-  border: 1px dashed #333;
+  border: 1px dashed var(--border-default);
   border-radius: 8px;
 }
 
@@ -584,8 +695,8 @@ body::after {
 
 .save-item {
   padding: 15px;
-  background: #252525;
-  border: 1px solid #333;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
@@ -595,21 +706,21 @@ body::after {
 }
 
 .save-item:hover {
-  background: #2a2a2a;
-  border-color: #555;
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
 }
 
 .save-item.selected {
-  background: #3d3115;
-  border-color: #d4af37;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  background: var(--accent-gold-weak);
+  border-color: var(--accent-gold);
+  box-shadow: var(--glow-gold);
 }
 
 .save-info {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .save-time {
@@ -619,7 +730,7 @@ body::after {
 .btn-delete-save {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 6px;
   border-radius: 4px;
@@ -629,8 +740,8 @@ body::after {
 }
 
 .btn-delete-save:hover {
-  color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.1);
+  color: var(--state-danger);
+  background: color-mix(in srgb, var(--state-danger) 15%, transparent);
 }
 
 .status-toast {
@@ -642,20 +753,20 @@ body::after {
   border-radius: 6px;
   font-size: 14px;
   z-index: 10000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-soft);
   pointer-events: none;
 }
 
 .status-toast.success {
-  background-color: #1b4332;
-  color: #74c69d;
-  border: 1px solid #2d6a4f;
+  background-color: color-mix(in srgb, var(--state-success) 16%, var(--bg-surface));
+  color: var(--state-success);
+  border: 1px solid color-mix(in srgb, var(--state-success) 36%, var(--border-default));
 }
 
 .status-toast.error {
-  background-color: #431b1b;
-  color: #c67474;
-  border: 1px solid #6a2d2d;
+  background-color: color-mix(in srgb, var(--state-danger) 16%, var(--bg-surface));
+  color: var(--state-danger);
+  border: 1px solid color-mix(in srgb, var(--state-danger) 36%, var(--border-default));
 }
 
 .status-fade-enter-active, .status-fade-leave-active {

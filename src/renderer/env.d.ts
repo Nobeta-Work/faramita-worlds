@@ -6,13 +6,20 @@ declare module '*.vue' {
   export default component
 }
 
+declare module '*.md?raw' {
+  const content: string
+  export default content
+}
+
 interface Window {
   api: {
-    saveWorldFile: (content: string) => Promise<{ success: boolean; error?: string }>
+    saveWorldFile: (content: string, worldName?: string, worldUuid?: string) => Promise<{ success: boolean; filePath?: string; error?: string }>
     saveWorldCards: (content: string, fileName: string) => Promise<{ success: boolean; filePath?: string; error?: string }>
     loadWorldCards: (fileName: string) => Promise<{ success: boolean; content?: string; error?: string }>
     listWorldTemplates: () => Promise<{ success: boolean; files?: string[]; error?: string }>
+    deleteWorldTemplate: (fileName: string) => Promise<{ success: boolean; error?: string }>
     loadWorldFileExternal: () => Promise<{ success: boolean; content?: string; cancelled?: boolean; error?: string }>
+    importTextFile: () => Promise<{ success: boolean; filename?: string; content?: string; encoding?: string; cancelled?: boolean; error?: string }>
     saveWorldFileExternal: (content: string, suggestedName: string) => Promise<{ success: boolean; filePath?: string; cancelled?: boolean; error?: string }>
     // Deprecated - use saveArchiveFile instead
     saveArchive: (content: string) => Promise<{ success: boolean; filePath?: string; cancelled?: boolean; error?: string }>
@@ -24,6 +31,7 @@ interface Window {
     loadArchiveFile: (filename: string) => Promise<{ success: boolean; content?: string; error?: string }>
     deleteArchiveFile: (filename: string) => Promise<{ success: boolean; error?: string }>
     autoSaveOnQuit: (content: string, worldUuid: string, worldName: string) => Promise<{ success: boolean; filePath?: string; filename?: string; error?: string }>
+    quitApp: () => Promise<{ success: boolean }>
   }
   
   // Electron API
